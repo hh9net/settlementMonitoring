@@ -24,8 +24,12 @@ func RouteInit() {
 
 	http.Handle("/", route)
 	gin.SetMode(gin.ReleaseMode)
-	logrus.Print(config.Opts().LocalAddress + ":" + config.Opts().WebPort)
-	route.Run(config.Opts().LocalAddress + ":" + config.Opts().WebPort)
+	logrus.Print("服务端 IpAddress：", config.Opts().LocalAddress+":"+config.Opts().WebPort)
+	runerr := route.Run(config.Opts().LocalAddress + ":" + config.Opts().WebPort)
+	if runerr != nil {
+		logrus.Print("Run error")
+		return
+	}
 }
 func APIV1Init(route *gin.RouterGroup) {
 	AuthAPIInit(route)
