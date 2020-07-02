@@ -1,7 +1,7 @@
 package config
 
 import (
-	"fmt"
+	"github.com/sirupsen/logrus"
 	"settlementMonitoring/utils"
 )
 
@@ -24,6 +24,7 @@ type Config struct {
 	LogFileName     string
 }
 
+//可选Optional
 var Optional = Config{}
 
 func Opts() Config {
@@ -37,5 +38,5 @@ func InitConfigs() {
 			Pointer:  &Optional,
 		},
 	})
-	fmt.Println(Optional)
+	logrus.Print("配置文件参数", Optional)
 }

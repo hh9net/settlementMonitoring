@@ -2,6 +2,7 @@ package router
 
 import (
 	"fmt"
+	"github.com/sirupsen/logrus"
 	"net/http"
 	"settlementMonitoring/config"
 	"settlementMonitoring/controller"
@@ -15,17 +16,15 @@ import (
 
 func RouteInit() {
 	route := gin.New()
-	//log中间件
-	//route.Use(commonUtils.GinLogrusLogger())
-	route.Use(Cors())
+	route.Use(Cors()) //跨域资源共享
 
 	route.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	apiV1 := route.Group("/ops_mgt/api/v1")
+	apiV1 := route.Group("/settlementCenter/api/v1")
 	APIV1Init(apiV1)
 
 	http.Handle("/", route)
 	gin.SetMode(gin.ReleaseMode)
-
+	logrus.Print(config.Opts().LocalAddress + ":" + config.Opts().WebPort)
 	route.Run(config.Opts().LocalAddress + ":" + config.Opts().WebPort)
 }
 func APIV1Init(route *gin.RouterGroup) {
@@ -34,7 +33,7 @@ func APIV1Init(route *gin.RouterGroup) {
 
 func AuthAPIInit(route *gin.RouterGroup) {
 	route.POST("/login", controller.Login)
-	//	route.POST("/send_vcode", controller.SendVerificationCode)
+	//route.POST("/send_vcode", controller.SendVerificationCode)
 
 }
 

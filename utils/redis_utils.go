@@ -1,5 +1,3 @@
-//author xinbing
-//time 2018/9/4 17:17
 package utils
 
 import (

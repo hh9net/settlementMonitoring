@@ -1,7 +1,11 @@
 package service
 
-import "settlementMonitoring/dto"
+import (
+	"github.com/sirupsen/logrus"
+	"settlementMonitoring/dto"
+)
 
 func Login(req dto.ReqLogin) (int, error) {
-	return 0, nil
+	logrus.Print(req)
+	return 200, nil
 }

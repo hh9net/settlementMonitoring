@@ -1,5 +1,3 @@
-//author xinbing
-//time 2018/8/28 14:18
 //字符串工具
 package utils
 
@@ -12,8 +10,7 @@ import (
 	"io"
 	"math/rand"
 	"time"
-
-	uuid "github.com/satori/go.uuid"
+	//uuid "github.com/satori/go.uuid"
 )
 
 var randomStrSource = []byte("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
@@ -38,13 +35,13 @@ func GetRandomNumStr(length int) string {
 	return string(result)
 }
 
-func UUID() (string, error) {
-	id, err := uuid.NewV1()
-	if err != nil {
-		return "", err
-	}
-	return id.String(), nil
-}
+//func UUID() (string, error) {
+//	id, err := uuid.NewV1()
+//	if err != nil {
+//		return "", err
+//	}
+//	return id.String(), nil
+//}
 
 // bool to int64(1,0)
 func Uint8ToBool(data uint8) bool {

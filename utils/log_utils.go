@@ -28,6 +28,7 @@ func init() {
 }
 
 // config logrus log to local filesystem, with file rotation
+//logPath:./log    logFileName: logFileName   maxAge:365*24h   rotationTime  24h
 func InitLogrus(logPath string, logFileName string, maxAge time.Duration, rotationTime time.Duration) {
 	if _, err := os.Stat(logPath); os.IsNotExist(err) { //如果不存在该目录，那么创建该目录
 		os.MkdirAll(logPath, os.ModePerm)
