@@ -1,10 +1,16 @@
 package dto
 
 type Response struct {
-	Code    int         `json:"code"`
-	Message string      `json:"message"`
+	Code    int         `json:"code"  example:"200"`
+	Message string      `json:"message" example:"响应成功信息"`
 	Data    interface{} `json:"data"`
 }
-type ReqLogin struct {
-	UserName string `json:"code"`
+type ResponseFailure struct {
+	Code    int         `json:"code"  example:"404"`
+	Message string      `json:"message" example:"响应失败信息"`
+	Data    interface{} `json:"data"`
+}
+
+type Reqlogin struct {
+	UserName string `json:"name" example:"abc"`
 }

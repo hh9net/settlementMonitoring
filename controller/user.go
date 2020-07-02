@@ -10,32 +10,33 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// @Summary 登录api
-// @Tags 权限管理
-// @version 1.0
-// @Accept application/json
-// @Param req  body dto.ReqLogin
-// @Success 200 object dto.Response 成功后返回值
-// @Failure 200 object dto.Response 查询失败
-// @Router /login [post]
+/*  接口方法注释   */
+//@Summary 登录api
+//@Tags 登录
+//@version 1.0
+//@Accept application/json
+//@Param req body dto.Reqlogin true "请求参数"
+//@Success 200 object dto.Response 成功后返回值
+//@Failure 404 object dto.ResponseFailure 查询失败
+//@Router /login [post]
 func Login(c *gin.Context) {
-	req := dto.ReqLogin{}
-	resp := dto.Response{}
+	req := dto.Reqlogin{}
+	respFailure := dto.ResponseFailure{}
 
 	if err := c.Bind(&req); err != nil {
 		logrus.Errorf("Login json unmarshal err: %v", err.Error())
-		resp.Code = -1
-		resp.Message = fmt.Sprintf("json unmarshal err: %v", err.Error())
-		c.JSON(http.StatusOK, resp)
+		respFailure.Code = -1
+		respFailure.Message = fmt.Sprintf("json unmarshal err: %v", err.Error())
+		c.JSON(http.StatusOK, respFailure)
 		return
 	}
 
 	code, err := service.Login(req)
 	if err != nil {
 		logrus.Errorf("Login  err: %v", err.Error())
-		resp.Code = code
-		resp.Message = fmt.Sprintf("Login err: %v", err.Error())
-		c.JSON(http.StatusOK, resp)
+		respFailure.Code = code
+		respFailure.Message = fmt.Sprintf("Login err: %v", err.Error())
+		c.JSON(http.StatusOK, respFailure)
 		return
 	}
 

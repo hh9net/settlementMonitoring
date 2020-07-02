@@ -5,7 +5,7 @@ import (
 	"settlementMonitoring/dto"
 )
 
-func Login(req dto.ReqLogin) (int, error) {
+func Login(req dto.Reqlogin) (int, error) {
 	logrus.Print(req)
 	return 200, nil
 }

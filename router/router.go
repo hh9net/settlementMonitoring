@@ -10,22 +10,25 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-	"github.com/swaggo/gin-swagger/swaggerFiles"
 )
 
 func RouteInit() {
-	route := gin.New()
-	route.Use(Cors()) //跨域资源共享
+	router := gin.New()
+	router.Use(Cors()) //跨域资源共享
 
-	route.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	apiV1 := route.Group("/settlementCenter/api/v1")
+	url := ginSwagger.URL("http://127.0.0.1:8088/swagger/doc.json")
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
+
+	//router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	apiV1 := router.Group("/settlementCenter/api/v1")
 	APIV1Init(apiV1)
 
-	http.Handle("/", route)
+	http.Handle("/", router)
 	gin.SetMode(gin.ReleaseMode)
 	logrus.Print("服务端 IpAddress：", config.Opts().LocalAddress+":"+config.Opts().WebPort)
-	runerr := route.Run(config.Opts().LocalAddress + ":" + config.Opts().WebPort)
+	runerr := router.Run(config.Opts().LocalAddress + ":" + config.Opts().WebPort)
 	if runerr != nil {
 		logrus.Print("Run error")
 		return
