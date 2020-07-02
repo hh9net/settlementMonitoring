@@ -1,0 +1,92 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Gin swagger 结算数据监控平台",
+        "title": "结算数据监控平台",
+        "contact": {},
+        "license": {},
+        "version": "1.0"
+    },
+    "host": "127.0.0.1:8088",
+    "paths": {
+        "/login": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "登录"
+                ],
+                "summary": "登录api",
+                "parameters": [
+                    {
+                        "description": "请求参数",
+                        "name": "req",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.Reqlogin"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseFailure"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "dto.Reqlogin": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "example": "abc"
+                }
+            }
+        },
+        "dto.Response": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer",
+                    "example": 200
+                },
+                "data": {
+                    "type": "object"
+                },
+                "message": {
+                    "type": "string",
+                    "example": "响应成功信息"
+                }
+            }
+        },
+        "dto.ResponseFailure": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer",
+                    "example": 404
+                },
+                "data": {
+                    "type": "object"
+                },
+                "message": {
+                    "type": "string",
+                    "example": "响应失败信息"
+                }
+            }
+        }
+    }
+}

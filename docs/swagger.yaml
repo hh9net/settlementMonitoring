@@ -1,0 +1,61 @@
+definitions:
+  dto.Reqlogin:
+    properties:
+      name:
+        example: abc
+        type: string
+    type: object
+  dto.Response:
+    properties:
+      code:
+        example: 200
+        type: integer
+      data:
+        type: object
+      message:
+        example: 响应成功信息
+        type: string
+    type: object
+  dto.ResponseFailure:
+    properties:
+      code:
+        example: 404
+        type: integer
+      data:
+        type: object
+      message:
+        example: 响应失败信息
+        type: string
+    type: object
+host: 127.0.0.1:8088
+info:
+  contact: {}
+  description: Gin swagger 结算数据监控平台
+  license: {}
+  title: 结算数据监控平台
+  version: "1.0"
+paths:
+  /login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 请求参数
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/dto.Reqlogin'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ResponseFailure'
+      summary: 登录api
+      tags:
+      - 登录
+swagger: "2.0"
