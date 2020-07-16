@@ -2,7 +2,9 @@ package db
 
 import (
 	"settlementMonitoring/config"
+	"settlementMonitoring/types"
 	"settlementMonitoring/utils"
+	"time"
 )
 
 var GormClient *utils.GormDB
@@ -15,6 +17,25 @@ func DBInit() {
 	})
 }
 
+//创建表
+func NewTables() {
+	config.InitConfigs() //初始化配置
+	utils.InitLogrus(config.Opts().LogPath, config.Opts().LogFileName, time.Duration(24*config.Optional.LogmaxAge)*time.Hour, time.Duration(config.Optional.LogrotationTime)*time.Hour)
+	DBInit() //初始化数据库
+	if GormClient.Client.HasTable(&types.JieSuanWssj{}) {
+		GormClient.Client.AutoMigrate(&types.JieSuanWssj{})
+	} else {
+		GormClient.Client.CreateTable(&types.JieSuanWssj{})
+	}
+
+	if GormClient.Client.HasTable(&types.JieSuanJiangssj{}) {
+		GormClient.Client.AutoMigrate(&types.JieSuanJiangssj{})
+	} else {
+		GormClient.Client.CreateTable(&types.JieSuanJiangssj{})
+	}
+}
+
+//
 func CreateModel(value interface{}) error {
 	if GormClient.Client.NewRecord(value) {
 		if mydb := GormClient.Client.Create(value); mydb.Error != nil {

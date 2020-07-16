@@ -39,8 +39,9 @@ func APIV1Init(route *gin.RouterGroup) {
 }
 
 func AuthAPIInit(route *gin.RouterGroup) {
+	//用户登录
 	route.POST("/login", controller.Login)
-	//route.POST("/send_vcode", controller.SendVerificationCode)
+	//
 
 }
 
