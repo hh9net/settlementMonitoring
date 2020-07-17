@@ -11,8 +11,8 @@ LogrotationTime = 24  #日志切割时间间隔（小时）
 LogPath="./log"
 LogFileName="logFileName"
 
-#mysql配置 "root:"+pwd+"@tcp(127.0.0.1:3306)/center?charset=utf8"
-MysqlStr="root:shx19930509321@tcp(127.0.0.1:3306)/center?charset=utf8&parseTime=true&loc=Local"
+#mysql配置 "root:"+pwd+"@tcp(127.0.0.1:3306)/payflow?charset=utf8"
+MysqlStr="root:shx19930509321@tcp(127.0.0.1:3306)/payflow?charset=utf8&parseTime=true&loc=Local"
 DBLog=1 #是否打印gorm的日志 1：打印
 DatabaseName="databaseName"
 

@@ -9,6 +9,7 @@ import (
 
 var GormClient *utils.GormDB
 
+//数据库的初始化
 func DBInit() {
 	GormClient = utils.InitGormDB(&utils.DBConfig{
 		DBAddr:       config.Optional.MysqlStr,

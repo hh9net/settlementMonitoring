@@ -211,7 +211,7 @@ type BJsjkShujbjk struct {
 //17 数据同步监控表 `b_jsjk_shujtbjk`
 type BJsjkShujtbjk struct {
 	FNbId        int    `gorm:"AUTO_INCREMENT primary_key"` //  `F_NB_ID` int NOT NULL AUTO_INCREMENT COMMENT '唯一自增id',
-	FNbJiesjzl   int    //  `F_NB_JIESJZL` int DEFAULT NULL COMMENT '结算数据总量',F_NB_JIESSJZL
+	FNbJiessjzl  int    //  `F_NB_JIESJZL` int DEFAULT NULL COMMENT '结算数据总量',F_NB_JIESSJZL
 	FNbYitbsjl   int    //  `F_NB_YITBSJL` int DEFAULT NULL COMMENT '已同步数据量',
 	FDtKaistjsj  string //  `F_DT_KAISTJSJ` datetime DEFAULT NULL COMMENT '开始统计时间',
 	FDtTongjwcsj string //  `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
@@ -278,5 +278,14 @@ type BJsjkZhuanjssjjk struct {
 	FDtKaistjsj   string //  `F_DT_KAISTJSJ` datetime DEFAULT NULL COMMENT '开始统计时间',
 	FDtTongjwcsj  string //  `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
 	FDtKuaizsj    string //  `F_DT_KUAIZSJ` datetime DEFAULT NULL COMMENT '快照时间',
+}
 
+//23 用户表 b_jsjk_jiesjkptyhb
+type BJsjkJiesjkptyhb struct {
+	//	FNbId      int    `gorm:"AUTO_INCREMENT primary_key"` //  `F_NB_ID` int NOT NULL AUTO_INCREMENT COMMENT '唯一自增id',
+	FNbYonghid int64  //   '用户id',
+	FVcYonghmm string //   '用户密码',
+	FVcShoujh  string //   '手机号',
+	FDtYoux    string //   '邮箱',
+	FDtYonghnc string //   '用户昵称',
 }
