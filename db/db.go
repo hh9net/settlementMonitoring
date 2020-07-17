@@ -17,7 +17,7 @@ func DBInit() {
 	})
 }
 
-//创建表
+//创建表【测试代码】
 func NewTables() {
 	config.InitConfigs() //初始化配置
 	utils.InitLogrus(config.Opts().LogPath, config.Opts().LogFileName, time.Duration(24*config.Optional.LogmaxAge)*time.Hour, time.Duration(config.Optional.LogrotationTime)*time.Hour)

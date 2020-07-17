@@ -30,7 +30,7 @@ func Login(c *gin.Context) {
 		c.JSON(http.StatusOK, respFailure)
 		return
 	}
-
+	//登录处理
 	code, err := service.Login(req)
 	if err != nil {
 		logrus.Errorf("Login  err: %v", err.Error())
@@ -39,6 +39,5 @@ func Login(c *gin.Context) {
 		c.JSON(http.StatusOK, respFailure)
 		return
 	}
-
 	c.JSON(http.StatusOK, dto.Response{Code: code, Message: "success"})
 }
