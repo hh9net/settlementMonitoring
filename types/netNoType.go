@@ -1,0 +1,78 @@
+package types
+
+//卡网络号
+const (
+	JS_NETWORK  int = 3201 // 江苏
+	SH_NETWORK  int = 3101 // 上海
+	ZJ_NETWORK  int = 3301 // 浙江
+	AH_NETWORK  int = 3401 // 安徽
+	FJ_NETWORK  int = 3501 // 福建
+	JX_NETWORK  int = 3601 // 江西
+	SD_NETWORK  int = 3701 // 山东
+	SD_NETWORK2 int = 3702 // 山东
+
+	/* 华北区路网代码定义*/
+	BJ_NETWORK  int = 1101 // 北京
+	TJ_NETWORK  int = 1201 // 天津
+	HEB_NETWORK int = 1301 // 河北
+	SX_NETWORK  int = 1401 // 山西
+	NM_NETWORK  int = 1501 // 内蒙古
+
+	/* 东北区路网代码定义*/
+	LN_NETWORK  int = 2101 // 辽宁
+	JL_NETWORK  int = 2201 // 吉林
+	HLJ_NETWORK int = 2301 // 黑龙江
+
+	/*华中、华南区路网代码定义*/
+	HEN_NETWORK  int = 4101 // 河南
+	HUB_NETWORK  int = 4201 // 湖北
+	HUB_NETWORK2 int = 4202 // 湖北
+
+	HUN_NETWORK  int = 4301 // 湖南
+	GD_NETWORK   int = 4401 // 广东
+	GX_NETWORK   int = 4501 // 广西
+	HAIN_NETWORK int = 4601 // 海南
+
+	/*西南区路网代码定义*/
+	CQ_NETWORK  int = 5001 // 重庆
+	SC_NETWORK  int = 5101 // 四川
+	SC_NETWORK2 int = 5102 // 四川
+	SC_NETWORK3 int = 5103 // 四川
+	SC_NETWORK4 int = 5104 // 四川
+	SC_NETWORK5 int = 5105 // 四川
+	GZ_NETWORK  int = 5201 // 贵州
+	YN_NETWORK  int = 5301 // 云南
+	XZ_NETWORK  int = 5401 // 西藏
+
+	/*西北区路网代码定义*/
+	SHANXI_NETWORK  int = 6101 // 陕西
+	SHANXI_NETWORK2 int = 6102 // 陕西
+	SHANXI_NETWORK3 int = 6103 // 陕西
+	SHANXI_NETWORK4 int = 6104 // 陕西
+	SHANXI_NETWORK5 int = 6105 // 陕西
+	SHANXI_NETWORK6 int = 6106 // 陕西
+	SHANXI_NETWORK7 int = 6107 // 陕西
+
+	GS_NETWORK int = 6201 // 甘肃
+	QH_NETWORK int = 6301 // 青海
+	NX_NETWORK int = 6401 // 宁夏
+	XJ_NETWORK int = 6501 // 新疆
+
+	ARMY_CARDNETWORK int = 501 // 军车卡的网络编号
+
+	NETWORK_CODE_CNT = 40 // 联网省份数量（发行商）
+
+	PRECARD    = 22 //储值卡
+	CREDITCARD = 23 //记账卡
+
+)
+
+//各省市发行方(除江苏)
+var Gl_network = []int{
+	SH_NETWORK, ZJ_NETWORK, AH_NETWORK, FJ_NETWORK, JX_NETWORK,
+	BJ_NETWORK, TJ_NETWORK, HEB_NETWORK, SHANXI_NETWORK, SHANXI_NETWORK2, SHANXI_NETWORK3, SHANXI_NETWORK4, SHANXI_NETWORK5, SHANXI_NETWORK6, SHANXI_NETWORK7, LN_NETWORK, SD_NETWORK, SD_NETWORK2, HUN_NETWORK, SX_NETWORK,
+	HEN_NETWORK, HUB_NETWORK2, GD_NETWORK, GZ_NETWORK, ARMY_CARDNETWORK,
+	JL_NETWORK, CQ_NETWORK, SC_NETWORK, SC_NETWORK2, SC_NETWORK3, SC_NETWORK4, SC_NETWORK5, YN_NETWORK,
+	GS_NETWORK, QH_NETWORK, NX_NETWORK,
+	NM_NETWORK, HLJ_NETWORK, GX_NETWORK, XJ_NETWORK,
+	JS_NETWORK}

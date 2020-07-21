@@ -1,5 +1,7 @@
 package types
 
+import "time"
+
 //省外数据
 type JieSuanWssj struct {
 	Id      int64 `gorm:"AUTO_INCREMENT primary_key"` // 设置 id 为自增类型
@@ -16,13 +18,13 @@ type JieSuanJiangssj struct {
 
 //1 结算统计监控表 b_jsjk_jiestj
 type BJsjkJiestj struct {
-	FNbId        int    `gorm:"AUTO_INCREMENT primary_key"` //`F_NB_ID` int NOT NULL AUTO_INCREMENT COMMENT '唯一自增id',
-	FNbKawlh     int    //`F_NB_KAWLH` int DEFAULT NULL COMMENT '卡网络号',
-	FNbZongje    int64  //`F_NB_ZONGJE` bigint DEFAULT NULL COMMENT '总金额 （分）',
-	FNbZongts    int    //`F_NB_ZONGTS` int DEFAULT NULL COMMENT '总条数',
-	FDtKaistjsj  string //`F_DT_KAISTJSJ` datetime DEFAULT NULL COMMENT '开始统计时间',
-	FDtTongjwcsj string //`F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
-	FDtTongjrq   string //`F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
+	FNbId        int       `gorm:"AUTO_INCREMENT primary_key"` //`F_NB_ID` int NOT NULL AUTO_INCREMENT COMMENT '唯一自增id',
+	FNbKawlh     int       //`F_NB_KAWLH` int DEFAULT NULL COMMENT '卡网络号',
+	FNbZongje    int64     //`F_NB_ZONGJE` bigint DEFAULT NULL COMMENT '总金额 （分）',
+	FNbZongts    int       //`F_NB_ZONGTS` int DEFAULT NULL COMMENT '总条数',
+	FDtKaistjsj  time.Time //`F_DT_KAISTJSJ` datetime DEFAULT NULL COMMENT '开始统计时间',
+	FDtTongjwcsj time.Time //`F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
+	FDtTongjrq   time.Time //`F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
 }
 
 //2清分核对表 b_jsjk_qingfhd

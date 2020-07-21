@@ -2,6 +2,7 @@ package db
 
 import (
 	"log"
+	"settlementMonitoring/types"
 	"testing"
 )
 
@@ -46,7 +47,64 @@ func TestQueryTable(t *testing.T) {
 	}
 }
 
+//插入数据
+func TestInsertTabledata(t *testing.T) {
+	Newdb()
+	InsertTabledata()
+}
+
+//
+func TestQueryTabledata(t *testing.T) {
+	Newdb()
+	QueryTabledata()
+}
+
 func TestUpdateTabledata(t *testing.T) {
 	Newdb()
 	UpdateTabledata()
+}
+
+//QueryJieSuanTable()
+func TestQueryJieSuanTable(t *testing.T) {
+	Newdb()
+	//查询结算表 总交易笔数、总金额
+	c, je := QueryJieSuanTable()
+	log.Println(c, je)
+}
+
+//测试查询各个卡网络号的总金额、总笔数
+func TestQueryKawlhJieSuan(t *testing.T) {
+	Newdb()
+	for _, kawlh := range types.Gl_network {
+		c, je := QueryKawlhJieSuan(kawlh)
+		log.Println(c, je)
+	}
+}
+
+//测试查询省内结算总金额、总条数
+func TestQueryShengnJieSuan(t *testing.T) {
+	Newdb()
+	c, je := QueryShengnJieSuan()
+	log.Println(c, je)
+}
+
+//QueryShengwClearingJieSuan()
+func TestQueryShengwClearingJieSuan(t *testing.T) {
+	Newdb()
+	c, je := QueryShengwClearingJieSuan()
+	log.Println(c, je)
+}
+
+//QueryDisputeJieSuanData()
+func TestQueryDisputeJieSuanData(t *testing.T) {
+	Newdb()
+	c, je := QueryDisputeJieSuanData()
+	log.Println(c, je)
+}
+
+//QueryAbnormalData
+func TestQueryAbnormalData(t *testing.T) {
+	Newdb()
+	c, je := QueryAbnormalData()
+	log.Println(c, je)
 }

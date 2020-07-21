@@ -21,8 +21,7 @@ func RouteInit() {
 	url := ginSwagger.URL("http://127.0.0.1:8088/swagger/doc.json")
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
 
-	//router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	apiV1 := router.Group("/settlementCenter/api/v1")
+	apiV1 := router.Group("/settlementMonitoring/api/v1")
 	APIV1Init(apiV1)
 
 	http.Handle("/", router)
@@ -41,7 +40,8 @@ func APIV1Init(route *gin.RouterGroup) {
 func AuthAPIInit(route *gin.RouterGroup) {
 	//用户登录
 	route.POST("/login", controller.Login)
-	//
+	//查询省外总交易额、总笔数
+	route.GET("/totalsettlementdata", controller.Login)
 
 }
 
