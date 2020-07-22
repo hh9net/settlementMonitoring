@@ -102,9 +102,16 @@ func TestQueryDisputeJieSuanData(t *testing.T) {
 	log.Println(c, je)
 }
 
-//QueryAbnormalData
+//查询待处理的异常数据 总条数、总金额【单点+总对总】
 func TestQueryAbnormalData(t *testing.T) {
 	Newdb()
 	c, je := QueryAbnormalData()
+	log.Println(c, je)
+}
+
+// 查询 已清分的坏账 Bad debts
+func TestQueryShengwBadDebtsJieSuan(t *testing.T) {
+	Newdb()
+	c, je := QueryShengwBadDebtsJieSuan()
 	log.Println(c, je)
 }

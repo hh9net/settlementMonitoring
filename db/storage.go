@@ -170,6 +170,21 @@ func QueryShengwClearingJieSuan() (int, int64) {
 	return count, total_money[0]
 }
 
+// 查询 已清分的坏账 Bad debts
+func QueryShengwBadDebtsJieSuan() (int, int64) {
+	db := utils.GormClient.Client
+	count := 0
+	//1:已清分 F_NB_ZHENGYCLJG 争议处理结果：坏账2
+	db.Table("b_js_jiessj").Where("F_NB_QINGFJG = ?", 1).Where("F_NB_ZHENGYCLJG = ?", 2).Count(&count)
+
+	var total_money []int64
+	sqlstr := `select SUM(F_NB_JINE) as total_money from b_js_jiessj where F_NB_QINGFJG = ? and F_NB_ZHENGYCLJG = ?`
+	db.Raw(sqlstr, 1, 2).Pluck("SUM(F_NB_JINE) as total_money", &total_money)
+
+	logrus.Printf("查询结算表已清分的坏账交易笔数%d，查询已清分的坏账总金额为：%d", count, total_money)
+	return count, total_money[0]
+}
+
 //4.1.3	查询省外结算数据中存在争议的数据总条数、总金额
 func QueryDisputeJieSuanData() (int, int64) {
 	db := utils.GormClient.Client
@@ -186,17 +201,38 @@ func QueryDisputeJieSuanData() (int, int64) {
 	return count, total_money[0]
 }
 
-//4.1.4	查询待处理的异常数据 总条数、总金额【单点】
+//4.1.4	查询待处理的异常数据 总条数、总金额【单点+总对总】
 func QueryAbnormalData() (int, int64) {
 	db := utils.GormClient.Client
-	count := 0
-	db.Table("b_js_jiessj").Where("F_NB_QINGFJG = ?", 1).Count(&count)
-	var total_money []int64
-	sqlstr := `select SUM(F_NB_JINE) as total_money from b_js_jiessj where F_NB_QINGFJG = ?`
-	db.Raw(sqlstr, 1).Pluck("SUM(F_NB_JINE) as total_money", &total_money)
+	ddcount := 0
+	//出口异常表
+	db.Table("b_dd_chedckyssjlycb").Count(&ddcount)
+	var ddtotal_money []int64
+	sqlstr := `select SUM(F_NB_JINE) as total_money from b_dd_chedckyssjlycb `
+	db.Raw(sqlstr).Pluck("SUM(F_NB_JINE) as total_money", &ddtotal_money)
 
-	logrus.Printf("查询结算表总清分的交易笔数%d，查询已清分总金额为：%d", count, total_money)
-	return count, total_money[0]
+	logrus.Printf("查询单点异常数据表 异常的交易笔数%d，查询异常的交易总金额为：%d", ddcount, ddtotal_money)
+	zdzcount := 0
+	//出口异常表
+	db.Table("b_zdz_chedckyssjlycb").Count(&zdzcount)
+	var zdztotal_money []int64
+	zdzsqlstr := `select SUM(F_NB_JINE) as total_money from b_zdz_chedckyssjlycb `
+	db.Raw(zdzsqlstr).Pluck("SUM(F_NB_JINE) as total_money", &zdztotal_money)
+
+	logrus.Printf("查询总对总异常数据表 异常的交易笔数%d，查询异常的交易总金额为：%d", zdzcount, zdztotal_money)
+	return ddcount + zdzcount, ddtotal_money[0] + zdztotal_money[0]
 }
 
 //4.1.5	数据包实时状态监控
+func PacketMonitoring() {
+
+}
+
+//今日打包数量
+//打包金额
+//已发送原始交易消息包数量
+//已发送原始交易消息包金额
+//记账包数量
+//记账包金额
+//原始交易消息应答包数量
+//func

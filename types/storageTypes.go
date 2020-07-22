@@ -285,9 +285,9 @@ type BJsjkZhuanjssjjk struct {
 //23 用户表 b_jsjk_jiesjkptyhb
 type BJsjkJiesjkptyhb struct {
 	//	FNbId      int    `gorm:"AUTO_INCREMENT primary_key"` //  `F_NB_ID` int NOT NULL AUTO_INCREMENT COMMENT '唯一自增id',
-	FNbYonghid int64  //   '用户id',
+	FNbYonghid string //   '用户id',//手机号 F_NB_YONGHID
 	FVcYonghmm string //   '用户密码',
 	FVcShoujh  string //   '手机号',
-	FDtYoux    string //   '邮箱',
-	FDtYonghnc string //   '用户昵称',
+	FVcYoux    string //   '邮箱',
+	FVcYonghnc string //   '用户昵称',
 }

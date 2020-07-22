@@ -38,10 +38,12 @@ func APIV1Init(route *gin.RouterGroup) {
 }
 
 func AuthAPIInit(route *gin.RouterGroup) {
+	//用户注册
+	route.POST("/user/register", controller.Register)
 	//用户登录
-	route.POST("/login", controller.Login)
+	route.POST("/user/login", controller.Login)
 	//查询省外总交易额、总笔数
-	route.GET("/totalsettlementdata", controller.Login)
+	route.GET("/sw/totalsettlementdata", controller.Login)
 
 }
 
