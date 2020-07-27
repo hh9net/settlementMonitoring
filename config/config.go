@@ -14,9 +14,13 @@ type Config struct {
 	DBLog        uint8
 	DatabaseName string
 
+	MysqlHMDStr     string //
+	HmdDBLog        uint8
+	HmdDatabaseName string
+
 	RedisAddr string
 	RedisPwd  string
-	RedisKey  string
+	RedisDB   uint8
 
 	LogmaxAge       int64 // 日志最大保存时间（天）
 	LogrotationTime int64 // 日志切割时间间隔（小时）
@@ -35,7 +39,6 @@ func InitConfigs() {
 	utils.InitTomlConfigs([]*utils.ConfigMap{
 		{
 			//FilePath: "./conf/config.toml", //go run main.go
-
 			FilePath: "../conf/config.toml",
 			Pointer:  &Optional,
 		},

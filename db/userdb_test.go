@@ -24,8 +24,10 @@ func TestUserInsert(t *testing.T) {
 //
 func TestQueryUsermsg(t *testing.T) {
 	Newdb()
-	err := QueryUsermsg("10001")
+	err, resp := QueryUsermsg("10001")
 	if err != nil {
 		logrus.Print("查询用户能否被注册，失败", err)
 	}
+	logrus.Print("查询用户能否被注册 ", resp)
+
 }

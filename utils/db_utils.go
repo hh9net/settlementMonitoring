@@ -11,10 +11,18 @@ import (
 
 var GormClient *GormDB
 
+var HmdGormClient *HmdGormDB
+
 type GormDB struct {
 	dbConfig *DBConfig
 	lock     sync.RWMutex // lock
 	Client   *gorm.DB     // mysql client
+}
+
+type HmdGormDB struct {
+	dbConfig  *HmdDBConfig
+	lock      sync.RWMutex // lock
+	HmdClient *gorm.DB     // mysql client
 }
 
 // 本方法会给GormClient赋值，多次调用GormClient指向最后一次调用的GormDB
@@ -29,6 +37,35 @@ func InitGormDB(dbConfig *DBConfig) *GormDB {
 	}
 	db, err := gorm.Open("mysql", dbConfig.DBAddr)
 	if err != nil {
+		logrus.Fatalln("db initing fail:", err)
+		return nil
+	}
+	err = db.DB().Ping()
+	if err != nil {
+		logrus.Fatalln("db ping fail:", err)
+		return nil
+	}
+	logrus.WithField("addr:", dbConfig.DBAddr).Infoln("connecting db success!")
+	myDB.Client = db
+	myDB.initByDBConfigs()
+	myDB.autoCreateTable()
+	go myDB.timer()
+	GormClient = myDB //gormClient
+	return myDB
+}
+
+// 本方法会给HmdGormClient赋值，多次调用HmdGormClient指向最后一次调用的GormDB
+func HmdInitGormDB(dbConfig *HmdDBConfig) *HmdGormDB {
+	logrus.Infoln("starting db")
+	if err := dbConfig.hmdcheck(); err != nil {
+		logrus.WithError(err).Errorln("error db config!")
+		return nil
+	}
+	hmdmyDB := &HmdGormDB{
+		dbConfig: dbConfig,
+	}
+	db, err := gorm.Open("mysql", dbConfig.HmdDBAddr)
+	if err != nil {
 		logrus.Fatalln("db initing fail", err)
 		return nil
 	}
@@ -37,13 +74,13 @@ func InitGormDB(dbConfig *DBConfig) *GormDB {
 		logrus.Fatalln("db ping fail", err)
 		return nil
 	}
-	logrus.WithField("addr", dbConfig.DBAddr).Infoln("connecting db success!")
-	myDB.Client = db
-	myDB.initByDBConfigs()
-	myDB.autoCreateTable()
-	go myDB.timer()
-	GormClient = myDB //gormClient
-	return myDB
+	logrus.WithField("addr", dbConfig.HmdDBAddr).Infoln("connecting db success!")
+	hmdmyDB.HmdClient = db
+	hmdmyDB.initByDBConfigs()
+	hmdmyDB.autoCreateTable()
+	go hmdmyDB.timer()
+	HmdGormClient = hmdmyDB //hmdgormClient
+	return hmdmyDB
 }
 
 // 初始化参数
@@ -64,8 +101,33 @@ func (p *GormDB) autoCreateTable() {
 	}
 }
 
+// 初始化参数
+func (p *HmdGormDB) initByDBConfigs() {
+	p.HmdClient.DB().SetMaxIdleConns(p.dbConfig.MaxIdleConns)
+	p.HmdClient.DB().SetMaxOpenConns(p.dbConfig.MaxOpenConns)
+	p.HmdClient.LogMode(p.dbConfig.LogMode)
+}
+
+//auto create table
+func (p *HmdGormDB) autoCreateTable() {
+	if p.dbConfig.AutoCreateTables == nil || len(p.dbConfig.AutoCreateTables) == 0 {
+		return
+	}
+	logrus.WithField("addr", p.dbConfig.HmdDBAddr).Infoln("begin initAutoDB")
+	for _, item := range p.dbConfig.AutoCreateTables {
+		p.autoCreate(item)
+	}
+}
+
 func (p *GormDB) autoCreate(it interface{}) {
 	err := p.Client.AutoMigrate(it).Error
+	if err != nil {
+		logrus.Errorln("auto create ", it, " error", err)
+	}
+}
+
+func (p *HmdGormDB) autoCreate(it interface{}) {
+	err := p.HmdClient.AutoMigrate(it).Error
 	if err != nil {
 		logrus.Errorln("auto create ", it, " error", err)
 	}
@@ -89,6 +151,24 @@ func (p *GormDB) timer() {
 	}
 }
 
+func (p *HmdGormDB) timer() {
+	if p.dbConfig.DetectionInterval < 0 {
+		return
+	}
+	timer1 := time.NewTicker(time.Duration(int64(p.dbConfig.DetectionInterval) * int64(time.Second)))
+	for {
+		select {
+		case <-timer1.C:
+			err := p.HmdClient.DB().Ping()
+			if err != nil {
+				logrus.Errorln("mysql connect fail,err:", err)
+				logrus.Infoln("reconnect beginning...")
+				p.hmdreConnect()
+			}
+		}
+	}
+}
+
 //重连接
 func (p *GormDB) reConnect() {
 	db, err := gorm.Open("mysql", p.dbConfig.DBAddr)
@@ -105,6 +185,22 @@ func (p *GormDB) reConnect() {
 	logrus.WithField("db addr", p.dbConfig.DBAddr).Infoln("reconnect db success!")
 }
 
+//hmd重连接
+func (p *HmdGormDB) hmdreConnect() {
+	db, err := gorm.Open("mysql", p.dbConfig.HmdDBAddr)
+	if err != nil {
+		logrus.Fatalln("db reconnect open addr fail", err)
+		return
+	}
+	err = db.DB().Ping()
+	if err != nil {
+		logrus.Fatalln("db reconnect ping fail", err)
+		return
+	}
+	p.initByDBConfigs()
+	logrus.WithField("db addr", p.dbConfig.HmdDBAddr).Infoln("reconnect db success!")
+}
+
 type DBConfig struct {
 	DBAddr            string
 	AutoCreateTables  []interface{} //自动创建的表，不设置则不创建表
@@ -114,8 +210,37 @@ type DBConfig struct {
 	DetectionInterval int           //心跳检测间隔，单位为s，默认30s,小于0则不检测
 }
 
+//hmd
+type HmdDBConfig struct {
+	HmdDBAddr         string
+	AutoCreateTables  []interface{} //自动创建的表，不设置则不创建表
+	MaxIdleConns      int           //数据库连接池设置—— 最大空闲数，不设置则为10
+	MaxOpenConns      int           //数据库连接池设置—— 最大打开的连接数，不设置则为100
+	LogMode           bool          //是否打印gorm的日志 配置文件是打印
+	DetectionInterval int           //心跳检测间隔，单位为s，默认30s,小于0则不检测
+}
+
 func (p *DBConfig) check() error {
 	if p.DBAddr == "" {
+		logrus.Println("empty sql addr")
+		return fmt.Errorf("empty sql addr")
+	}
+	if p.MaxIdleConns <= 0 {
+		p.MaxIdleConns = 10
+	}
+	if p.MaxOpenConns <= 0 {
+		p.MaxOpenConns = 100
+	}
+	if p.DetectionInterval == 0 {
+		p.DetectionInterval = 30
+	}
+	return nil
+}
+
+//hmd
+func (p *HmdDBConfig) hmdcheck() error {
+	if p.HmdDBAddr == "" {
+		logrus.Println("empty sql addr")
 		return fmt.Errorf("empty sql addr")
 	}
 	if p.MaxIdleConns <= 0 {

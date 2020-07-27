@@ -2,11 +2,13 @@ package db
 
 import (
 	"log"
+	"settlementMonitoring/config"
 	"settlementMonitoring/types"
 	"testing"
 )
 
 func TestNewTables(t *testing.T) {
+	Newdb()
 	NewTables()
 }
 func TestQueryTable(t *testing.T) {
@@ -50,18 +52,19 @@ func TestQueryTable(t *testing.T) {
 //插入数据
 func TestInsertTabledata(t *testing.T) {
 	Newdb()
-	InsertTabledata()
+	InsertTabledata(10000)
 }
 
 //
 func TestQueryTabledata(t *testing.T) {
 	Newdb()
-	QueryTabledata()
+	QueryTabledata(10000)
 }
 
 func TestUpdateTabledata(t *testing.T) {
 	Newdb()
-	UpdateTabledata()
+	data := &types.BJsjkJiestj{FNbId: 19, FNbZongts: 9999, FNbZongje: 90000}
+	UpdateTabledata(data, 10000, 19)
 }
 
 //QueryJieSuanTable()
@@ -69,7 +72,7 @@ func TestQueryJieSuanTable(t *testing.T) {
 	Newdb()
 	//查询结算表 总交易笔数、总金额
 	c, je := QueryJieSuanTable()
-	log.Println(c, je)
+	log.Println(c, je) //查询结算表总交易笔数为8058， 查询总金额为：11933100"
 }
 
 //测试查询各个卡网络号的总金额、总笔数
@@ -85,7 +88,7 @@ func TestQueryKawlhJieSuan(t *testing.T) {
 func TestQueryShengnJieSuan(t *testing.T) {
 	Newdb()
 	c, je := QueryShengnJieSuan()
-	log.Println(c, je)
+	log.Println(c, je) //结算表总交易笔数7011，查询总金额为：[10309200]
 }
 
 //QueryShengwClearingJieSuan()
@@ -105,8 +108,8 @@ func TestQueryDisputeJieSuanData(t *testing.T) {
 //查询待处理的异常数据 总条数、总金额【单点+总对总】
 func TestQueryAbnormalData(t *testing.T) {
 	Newdb()
-	c, je := QueryAbnormalData()
-	log.Println(c, je)
+	c, je, err := QueryAbnormalData(1)
+	log.Println(c, je, err)
 }
 
 // 查询 已清分的坏账 Bad debts
@@ -114,4 +117,73 @@ func TestQueryShengwBadDebtsJieSuan(t *testing.T) {
 	Newdb()
 	c, je := QueryShengwBadDebtsJieSuan()
 	log.Println(c, je)
+}
+
+//(省外总金额)
+func TestQueryShengwJieSuan(t *testing.T) {
+	Newdb()
+	c, je := QueryShengwJieSuan()
+	log.Println(c, je) //总交易笔数1047，查询总金额为：[1623900]
+}
+
+//ShengwClearingInsert()
+func TestShengwClearingInsert(t *testing.T) {
+	Newdb()
+	c := ShengwClearingInsert()
+	log.Println(c)
+}
+
+//QueryJieSuan()
+func TestQueryJieSuan(t *testing.T) {
+	Newdb()
+	QueryJieSuan()
+}
+
+//QueryShengwClearingdata()
+func TestQueryShengwClearingdata(t *testing.T) {
+	Newdb()
+	QueryShengwClearingdata()
+}
+
+//ShengwDisputeInsert()
+func TestShengwDisputeInsert(t *testing.T) {
+	Newdb()
+	ShengwDisputeInsert()
+}
+
+//QueryShengwDispute
+func TestQueryShengwDispute(t *testing.T) {
+	Newdb()
+	QueryShengwDispute()
+}
+
+//AbnormalDataInsert()
+func TestAbnormalDataInsert(t *testing.T) {
+	Newdb()
+	AbnormalDataInsert(1)
+}
+
+//QueryAbnormaltable()
+func TestQueryAbnormaltable(t *testing.T) {
+	Newdb()
+	QueryAbnormaltable(1)
+}
+
+//QueryblacklistTable
+func TestQueryblacklistTable(t *testing.T) {
+	Newdb()
+	QueryblacklistTable() //64张表
+}
+
+//QueryBlacklistcount
+func TestQueryBlacklistcount(t *testing.T) {
+	config.InitConfigs()  //初始化配置
+	QueryBlacklistcount() //"表数64获取黑名单总数:3165万6389"
+	//"表数64获取黑名单总数:3165万6389"
+}
+
+//QueryBlacklistTiaoshutable
+func TestQueryBlacklistTiaoshutable(t *testing.T) {
+	Newdb()
+	QueryBlacklistTiaoshutable(7, 3)
 }

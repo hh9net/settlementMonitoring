@@ -8,6 +8,7 @@ import (
 )
 
 var GormClient *utils.GormDB
+var HmdGormClient *utils.HmdGormDB
 
 //数据库的初始化
 func DBInit() {
@@ -15,6 +16,14 @@ func DBInit() {
 		DBAddr:       config.Optional.MysqlStr,
 		MaxIdleConns: 30,
 		LogMode:      utils.Uint8ToBool(config.Optional.DBLog),
+	})
+}
+
+func HmdDBInit() {
+	HmdGormClient = utils.HmdInitGormDB(&utils.HmdDBConfig{
+		HmdDBAddr:    config.Optional.MysqlHMDStr,
+		MaxIdleConns: 30,
+		LogMode:      utils.Uint8ToBool(config.Optional.HmdDBLog),
 	})
 }
 

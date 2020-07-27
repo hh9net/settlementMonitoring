@@ -16,7 +16,12 @@ MysqlStr="root:shx19930509321@tcp(127.0.0.1:3306)/payflow?charset=utf8&parseTime
 DBLog=1 #是否打印gorm的日志 1：打印
 DatabaseName="databaseName"
 
+#黑名单mysql配置 "root:"+pwd+"@tcp(122.51.24.189:3307)/blacklist?charset=utf8"
+MysqlHMDStr="root:Microvideo_1@tcp(122.51.24.189:3307)/blacklist?charset=utf8&parseTime=true&loc=Local"
+HmdDBLog=1 #是否打印gorm的日志 1：打印
+HmdDatabaseName="blacklist"
+
 #redis配置
-RedisAddr=""
+RedisAddr="127.0.0.1:6379"
 RedisPwd=""
-RedisKey=""
+RedisDB="3"

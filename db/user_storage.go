@@ -1,7 +1,10 @@
 package db
 
 import (
+	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
+	"log"
+
 	"settlementMonitoring/types"
 	"settlementMonitoring/utils"
 )
@@ -9,18 +12,35 @@ import (
 //用户注册 查询用户信息是否以及存在
 func QueryUsermsg(username string) (error, int) {
 	db := utils.GormClient.Client
-	//user := new(types.BJsjkJiesjkptyhb)
-
-	user := make([]types.BJsjkJiesjkptyhb, 0)
-
-	if err := db.Table("b_jsjk_jiesjkptyhb").Where("F_NB_YONGHID = ?", username).Find(&user).Error; err != nil {
-		// 错误处理...
-		logrus.Println("Query b_jsjk_jiesjkptyhb error", err)
-		return err, 0
+	users := make([]types.BJsjkJiesjkptyhb, 0)
+	res := db.Table("b_jsjk_jiesjkptyhb").Where("F_NB_YONGHID = ?", username).First(&users)
+	if res.Error != nil {
+		logrus.Println(res.Error)
+		return res.Error, 0
 	}
-	logrus.Println(len(user))
+	logrus.Println("users:", users)
+	if res.RecordNotFound() {
+		log.Print("Record not found")
+		return errors.New("Record not found"), 0
+	} else {
+		logrus.Println("查询数据：", users)
+		return nil, len(users)
+	}
+}
+func QueryUserLoginmsg(username string) (error, *[]types.BJsjkJiesjkptyhb) {
+	db := utils.GormClient.Client
+	users := make([]types.BJsjkJiesjkptyhb, 0)
+	if err := db.Table("b_jsjk_jiesjkptyhb").Where("F_NB_YONGHID = ?", username).First(&users).Error; err != nil {
+		logrus.Println("查询用户登录信息失败！")
+		return err, nil
+	}
+	if len(users) == 0 {
+		log.Print("Record not found")
+		return errors.New("Record not found"), nil
+	}
+	logrus.Println("查询数据：", users, (users[0]), &(users[0]))
+	return nil, &(users)
 
-	return nil, len(user)
 }
 
 //用户注册 插入数据库
