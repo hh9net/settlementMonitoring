@@ -22,3 +22,9 @@ func TestQueryblacklistCount(t *testing.T) {
 	//表数64获取黑名单总数:3165万7282
 	//表数64获取黑名单总数:3165万9304  有增量包
 }
+
+//QueryTingccJieSuan()
+func TestQueryTingccJieSuan(t *testing.T) {
+	Newdb()
+	QueryTingccJieSuan()
+}

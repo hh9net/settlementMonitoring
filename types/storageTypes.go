@@ -241,15 +241,15 @@ type BJsjkShujtbjk struct {
 
 //18 停车场结算数据统计表 `b_jsjk_tingccjssjtj`
 type BJsjkTingccjssjtj struct {
-	FNbId int `gorm:"AUTO_INCREMENT; primary_key; column:F_NB_ID" ` //  `F_NB_ID` int NOT NULL AUTO_INCREMENT COMMENT '唯一自增id',
+	FNbId int `gorm:"AUTO_INCREMENT; primary_key; column:F_NB_ID"` //  `F_NB_ID` int NOT NULL AUTO_INCREMENT COMMENT '唯一自增id',
 
-	FVcTingccid  string `gorm:"column:F_VC_TINGCCID"`  //   `F_VC_TINGCCID` varchar(32) DEFAULT NULL COMMENT '停车场id',
-	FNbkawlh     int    `gorm:"column:F_NB_KAWLH"`     //   `F_NB_KAWLH` int DEFAULT NULL COMMENT '卡网络号',
-	FNbZongje    int64  `gorm:"column:F_NB_ZONGJE"`    //   `F_NB_ZONGJE` bigint DEFAULT NULL COMMENT '总金额 （分）',
-	FNbZongts    int    `gorm:"column:F_NB_ZONGTS"`    //   `F_NB_ZONGTS` int DEFAULT NULL COMMENT '总条数',
-	FDtKaistjsj  string `gorm:"column:F_DT_KAISTJSJ"`  //   `F_DT_KAISTJSJ` datetime DEFAULT NULL COMMENT '开始统计时间',
-	FDtTongjwcsj string `gorm:"column:F_DT_TONGJWCSJ"` //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
-	FVcTongjrq   string `gorm:"column:F_VC_TONGJRQ"`   //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
+	FVcTingccid  string    `gorm:"column:F_VC_TINGCCID"`  //   `F_VC_TINGCCID` varchar(32) DEFAULT NULL COMMENT '停车场id',
+	FNbkawlh     int       `gorm:"column:F_NB_KAWLH"`     //   `F_NB_KAWLH` int DEFAULT NULL COMMENT '卡网络号',
+	FNbZongje    int64     `gorm:"column:F_NB_ZONGJE"`    //   `F_NB_ZONGJE` bigint DEFAULT NULL COMMENT '总金额 （分）',
+	FNbZongts    int       `gorm:"column:F_NB_ZONGTS"`    //   `F_NB_ZONGTS` int DEFAULT NULL COMMENT '总条数',
+	FDtKaistjsj  time.Time `gorm:"column:F_DT_KAISTJSJ"`  //   `F_DT_KAISTJSJ` datetime DEFAULT NULL COMMENT '开始统计时间',
+	FDtTongjwcsj time.Time `gorm:"column:F_DT_TONGJWCSJ"` //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
+	FVcTongjrq   string    `gorm:"column:F_VC_TONGJRQ"`   //   `F_VC_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
 
 }
 
@@ -312,4 +312,10 @@ type BJsjkJiesjkptyhb struct {
 	FVcShoujh  string `gorm:"column:F_VC_Shoujh"`  //  `F_VC_Shoujh` varchar(32) DEFAULT NULL COMMENT '手机号', '手机号',
 	FVcYoux    string `gorm:"column:F_VC_YOUX"`    //  `F_VC_YOUX` varchar(32) DEFAULT NULL COMMENT '邮箱', '邮箱',
 	FVcYonghnc string `gorm:"column:F_VC_YONGHNC"` //  `F_VC_YONGHNC` varchar(32) DEFAULT NULL COMMENT '用户昵称''用户昵称',
+}
+
+type Result struct {
+	Total     int64
+	Count     int
+	Parkingid string
 }

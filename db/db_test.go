@@ -1,10 +1,12 @@
 package db
 
 import (
+	"github.com/sirupsen/logrus"
 	"log"
 	"settlementMonitoring/config"
 	"settlementMonitoring/types"
 	"testing"
+	"time"
 )
 
 func TestNewTables(t *testing.T) {
@@ -186,4 +188,42 @@ func TestQueryBlacklistcount(t *testing.T) {
 func TestQueryBlacklistTiaoshutable(t *testing.T) {
 	Newdb()
 	QueryBlacklistTiaoshutable(7, 3)
+}
+
+func TestQueryTingccJieSuandata(t *testing.T) {
+	Newdb()
+	c := QueryTingccJieSuandata()
+	log.Println(c)
+}
+
+//InsertTingjiesuan
+func TestInsertTingjiesuan(t *testing.T) {
+	Newdb()
+	InsertTingjiesuan()
+}
+
+//QueryTingjiesuan
+func TestQueryTingjiesuan(t *testing.T) {
+	Newdb()
+	QueryTingjiesuan()
+}
+
+//UpdateTingjiesuan
+func TestUpdateTingjiesuan(t *testing.T) {
+	Newdb()
+
+	err := UpdateTingjiesuan(&types.BJsjkTingccjssjtj{
+		FNbZongje:    1314,        //   `F_NB_ZONGJE` bigint DEFAULT NULL COMMENT '总金额 （分）',
+		FNbZongts:    1212,        //   `F_NB_ZONGTS` int DEFAULT NULL COMMENT '总条数',
+		FDtTongjwcsj: time.Now(),  //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
+		FVcTongjrq:   "2020-7-28", //   `F_VC_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
+		FVcTingccid:  "20201314",  //   `F_VC_TINGCCID` varchar(32) DEFAULT NULL COMMENT '停车场id',
+	}, "20201314", 1)
+	logrus.Print(err)
+}
+
+// QueryTingjiesuanById
+func TestQueryTingjiesuanById(t *testing.T) {
+	Newdb()
+	QueryTingjiesuanById(2)
 }

@@ -30,24 +30,25 @@ func NewRedis() {
 	})
 }
 */
+
 //redis 工具箱
 //1、redis 初始化
 func RedisInit() *redis.Conn {
 	logrus.Infoln("starting redis")
 	//连接数据库
-	//address:="192.168.200.170:6379"
+	//address := "192.168.200.170:6379"
 	address := "127.0.0.1:6379"
 	//address :=redisconf.RedisDBAddr
 	conn, err := redis.Dial("tcp", address /*,redis.DialPassword("123456")*/)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(address, "redis连接成功!")
+	fmt.Println("address:", address, "redis连接成功!")
 	return &conn
 }
 
 //连接redis数据库
-func RedisSelectDB(conn *redis.Conn /*redisconf *RedisDBConfig*/) {
+func RedisSelectDB(conn *redis.Conn) {
 	reply, serr := (*conn).Do("select", 3)
 	if serr != nil {
 		panic(serr)
@@ -76,15 +77,16 @@ func RedisGet(conn *redis.Conn, key string) {
 }
 
 //hset 设置值
-func RedisHSet(conn *redis.Conn, key string, item string, value string) {
+func RedisHSet(conn *redis.Conn, key string, item string, value string) error {
 	RedisSelectDB(conn)
 	//hset
 	_, err := (*conn).Do("HSet", key, item, value)
 	if err != nil {
 		fmt.Println("hset出错，错误信息：", err)
-		return
+		return err
 	}
-	fmt.Println("hset ok")
+	fmt.Println("hset ok:", key, item, value)
+	return nil
 }
 
 //hget设置值

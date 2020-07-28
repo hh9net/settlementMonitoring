@@ -4,6 +4,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"settlementMonitoring/types"
 	"settlementMonitoring/utils"
+	"strconv"
 	"time"
 )
 
@@ -27,6 +28,12 @@ func HandleDayTasks() {
 			log.Println("查询省外已清分总金额、总笔数定时任务:", qcerr)
 		}
 
+		//任务三
+		//查询停车场的总金额、总笔数
+		qterr := QueryTingccJieSuan()
+		if qterr != nil {
+			log.Println("查询省外已清分总金额、总笔数定时任务:", qterr)
+		}
 	}
 }
 
@@ -69,6 +76,36 @@ func HandleMinutesTasks() {
 
 }
 
+//goroutine4 处理kafka数据消费
+func HandleKafkaDataConsume() error {
+	//接收kafka消息   获取count amount  parkingid
+
+	//如果Kafka 有数据就更新
+
+	Parkingid := ""
+	Total := 12
+	Count := 12
+
+	//根据消息 更新redis
+	//hset redis
+	conn := utils.RedisInit() //初始化redis
+	// key:"jiesstatistical"  item: 停车场id  value："金额｜总条数"
+	rhseterr := utils.RedisHSet(conn, "jiesstatistical", Parkingid, strconv.Itoa(int(Total))+"|"+strconv.Itoa(Count))
+	if rhseterr != nil {
+		return rhseterr
+	}
+
+	return nil
+}
+
+func HandleKafkaDataconsume() error {
+	//接收kafka消息   获取count amount  parkingid
+
+	//如果Kafka 有数据就更新
+
+	return nil
+}
+
 //1任务1
 func QuerTotalSettlementData() error {
 	//1、新增开始统计记录
@@ -100,6 +137,7 @@ func QuerTotalSettlementData() error {
 		log.Println("db.UpdateTabledata error!", uperr)
 		return uperr
 	}
+	//5、把数据更新到redis【覆盖】
 
 	log.Println("更新省外结算统计最新统计记录成功")
 	//返回数据赋值
@@ -145,6 +183,47 @@ func QuerTotalClarify() error {
 
 	log.Println("更新清分监控表数据成功")
 	//返回数据赋值
+	return nil
+}
+
+//1任务3 获取停车场总金额、总笔数
+func QueryTingccJieSuan() error {
+	//获取停车场总金额、总笔数
+	result := QueryTingccJieSuandata()
+	for _, r := range *result {
+		//1、插入表新数据
+		inerr := InsertTingjiesuan()
+		if inerr != nil {
+			return inerr
+		}
+		//2、查询 停车场结算数据统计表最新数据
+		qterr, tingjs := QueryTingjiesuan()
+		if qterr != nil {
+			return qterr
+		}
+		//赋值
+		jiestjsj := new(types.BJsjkTingccjssjtj)
+		jiestjsj.FVcTingccid = tingjs.FVcTingccid        //停车场id 插入 redis
+		jiestjsj.FNbZongje = r.Total                     //总金额   插入 redis
+		jiestjsj.FNbZongts = r.Count                     //总数     插入 redis
+		jiestjsj.FDtTongjwcsj = utils.StrTimeToNowtime() //统计完成时间
+		jiestjsj.FVcTongjrq = utils.DateNowFormat()      //统计日期
+
+		//3、更新停车场
+		uperr := UpdateTingjiesuan(jiestjsj, r.Parkingid, tingjs.FNbId)
+		if uperr != nil {
+			return uperr
+		}
+
+		//4、更新到redis中
+		conn := utils.RedisInit()
+		//utils.RedisSelectDB(conn) //初始化redis
+		// key:"jsstatistical"  item: 停车场id  value："金额｜总条数"
+		rhseterr := utils.RedisHSet(conn, "jiesstatistical", r.Parkingid, strconv.Itoa(int(r.Total))+"|"+strconv.Itoa(r.Count))
+		if rhseterr != nil {
+			return rhseterr
+		}
+	}
 	return nil
 }
 

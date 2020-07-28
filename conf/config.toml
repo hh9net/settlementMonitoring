@@ -21,7 +21,7 @@ MysqlHMDStr="root:Microvideo_1@tcp(122.51.24.189:3307)/blacklist?charset=utf8&pa
 HmdDBLog=1 #是否打印gorm的日志 1：打印
 HmdDatabaseName="blacklist"
 
-#redis配置
-RedisAddr="127.0.0.1:6379"
+#redis配置 192.168.200.170
+RedisAddr="192.168.200.170:6379"
 RedisPwd=""
 RedisDB="3"

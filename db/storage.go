@@ -95,6 +95,76 @@ func QueryJieSuanTable() (int, int64) {
 	return count, total_money[0]
 }
 
+//1.1 按照停车场id 查询总金额、总条数
+func QueryTingccJieSuandata() *[]types.Result {
+	db := utils.GormClient.Client
+	var result []types.Result
+	sqlstr4 := `select SUM(F_NB_JINE) as total,count(F_NB_JINE) as count ,F_VC_TINGCCBH  as  parkingid from b_js_jiessj GROUP BY F_VC_TINGCCBH `
+	db.Raw(sqlstr4).Scan(&result)
+	logrus.Println("result:", result)
+	return &result
+}
+
+//1.2 新增停车场id 查询总金额、总条数记录
+func InsertTingjiesuan() error {
+	db := utils.GormClient.Client
+	Jiestj := new(types.BJsjkTingccjssjtj)
+	//赋值
+	Jiestj.FDtKaistjsj = utils.StrTimeToNowtime()           //开始统计时间
+	Jiestj.FDtTongjwcsj = utils.StrTimeTodefaultdate()      //统计完成时间
+	Jiestj.FVcTongjrq = utils.StrTimeTodefaultdatetimestr() //统计日期
+	if err := db.Table("b_jsjk_tingccjssjtj").Create(&Jiestj).Error; err != nil {
+		// 错误处理...
+		logrus.Println("Insert b_jsjk_tingccjssjtj error", err)
+		return err
+	}
+	logrus.Println("停车场结算数据统计表插入成功！")
+	return nil
+}
+
+//1.3 查询 停车场结算数据统计表最新数据
+func QueryTingjiesuan() (error, *types.BJsjkTingccjssjtj) {
+	db := utils.GormClient.Client
+	Jiestjs := new(types.BJsjkTingccjssjtj)
+	//赋值
+	if err := db.Table("b_jsjk_tingccjssjtj").Last(&Jiestjs).Error; err != nil {
+		logrus.Println("查询 停车场结算数据统计表最新数据时 QueryTabledata error :", err)
+		return err, nil
+	}
+	logrus.Println("查询停车场结算数据统计表结果:", Jiestjs)
+	return nil, Jiestjs
+}
+
+//1.4 更新停车场结算数据统计表最新数据
+func UpdateTingjiesuan(data *types.BJsjkTingccjssjtj, parkingid string, id int) error {
+	db := utils.GormClient.Client
+	Jiestj := new(types.BJsjkTingccjssjtj)
+
+	Jiestj.FNbZongje = data.FNbZongje       //
+	Jiestj.FNbZongts = data.FNbZongts       //
+	Jiestj.FVcTingccid = parkingid          //
+	Jiestj.FDtTongjwcsj = data.FDtTongjwcsj //统计完成时间
+	Jiestj.FVcTongjrq = data.FVcTongjrq
+	if err := db.Table("b_jsjk_tingccjssjtj").Where("F_NB_ID=?", id).Updates(&Jiestj).Error; err != nil {
+		logrus.Println("更新结算统计表 error", err)
+		return err
+	}
+	return nil
+}
+
+//1.5  用id 查询 停车场结算数据统计表最新数据
+func QueryTingjiesuanById(id int) (error, *types.BJsjkTingccjssjtj) {
+	db := utils.GormClient.Client
+	Jiestjs := new(types.BJsjkTingccjssjtj)
+	//赋值
+	if err := db.Table("b_jsjk_tingccjssjtj").Where("F_NB_ID=?", id).Last(&Jiestjs).Error; err != nil {
+		logrus.Println("查询 停车场结算数据统计表最新数据时 QueryTabledata error :", err)
+		return err, nil
+	}
+	logrus.Println("查询停车场结算数据统计表结果:", Jiestjs)
+	return nil, Jiestjs
+}
+
 //2按卡网络号查询结算表数据
 func QueryKawlhJieSuan(kawlh int) (int, int64) {
 	db := utils.GormClient.Client

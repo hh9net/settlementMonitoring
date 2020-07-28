@@ -10,6 +10,8 @@ import (
 
 //查询省外结算总金额、总笔数
 func QuerTotalSettlementData() (int, error, *dto.TotalSettlementData) {
+	//查询数据库获取总金额、总笔数
+
 	qerr, sj := db.QueryTabledata(10000)
 	if qerr != nil {
 		logrus.Println("查询省外结算总金额、总笔数,查询最新的省外结算统计记录  error!", qerr)

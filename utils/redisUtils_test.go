@@ -28,9 +28,10 @@ func TestRedisGet(t *testing.T) {
 	RedisGet(RedisInit(), "kabc")
 }
 
-//RedisHSet
+//RedisHSet  覆盖set
 func TestRedisHSet(t *testing.T) {
-	RedisHSet(RedisInit(), "kabc12", "k1", "v1")
+	//RedisHSet(RedisInit(), "tingabc12", "k1", "v1")
+	RedisHSet(RedisInit(), "tingabc12", "k1", "v2")
 }
 
 //RedisHGet

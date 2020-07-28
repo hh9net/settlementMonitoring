@@ -21,11 +21,13 @@ func main() {
 	utils.RedisInit() //初始化redis
 	db.DBInit()       //初始化数据库
 	//goroutine1
-	//go db.HandleDayTasks()
+	go db.HandleDayTasks()
 	//goroutine2
-	//go db.HandleHourTasks()
+	go db.HandleHourTasks()
 	//goroutine3
 	//go db.HandleMinutesTasks()
+	//goroutine4 处理kafka
+	go db.HandleKafkaDataConsume()
 	//http处理
 	router.RouteInit()
 	for {
