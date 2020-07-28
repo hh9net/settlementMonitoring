@@ -23,17 +23,17 @@ func HandleDayTasks() {
 		}
 		//任务二
 		//查询省外已清分总金额、总笔数
-		qcerr := QuerTotalClarify()
-		if qcerr != nil {
-			log.Println("查询省外已清分总金额、总笔数定时任务:", qcerr)
-		}
-
-		//任务三
-		//查询停车场的总金额、总笔数
-		qterr := QueryTingccJieSuan()
-		if qterr != nil {
-			log.Println("查询省外已清分总金额、总笔数定时任务:", qterr)
-		}
+		//qcerr := QuerTotalClarify()
+		//if qcerr != nil {
+		//	log.Println("查询省外已清分总金额、总笔数定时任务:", qcerr)
+		//}
+		//
+		////任务三
+		////查询停车场的总金额、总笔数
+		//qterr := QueryTingccJieSuan()
+		//if qterr != nil {
+		//	log.Println("查询省外已清分总金额、总笔数定时任务:", qterr)
+		//}
 	}
 }
 
@@ -77,7 +77,7 @@ func HandleMinutesTasks() {
 }
 
 //goroutine4 处理kafka数据消费
-func HandleKafkaDataConsume() error {
+func HandleKafkaDataConsume() {
 	//接收kafka消息   获取count amount  parkingid
 
 	//如果Kafka 有数据就更新
@@ -92,10 +92,11 @@ func HandleKafkaDataConsume() error {
 	// key:"jiesstatistical"  item: 停车场id  value："金额｜总条数"
 	rhseterr := utils.RedisHSet(conn, "jiesstatistical", Parkingid, strconv.Itoa(int(Total))+"|"+strconv.Itoa(Count))
 	if rhseterr != nil {
-		return rhseterr
+		log.Println(rhseterr)
+		//return rhseterr
 	}
 
-	return nil
+	//return nil
 }
 
 func HandleKafkaDataconsume() error {
@@ -137,7 +138,14 @@ func QuerTotalSettlementData() error {
 		log.Println("db.UpdateTabledata error!", uperr)
 		return uperr
 	}
+
 	//5、把数据更新到redis【覆盖】
+	conn := utils.RedisInit() //初始化redis
+	// key:"jiesuantotal"  value："金额｜总条数"
+	rhseterr := utils.RedisSet(conn, "jiesuantotal", strconv.Itoa(int(zje))+"|"+strconv.Itoa(zts))
+	if rhseterr != nil {
+		return rhseterr
+	}
 
 	log.Println("更新省外结算统计最新统计记录成功")
 	//返回数据赋值
@@ -216,9 +224,8 @@ func QueryTingccJieSuan() error {
 		}
 
 		//4、更新到redis中
-		conn := utils.RedisInit()
-		//utils.RedisSelectDB(conn) //初始化redis
-		// key:"jsstatistical"  item: 停车场id  value："金额｜总条数"
+		conn := utils.RedisInit() //初始化redis
+		// key:"jiesstatistical"  item: 停车场id  value："金额｜总条数"
 		rhseterr := utils.RedisHSet(conn, "jiesstatistical", r.Parkingid, strconv.Itoa(int(r.Total))+"|"+strconv.Itoa(r.Count))
 		if rhseterr != nil {
 			return rhseterr

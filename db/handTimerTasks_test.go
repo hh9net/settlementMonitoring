@@ -2,6 +2,12 @@ package db
 
 import "testing"
 
+//HandleDayTasks()
+func TestHandleDayTasks(t *testing.T) {
+	Newdb()
+	HandleDayTasks()
+}
+
 //任务1
 func TestQuerTotalSettlementData(t *testing.T) {
 	Newdb()

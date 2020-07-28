@@ -1,25 +1,38 @@
 package service
 
 import (
-	"github.com/sirupsen/logrus"
-	"log"
+	"errors"
+	log "github.com/sirupsen/logrus"
 	"settlementMonitoring/db"
 	"settlementMonitoring/dto"
 	"settlementMonitoring/utils"
+	"strconv"
+	"strings"
 )
 
 //查询省外结算总金额、总笔数
 func QuerTotalSettlementData() (int, error, *dto.TotalSettlementData) {
 	//查询数据库获取总金额、总笔数
-
-	qerr, sj := db.QueryTabledata(10000)
-	if qerr != nil {
-		logrus.Println("查询省外结算总金额、总笔数,查询最新的省外结算统计记录  error!", qerr)
-		return 0, qerr, nil //不用返回前端
+	conn := utils.RedisInit() //初始化redis
+	// key:"jiestotal"  value："金额｜总条数"
+	rhseterr, value := utils.RedisGet(conn, "jiesuantotal")
+	if rhseterr != nil {
+		return 0, rhseterr, nil
 	}
-	logrus.Println("查询成功")
+
+	vstr := string(value)
+	log.Println("The value is ", vstr)
+
+	if !utils.StringExist(vstr, "|") {
+		return 0, errors.New("get redis error"), nil
+	}
+
+	v := strings.Split(vstr, "|")
+	zje, _ := strconv.Atoi(v[0])
+	zts, _ := strconv.Atoi(v[1])
+	log.Println("查询成功")
 	//返回数据赋值
-	return 203, nil, &dto.TotalSettlementData{Amount: utils.Fen2Yuan(sj.FNbZongje), Count: sj.FNbZongts}
+	return 203, nil, &dto.TotalSettlementData{Amount: utils.Fen2Yuan(int64(zje)), Count: zts}
 }
 
 //查询省外已清分总金额、总笔数
@@ -30,7 +43,7 @@ func QuerTotalClarify() (int, error, *dto.TotalClarifyData) {
 		log.Println("查询省外已清分总金额、总笔数,查询最新数据时  error!", qerr)
 		return 0, qerr, nil //不用返回前端
 	}
-	logrus.Println("查询省外已清分总金额、总笔数 (包含坏账的)成功")
+	log.Println("查询省外已清分总金额、总笔数 (包含坏账的)成功")
 	//返回数据赋值
 	return 204, nil, &dto.TotalClarifyData{Amount: utils.Fen2Yuan(qingfjg.FNbZongje), Count: qingfjg.FNbZongts}
 }
@@ -43,7 +56,7 @@ func QuerTotalBaddebts() (int, error, *dto.TotalBaddebtsData) {
 		log.Println("查询省外坏账总金额、总笔数,查询最新数据时  error!", qerr)
 		return 0, qerr, nil //不用返回前端
 	}
-	logrus.Println("查询省外坏账总金额、总笔数 成功")
+	log.Println("查询省外坏账总金额、总笔数 成功")
 	//返回数据赋值
 	return 205, nil, &dto.TotalBaddebtsData{Amount: utils.Fen2Yuan(qingfjg.FNbHuaizje), Count: qingfjg.FNbHuaizts}
 }
@@ -56,7 +69,7 @@ func QueryDisputedata() (int, error, *dto.TotalDisputeData) {
 		log.Println("查询存在争议的数据总金额、总笔数,查询最新数据时  error!", qerr)
 		return 0, qerr, nil //不用返回前端
 	}
-	logrus.Println("查询存在争议的数据总金额、总笔数 (包含坏账的)成功")
+	log.Println("查询存在争议的数据总金额、总笔数 (包含坏账的)成功")
 	//返回数据赋值
 	return 206, nil, &dto.TotalDisputeData{Amount: utils.Fen2Yuan(zyjg.FNbZongje), Count: zyjg.FNbZongts}
 }
@@ -76,7 +89,7 @@ func QueryAbnormaldata() (int, error, *dto.TotalAbnormalData) {
 		return 0, ddqycerr, nil
 	}
 
-	logrus.Println("查询异常的数据总金额、总笔数  成功")
+	log.Println("查询异常的数据总金额、总笔数  成功")
 	//返回数据赋值
 	return 207, nil, &dto.TotalAbnormalData{Amount: utils.Fen2Yuan(ycamount + ddycamount), Count: yccount + ddyccount}
 }
@@ -105,7 +118,7 @@ func Queryblacklistdata() (int, error, *dto.TotalBlacklistData) {
 	}
 
 	changecount := (*hmdjls)[2].FNbHeimdzs - (*hmdjls)[0].FNbHeimdzs
-	logrus.Println("查询黑名单总数、较2小时前变化值  成功", (*hmdjls)[2].FNbHeimdzs, changecount)
+	log.Println("查询黑名单总数、较2小时前变化值  成功", (*hmdjls)[2].FNbHeimdzs, changecount)
 	//返回数据赋值
 	return 208, nil, &dto.TotalBlacklistData{Blacklistcount: (*hmdjls)[2].FNbHeimdzs, ChangeCount: changecount}
 }

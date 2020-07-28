@@ -57,23 +57,30 @@ func RedisSelectDB(conn *redis.Conn) {
 }
 
 //set设置值
-func RedisSet(conn *redis.Conn, key string, value string) {
+func RedisSet(conn *redis.Conn, key string, value string) error {
 	RedisSelectDB(conn)
 	result, err := (*conn).Do("SET", key, value)
 	if err != nil {
-		panic(err)
+		logrus.Print(err)
+		return err
 	}
 	fmt.Println("set result:", result) //设置成功，ok
+
+	return nil
 }
 
 //get value
-func RedisGet(conn *redis.Conn, key string) {
+func RedisGet(conn *redis.Conn, key string) (error, []uint8) {
 	RedisSelectDB(conn)
 	value, err := (*conn).Do("GET", key)
 	if err != nil {
-		panic(err)
+		logrus.Print(err)
+		return err, nil
 	}
-	fmt.Printf("Get value: v=%s\n", value) //get value
+	fmt.Printf("Get value 成功: v=%s\n", value) //get value
+	/*	str := string(value)
+		logrus.Print(str)*/
+	return nil, value.([]uint8)
 }
 
 //hset 设置值

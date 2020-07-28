@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io"
 	"math/rand"
+	"strings"
 	"time"
 	//uuid "github.com/satori/go.uuid"
 )
@@ -74,4 +75,8 @@ func Encode(data string) string {
 	h := md5.New()
 	h.Write([]byte(data))
 	return hex.EncodeToString(h.Sum(nil))
+}
+
+func StringExist(srv string, dis string) bool {
+	return strings.Contains(srv, dis)
 }
