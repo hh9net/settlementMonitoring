@@ -1,11 +1,7 @@
 package main
 
 import (
-	log "github.com/sirupsen/logrus"
-
 	"settlementMonitoring/config"
-	"settlementMonitoring/db"
-	"settlementMonitoring/router"
 	"settlementMonitoring/utils"
 	"time"
 )
@@ -16,10 +12,11 @@ import (
 // @description Gin swagger 结算数据监控平台
 // @host 127.0.0.1:8088
 func main() {
+
 	config.InitConfigs() //初始化配置
 	utils.InitLogrus(config.Opts().LogPath, config.Opts().LogFileName, time.Duration(24*config.Optional.LogmaxAge)*time.Hour, time.Duration(config.Optional.LogrotationTime)*time.Hour)
 	utils.RedisInit() //初始化redis
-	db.DBInit()       //初始化数据库
+	//db.DBInit()       //初始化数据库
 	//goroutine1
 	//go db.HandleDayTasks()
 	//goroutine2
@@ -29,12 +26,12 @@ func main() {
 	//goroutine4 处理kafka
 	//go db.HandleKafkaDataConsume()
 	//http处理
-	router.RouteInit()
+	//router.RouteInit()
 	for {
-		tiker := time.NewTicker(time.Second * 10)
+		//tiker := time.NewTicker(time.Second * 1)
 		for {
-			log.Println("执行主go程 ", utils.DateTimeFormat(<-tiker.C))
-
+			//log.Println("执行主go程 ", utils.DateTimeFormat(<-tiker.C))
+			utils.ConsumerGroup()
 		}
 	}
 }

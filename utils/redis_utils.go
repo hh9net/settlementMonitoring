@@ -64,13 +64,13 @@ func RedisSet(conn *redis.Conn, key string, value string) error {
 		logrus.Print(err)
 		return err
 	}
-	fmt.Println("set result:", result) //设置成功，ok
+	fmt.Println("set result:", result, "set value:", value) //设置成功，ok
 
 	return nil
 }
 
 //get value
-func RedisGet(conn *redis.Conn, key string) (error, []uint8) {
+func RedisGet(conn *redis.Conn, key string) (error, interface{}) {
 	RedisSelectDB(conn)
 	value, err := (*conn).Do("GET", key)
 	if err != nil {
@@ -80,7 +80,7 @@ func RedisGet(conn *redis.Conn, key string) (error, []uint8) {
 	fmt.Printf("Get value 成功: v=%s\n", value) //get value
 	/*	str := string(value)
 		logrus.Print(str)*/
-	return nil, value.([]uint8)
+	return nil, value
 }
 
 //hset 设置值
@@ -97,13 +97,14 @@ func RedisHSet(conn *redis.Conn, key string, item string, value string) error {
 }
 
 //hget设置值
-func RedisHGet(conn *redis.Conn, key string, item string) {
+func RedisHGet(conn *redis.Conn, key string, item string) (error, interface{}) {
 	RedisSelectDB(conn)
 	value, err := (*conn).Do("HGET", key, item)
 	if err != nil {
 		panic(err)
 	}
 	fmt.Printf("Get value: value=%s\n", value) //get value
+	return nil, value
 }
 
 func RedisExample() {

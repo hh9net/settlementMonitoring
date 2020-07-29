@@ -15,13 +15,13 @@ func QuerTotalSettlementData() (int, error, *dto.TotalSettlementData) {
 	//查询数据库获取总金额、总笔数
 	conn := utils.RedisInit() //初始化redis
 	// key:"jiestotal"  value："金额｜总条数"
-	rhseterr, value := utils.RedisGet(conn, "jiesuantotal")
-	if rhseterr != nil {
-		return 0, rhseterr, nil
+	rhgeterr, value := utils.RedisGet(conn, "jiesuantotal")
+	if rhgeterr != nil {
+		return 0, rhgeterr, nil
 	}
 
-	vstr := string(value)
-	log.Println("The value is ", vstr)
+	vstr := string(value.([]uint8))
+	log.Println("The get redis value is ", vstr)
 
 	if !utils.StringExist(vstr, "|") {
 		return 0, errors.New("get redis error"), nil
@@ -30,7 +30,7 @@ func QuerTotalSettlementData() (int, error, *dto.TotalSettlementData) {
 	v := strings.Split(vstr, "|")
 	zje, _ := strconv.Atoi(v[0])
 	zts, _ := strconv.Atoi(v[1])
-	log.Println("查询成功")
+	log.Println("查询成功", "jine: ", int64(zje), "Count", zts)
 	//返回数据赋值
 	return 203, nil, &dto.TotalSettlementData{Amount: utils.Fen2Yuan(int64(zje)), Count: zts}
 }
