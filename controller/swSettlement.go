@@ -181,3 +181,32 @@ func Queryblacklistdata(c *gin.Context) {
 		c.JSON(http.StatusOK, dto.Response{Code: code, Data: types.StatusText(types.StatusQueryblacklistdataError), Message: "查询黑名单总数、较2小时前变化值 失败"})
 	}
 }
+
+//clearlingAndDisputePackageSettlement
+/*  接口6方法注释   */
+//@Summary 查询清分包、争议包的接收时间、包号 api
+//@Tags 查询清分包、争议包的接收时间、包号
+//@version 1.0
+//@Accept application/json
+//@Param req body dto.Reqlogin true "请求参数"
+//@Success 200 object dto.Response 成功后返回值
+//@Failure 404 object dto.ResponseFailure 查询失败
+//@Router /sw/clearlingAndDisputePackageSettlement [get]
+func QueryClearlingAndDisputePackage(c *gin.Context) {
+	respFailure := dto.ResponseFailure{}
+	// 查询清分包、争议包的接收时间、包号
+	code, err, totaldata := service.QueryClearlingAndDisputePackagedata()
+	if err != nil {
+		logrus.Errorf("QueryClearlingAndDisputePackagedata  err: %v", err.Error())
+		respFailure.Code = code
+		respFailure.Message = fmt.Sprintf("QueryClearlingAndDisputePackagedata err: %v", err.Error())
+		c.JSON(http.StatusOK, respFailure)
+		return
+	}
+	if code == 208 {
+		c.JSON(http.StatusOK, dto.QuerTotalSettlementDataResponse{Code: code, CodeMsg: types.StatusText(208), Data: *totaldata, Message: "查询清分包、争议包的接收时间、包号 成功"})
+	}
+	if code == 0 {
+		c.JSON(http.StatusOK, dto.Response{Code: code, Data: types.StatusText(types.StatusQueryblacklistdataError), Message: "查询清分包、争议包的接收时间、包号 失败"})
+	}
+}

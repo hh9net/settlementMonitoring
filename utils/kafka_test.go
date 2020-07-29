@@ -6,7 +6,7 @@ import (
 )
 
 func TestKafkaProduction(t *testing.T) {
-	//KafkaProduction()
+
 }
 
 func TestConsumer(t *testing.T) {
@@ -41,7 +41,7 @@ func TestConsumerGroup(t *testing.T) {
 
 //ConsumerGroup()
 func TestConsumerGroups(t *testing.T) {
-	/*jsonData := []byte(`{"head":{
+	jsonData := []byte(`{"head":{
 	    "topic":"billExitDataCollectTopic",
 	    "index":"325",
 	    "topicreply":"SG_GATEWAY_mytopic_test",
@@ -65,7 +65,7 @@ func TestConsumerGroups(t *testing.T) {
 	"file0015":"d5e3bdadd5e3bdad1711210115122302000310462016070620260706d5e342593030335600000000000000","obuinfo":"",
 	"vehicileinfo":"d5e34236363344500000000000000100000000000000000000000500b8a5481204c38b1085d274388b4af831323134373433001200000000000000",
 	"feebackinfo":"","costtime":"343","psamversion":"0","card_version":"17","obu_type":"0","key_type":"0","before_money":"0","devicetype":"0"}}`)
-		ProcessMessage("billDataCollectTopic",jsonData)*/
+	ProcessMessage("billDataCollectTopic", jsonData)
 	//zdzBillExitDataCollectTopic
 	zdzjsonData := []byte(`{"head":{
 "topic":"zdzBillExitDataCollectTopic", 

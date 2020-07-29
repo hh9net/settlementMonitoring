@@ -23,17 +23,24 @@ func HandleDayTasks() {
 		}
 		//任务二
 		//查询省外已清分总金额、总笔数
-		//qcerr := QuerTotalClarify()
-		//if qcerr != nil {
-		//	log.Println("查询省外已清分总金额、总笔数定时任务:", qcerr)
-		//}
-		//
-		////任务三
-		////查询停车场的总金额、总笔数
-		//qterr := QueryTingccJieSuan()
-		//if qterr != nil {
-		//	log.Println("查询省外已清分总金额、总笔数定时任务:", qterr)
-		//}
+		qcerr := QuerTotalClarify()
+		if qcerr != nil {
+			log.Println("查询省外已清分总金额、总笔数定时任务:", qcerr)
+		}
+
+		//任务三
+		//查询停车场的总金额、总笔数
+		qterr := QueryTingccJieSuan()
+		if qterr != nil {
+			log.Println("查询停车场的总金额、总笔数定时任务:", qterr)
+		}
+
+		//任务四
+		//查询清分包、争议包的包号、接收时间
+		qcderr := QueryClearlingAndDisputePackage()
+		if qcderr != nil {
+			log.Println("查询清分包、争议包的包号、接收时间定时任务:", qcderr)
+		}
 	}
 }
 
@@ -74,37 +81,6 @@ func HandleMinutesTasks() {
 
 	}
 
-}
-
-//goroutine4 处理kafka数据消费
-func HandleKafkaDataConsume() {
-	//接收kafka消息   获取count amount  parkingid
-
-	//如果Kafka 有数据就更新
-
-	Parkingid := ""
-	Total := 12
-	Count := 12
-
-	//根据消息 更新redis
-	//hset redis
-	conn := utils.RedisInit() //初始化redis
-	// key:"jiesstatistical"  item: 停车场id  value："金额｜总条数"
-	rhseterr := utils.RedisHSet(conn, "jiesstatistical", Parkingid, strconv.Itoa(int(Total))+"|"+strconv.Itoa(Count))
-	if rhseterr != nil {
-		log.Println(rhseterr)
-		//return rhseterr
-	}
-
-	//return nil
-}
-
-func HandleKafkaDataconsume() error {
-	//接收kafka消息   获取count amount  parkingid
-
-	//如果Kafka 有数据就更新
-
-	return nil
 }
 
 //1任务1
@@ -231,6 +207,16 @@ func QueryTingccJieSuan() error {
 			return rhseterr
 		}
 	}
+	return nil
+}
+
+//1任务4
+func QueryClearlingAndDisputePackage() error {
+
+	//1、获取清分包、争议包数据
+
+	//2、
+
 	return nil
 }
 

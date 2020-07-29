@@ -109,7 +109,7 @@ func Queryblacklistdata() (int, error, *dto.TotalBlacklistData) {
 	if hmdjl.FNbHeimdzs == 0 {
 		id = id - 1
 	}
-	ts := 3 //需要查询条数
+	ts := 3 //需要查询条数【后面可以改】
 	qdterr, hmdjls := db.QueryBlacklistTiaoshutable(id, ts)
 
 	if qdterr != nil {
@@ -119,6 +119,34 @@ func Queryblacklistdata() (int, error, *dto.TotalBlacklistData) {
 
 	changecount := (*hmdjls)[2].FNbHeimdzs - (*hmdjls)[0].FNbHeimdzs
 	log.Println("查询黑名单总数、较2小时前变化值  成功", (*hmdjls)[2].FNbHeimdzs, changecount)
+	//返回数据赋值
+	return 208, nil, &dto.TotalBlacklistData{Blacklistcount: (*hmdjls)[2].FNbHeimdzs, ChangeCount: changecount}
+}
+
+//查询清分包、争议包的接收时间、包号
+func QueryClearlingAndDisputePackagedata() (int, error, *dto.TotalBlacklistData) {
+
+	//查询清分包、争议包的接收时间、包号[最新的数据]
+	qerr, hmdjl := db.QueryBlacklisttable()
+
+	if qerr != nil {
+		log.Println(qerr)
+		return 0, qerr, nil
+	}
+	id := hmdjl.FNbId
+	if hmdjl.FNbHeimdzs == 0 {
+		id = id - 1
+	}
+	ts := 3 //需要查询条数【后面可以改】
+	qdterr, hmdjls := db.QueryBlacklistTiaoshutable(id, ts)
+
+	if qdterr != nil {
+		log.Println(qdterr)
+		return 0, qdterr, nil
+	}
+
+	changecount := (*hmdjls)[2].FNbHeimdzs - (*hmdjls)[0].FNbHeimdzs
+	log.Println("查询清分包、争议包的接收时间、包号  成功", (*hmdjls)[2].FNbHeimdzs, changecount)
 	//返回数据赋值
 	return 208, nil, &dto.TotalBlacklistData{Blacklistcount: (*hmdjls)[2].FNbHeimdzs, ChangeCount: changecount}
 }
