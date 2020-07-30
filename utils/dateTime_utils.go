@@ -61,3 +61,39 @@ func StrTimeTodefaultdate() time.Time {
 func StrTimeTodefaultdatetimestr() string {
 	return "2020-01-01 00:00:00"
 }
+
+//获取昨天的日期
+func Yesterdaydate() string {
+	nTime := time.Now()
+	yesTime := nTime.AddDate(0, 0, -1)
+	return yesTime.Format("2006-01-02")
+}
+
+//currentTime := time.Now()
+//oldTime := currentTime.AddDate(0, 0, -2)
+//获取昨天的日期
+func OldData(num int) []string {
+	days := num
+	nTime := time.Now()
+	//switch num {
+	//case 1:
+	//	days = -1
+	//case 7:
+	//	days = -7
+	//case 14:
+	//	days = -14
+	//case 30:
+	//	days = -7
+	//default: //default case
+	//	log.Println("  number  error")
+	//	return nil
+	//}
+	daystrs := make([]string, 0)
+	for i := 0; i < num; i++ {
+		yesTime := nTime.AddDate(0, 0, -days)
+		daystrs = append(daystrs, yesTime.Format("2006-01-02"))
+		days--
+	}
+	//log.Println("daystrs:", daystrs)
+	return daystrs
+}

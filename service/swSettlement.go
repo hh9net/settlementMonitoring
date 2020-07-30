@@ -5,6 +5,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"settlementMonitoring/db"
 	"settlementMonitoring/dto"
+	"settlementMonitoring/types"
 	"settlementMonitoring/utils"
 	"strconv"
 	"strings"
@@ -123,30 +124,43 @@ func Queryblacklistdata() (int, error, *dto.TotalBlacklistData) {
 	return 208, nil, &dto.TotalBlacklistData{Blacklistcount: (*hmdjls)[2].FNbHeimdzs, ChangeCount: changecount}
 }
 
-//查询清分包、争议包的接收时间、包号
-func QueryClearlingAndDisputePackagedata() (int, error, *dto.TotalBlacklistData) {
+//查询清分包、争议包的接收时间、包号 14天
+func QueryClearlingAndDisputePackagedata() (int, error, *dto.ClearlAndDisputeData) {
 
-	//查询清分包、争议包的接收时间、包号[最新的数据]
-	qerr, hmdjl := db.QueryBlacklisttable()
+	//查询清分包、争议包的接收时间、包号[最新的数据]前14天数据
 
-	if qerr != nil {
-		log.Println(qerr)
-		return 0, qerr, nil
-	}
-	id := hmdjl.FNbId
-	if hmdjl.FNbHeimdzs == 0 {
-		id = id - 1
-	}
-	ts := 3 //需要查询条数【后面可以改】
-	qdterr, hmdjls := db.QueryBlacklistTiaoshutable(id, ts)
-
-	if qdterr != nil {
-		log.Println(qdterr)
-		return 0, qdterr, nil
+	chmgeterr, cleardata := utils.RedisHMGet(utils.RedisInit(), "clear", utils.OldData(14))
+	if chmgeterr != nil {
+		return 0, chmgeterr, nil
 	}
 
-	changecount := (*hmdjls)[2].FNbHeimdzs - (*hmdjls)[0].FNbHeimdzs
-	log.Println("查询清分包、争议包的接收时间、包号  成功", (*hmdjls)[2].FNbHeimdzs, changecount)
+	dhmgeterr, disputdata := utils.RedisHMGet(utils.RedisInit(), "disput", utils.OldData(14))
+	if dhmgeterr != nil {
+		return 0, dhmgeterr, nil
+	}
+	data := make([]types.ClearlingAndDisputeData, 0)
+
+	for _, clearData := range *cleardata {
+		clearAndDis := new(types.ClearlingAndDisputeData)
+		if clearData == "no data" {
+			continue
+		}
+		str := strings.Split(clearData, "|")
+		clearAndDis.ClearPacgNo = str[0]
+		clearAndDis.Cleardatetime = str[1]
+		data = append(data, *clearAndDis)
+	}
+
+	for i, disputData := range *disputdata {
+		if disputData == "no data" {
+			continue
+		}
+		disstr := strings.Split(disputData, "|")
+		data[i].Disputdatetime = disstr[1]
+		data[i].DisputPacgeNo = disstr[0]
+	}
+
+	log.Println("查询清分包、争议包的接收时间、包号  成功。data数组长度:", len(data))
 	//返回数据赋值
-	return 208, nil, &dto.TotalBlacklistData{Blacklistcount: (*hmdjls)[2].FNbHeimdzs, ChangeCount: changecount}
+	return 209, nil, &dto.ClearlAndDisputeData{data}
 }

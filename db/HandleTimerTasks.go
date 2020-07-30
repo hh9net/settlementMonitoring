@@ -27,20 +27,19 @@ func HandleDayTasks() {
 		if qcerr != nil {
 			log.Println("查询省外已清分总金额、总笔数定时任务:", qcerr)
 		}
-
 		//任务三
 		//查询停车场的总金额、总笔数
 		qterr := QueryTingccJieSuan()
 		if qterr != nil {
 			log.Println("查询停车场的总金额、总笔数定时任务:", qterr)
 		}
-
 		//任务四
 		//查询清分包、争议包的包号、接收时间
 		qcderr := QueryClearlingAndDisputePackage()
 		if qcderr != nil {
 			log.Println("查询清分包、争议包的包号、接收时间定时任务:", qcderr)
 		}
+		//
 	}
 }
 
@@ -210,13 +209,46 @@ func QueryTingccJieSuan() error {
 	return nil
 }
 
-//1任务4
+//1任务4 查询清分、争议处理包
 func QueryClearlingAndDisputePackage() error {
 
 	//1、获取清分包、争议包数据
+	qcerr, clear := QueryClearlingdata()
+	if qcerr != nil {
+		return qcerr
+	}
+	Clear := types.ClearlingAndDispute{
+		DataType:  "clear",
+		PackageNo: strconv.Itoa(int(clear.FNbXiaoxxh)),
+		DateTime:  utils.DateTimeFormat(clear.FDtJiessj),
+	}
+	m := make(map[string]string, 0)
+	// key:日期    value:"包号"｜"时间"
 
-	//2、
+	m[utils.Yesterdaydate()] = Clear.PackageNo + "|" + Clear.DateTime
+	//2、把数据存储于redis  接收时间、包号
+	hmseterr := utils.RedisHMSet(utils.RedisInit(), Clear.DataType, m)
+	if hmseterr != nil {
+		return hmseterr
+	}
 
+	qderr, dispute := QueryDisputedata()
+	if qderr != nil {
+		return qderr
+	}
+
+	Disput := types.ClearlingAndDispute{
+		DataType:  "disput",
+		PackageNo: strconv.Itoa(int(dispute.FNbXiaoxxh)),
+		DateTime:  utils.DateTimeFormat(dispute.FDtJiessj),
+	}
+	//2、把数据存储于redis  接收时间、包号
+	m[utils.Yesterdaydate()] = Disput.PackageNo + "|" + Disput.DateTime
+
+	dishmseterr := utils.RedisHMSet(utils.RedisInit(), Disput.DataType, m)
+	if dishmseterr != nil {
+		return dishmseterr
+	}
 	return nil
 }
 

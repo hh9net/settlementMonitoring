@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"net/http"
-	"settlementMonitoring/config"
 	"settlementMonitoring/controller"
 	_ "settlementMonitoring/docs"
 	"strings"
@@ -14,7 +13,7 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-func RouteInit() {
+func RouteInit(IpAddress string) {
 	router := gin.New()
 	router.Use(Cors()) //跨域资源共享
 
@@ -26,8 +25,8 @@ func RouteInit() {
 
 	http.Handle("/", router)
 	gin.SetMode(gin.ReleaseMode)
-	logrus.Print("服务端 IpAddress：", config.Opts().LocalAddress+":"+config.Opts().WebPort)
-	runerr := router.Run(config.Opts().LocalAddress + ":" + config.Opts().WebPort)
+	logrus.Print("服务端 IpAddress：", IpAddress)
+	runerr := router.Run(IpAddress)
 	if runerr != nil {
 		logrus.Print("Run error")
 		return

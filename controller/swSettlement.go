@@ -203,8 +203,8 @@ func QueryClearlingAndDisputePackage(c *gin.Context) {
 		c.JSON(http.StatusOK, respFailure)
 		return
 	}
-	if code == 208 {
-		c.JSON(http.StatusOK, dto.QuerTotalSettlementDataResponse{Code: code, CodeMsg: types.StatusText(208), Data: *totaldata, Message: "查询清分包、争议包的接收时间、包号 成功"})
+	if code == 209 {
+		c.JSON(http.StatusOK, dto.QueryClearlingAndDisputeResponse{Code: code, CodeMsg: types.StatusText(208), Data: *totaldata, Message: "查询清分包、争议包的接收时间、包号 成功"})
 	}
 	if code == 0 {
 		c.JSON(http.StatusOK, dto.Response{Code: code, Data: types.StatusText(types.StatusQueryblacklistdataError), Message: "查询清分包、争议包的接收时间、包号 失败"})

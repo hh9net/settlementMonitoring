@@ -34,3 +34,9 @@ func TestQueryTingccJieSuan(t *testing.T) {
 	Newdb()
 	QueryTingccJieSuan()
 }
+
+//QueryClearlingAndDisputePackage
+func TestQueryClearlingAndDisputePackage(t *testing.T) {
+	Newdb()
+	QueryClearlingAndDisputePackage()
+}

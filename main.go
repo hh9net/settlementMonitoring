@@ -3,6 +3,7 @@ package main
 import (
 	"settlementMonitoring/config"
 	"settlementMonitoring/db"
+	"settlementMonitoring/router"
 	"settlementMonitoring/utils"
 	"time"
 )
@@ -14,20 +15,23 @@ import (
 // @host 127.0.0.1:8088
 func main() {
 
-	config.InitConfigs() //初始化配置
-	utils.InitLogrus(config.Opts().LogPath, config.Opts().LogFileName, time.Duration(24*config.Optional.LogmaxAge)*time.Hour, time.Duration(config.Optional.LogrotationTime)*time.Hour)
+	conf := config.ConfigInit() //初始化配置
+	utils.InitLogrus(conf.LogPath, conf.LogFileName, time.Duration(24*conf.LogMaxAge)*time.Hour, time.Duration(conf.LogRotationTime)*time.Hour)
 	utils.RedisInit() //初始化redis
-	db.DBInit()       //初始化数据库
+	//"root:Microvideo_1@tcp(122.51.24.189:3307)/blacklist?charset=utf8&parseTime=true&loc=Local"
+	mstr := conf.MUserName + ":" + conf.MPass + "@tcp(" + conf.MHostname + ":" + conf.MPort + ")/" + conf.Mdatabasename + "?charset=utf8&parseTime=true&loc=Local"
+	IpAddress := conf.IpAddress
+	db.DBInit(mstr) //初始化数据库
 	//goroutine1
-	go db.HandleDayTasks()
+	//go db.HandleDayTasks()
 	//goroutine2
-	go db.HandleHourTasks()
+	//go db.HandleHourTasks()
 	//goroutine3
-	go db.HandleMinutesTasks()
+	//go db.HandleMinutesTasks()
 	////goroutine4 处理kafka
 	//go db.HandleKafkaDataConsume()
 	//http处理
-	//router.RouteInit()
+	router.RouteInit(IpAddress)
 	for {
 		//tiker := time.NewTicker(time.Second * 1)
 		for {

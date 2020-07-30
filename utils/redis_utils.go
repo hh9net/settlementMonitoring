@@ -1,9 +1,10 @@
 package utils
 
 import (
+	"errors"
 	"fmt"
 	"github.com/garyburd/redigo/redis"
-	"github.com/sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 	"reflect"
 )
 
@@ -34,11 +35,9 @@ func NewRedis() {
 //redis 工具箱
 //1、redis 初始化
 func RedisInit() *redis.Conn {
-	logrus.Infoln("starting redis")
+	log.Infoln("starting redis")
 	//连接数据库
-	//address := "192.168.200.170:6379"
 	address := "127.0.0.1:6379"
-	//address :=redisconf.RedisDBAddr
 	conn, err := redis.Dial("tcp", address /*,redis.DialPassword("123456")*/)
 	if err != nil {
 		panic(err)
@@ -61,7 +60,7 @@ func RedisSet(conn *redis.Conn, key string, value string) error {
 	RedisSelectDB(conn)
 	result, err := (*conn).Do("SET", key, value)
 	if err != nil {
-		logrus.Print(err)
+		log.Print(err)
 		return err
 	}
 	fmt.Println("set result:", result, "set value:", value) //设置成功，ok
@@ -74,7 +73,7 @@ func RedisGet(conn *redis.Conn, key string) (error, interface{}) {
 	RedisSelectDB(conn)
 	value, err := (*conn).Do("GET", key)
 	if err != nil {
-		logrus.Print(err)
+		log.Print(err)
 		return err, nil
 	}
 	fmt.Printf("Get value 成功: v=%s\n", value) //get value
@@ -107,6 +106,69 @@ func RedisHGet(conn *redis.Conn, key string, item string) (error, interface{}) {
 	return nil, value
 }
 
+//HMGet - 根据key和多个字段名，批量查询多个hash字段值
+func RedisHMGet(conn *redis.Conn, key string, items []string) (error, *[]string) {
+	// HMGet支持多个field字段名，意思是一次返回多个字段值
+	//vals, err := client.HMGet("key","field1", "field2")
+	RedisSelectDB(conn)
+	//构建 hmset 的参数列表  len(items)
+	fields := make([]interface{}, len(items)+1)
+	fields[0] = key
+	var i int
+	for _, vv := range items {
+		i++
+		fields[i] = vv
+	}
+	log.Println("fields:", fields)
+	values, err := (*conn).Do("HMGET", fields...)
+	if err != nil {
+		log.Println(err)
+		return err, nil
+	}
+
+	var vstr []string
+	for _, v := range values.([]interface{}) {
+		if v == nil {
+			log.Println("v==nil,有一天没有数据包")
+			vstr = append(vstr, "no data")
+			continue
+		}
+		vstr = append(vstr, string(v.([]uint8)))
+	}
+	log.Println("RedisHMGet 中 vstr:", vstr)
+	return nil, &vstr
+}
+
+//HMSet - 根据key和多个字段名，批量set多个hash字段值
+func RedisHMSet(conn *redis.Conn, key string, v map[string]string) error {
+	// HMGet支持多个field字段名，意思是一次返回多个字段值
+	//vals, err := client.HMGet("key","field1", "field2")
+	RedisSelectDB(conn)
+	//构建 hmset 的参数列表
+	kvs := make([]interface{}, len(v)*2+1)
+	kvs[0] = key
+
+	var i int
+	for kk, vv := range v {
+		i++
+		kvs[i] = kk
+		i++
+		kvs[i] = vv
+	}
+	//hash存
+	values, err := (*conn).Do("HMSET", kvs...)
+	if err != nil {
+		return err
+	}
+
+	if values == nil {
+		log.Println("values==nil")
+		return errors.New("values==nil")
+	}
+	log.Println("kvs:", kvs)
+	log.Print("values:", (values.(string)))
+	return nil
+}
 func RedisExample() {
 	//连接数据库
 	//address:="192.168.200.170:6379"

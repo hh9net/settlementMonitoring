@@ -227,3 +227,9 @@ func TestQueryTingjiesuanById(t *testing.T) {
 	Newdb()
 	QueryTingjiesuanById(2)
 }
+
+//QueryClearlingdata()
+func TestQueryClearlingdata(t *testing.T) {
+	Newdb()
+	QueryClearlingdata()
+}

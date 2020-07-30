@@ -38,3 +38,16 @@ func TestRedisHSet(t *testing.T) {
 func TestRedisHGet(t *testing.T) {
 	RedisHGet(RedisInit(), "kabc12", "k1")
 }
+
+//RedisHMSet
+func TestRedisHMSet(t *testing.T) {
+	clear := make(map[string]string, 0)
+	clear["field"] = "abc"
+	RedisHMSet(RedisInit(), "clearlingTJ", clear)
+}
+
+//RedisHMGet
+func TestRedisHMGet(t *testing.T) {
+
+	RedisHMGet(RedisInit(), "clear", OldData(16))
+}

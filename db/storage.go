@@ -11,9 +11,10 @@ import (
 
 //结算监控平台数据层：数据的增删改查
 func Newdb() {
-	config.InitConfigs() //初始化配置
-	utils.InitLogrus(config.Opts().LogPath, config.Opts().LogFileName, time.Duration(24*config.Optional.LogmaxAge)*time.Hour, time.Duration(config.Optional.LogrotationTime)*time.Hour)
-	DBInit() //初始化数据库
+	conf := config.ConfigInit() //初始化配置
+	utils.InitLogrus(conf.LogPath, conf.LogFileName, time.Duration(24*conf.LogMaxAge)*time.Hour, time.Duration(conf.LogRotationTime)*time.Hour)
+	mstr := conf.MUserName + ":" + conf.MPass + "@tcp(" + conf.MHostname + ":" + conf.MPort + ")/" + conf.Mdatabasename + "?charset=utf8&parseTime=true&loc=Local"
+	DBInit(mstr) //初始化数据库
 }
 
 //1、查询表是否存在
@@ -488,3 +489,30 @@ func PacketMonitoring() {
 //记账包金额
 //原始交易消息应答包数量
 //func
+
+//4.1.10	清分、争议包更新状态监控
+//1、查询清分包数据
+func QueryClearlingdata() (error, *types.BJsQingftjxx) {
+	db := utils.GormClient.Client
+	qingftjsj := new(types.BJsQingftjxx)
+	//赋值
+	if err := db.Table("b_js_qingftjxx").Last(&qingftjsj).Error; err != nil {
+		logrus.Println("查询清分包数据 最新数据时 QueryClearlingdata error :", err)
+		return err, nil
+	}
+	logrus.Println("查询清分包数据表结果:", qingftjsj)
+	return nil, qingftjsj
+}
+
+//2、查询争议处理包数据
+func QueryDisputedata() (error, *types.BJsZhengyjyclxx) {
+	db := utils.GormClient.Client
+	zytjsj := new(types.BJsZhengyjyclxx)
+	//赋值
+	if err := db.Table("b_js_zhengyjyclxx").Last(&zytjsj).Error; err != nil {
+		logrus.Println("查询争议处理包数据表最新数据时 QueryDisputedata error :", err)
+		return err, nil
+	}
+	logrus.Println("查询争议处理包数据表结果:", zytjsj)
+	return nil, zytjsj
+}

@@ -17,3 +17,14 @@ func TestStrTimeToNowtime(t *testing.T) {
 func TestKuaizhaoTimeNowFormat(t *testing.T) {
 	logrus.Print(KuaizhaoTimeNowFormat())
 }
+
+//Yesterdaydate()
+func TestYesterdaydate(t *testing.T) {
+	logrus.Print(Yesterdaydate())
+}
+
+//OldData
+func TestOldData(t *testing.T) {
+	OldData(14)
+
+}
