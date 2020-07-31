@@ -6,8 +6,21 @@ import (
 )
 
 func DateTimeFormat(t time.Time) string {
-	datetime := t.Format("2006-01-02 15:04:05") //后面的参数是固定的 否则将无输出
-	return datetime
+	return t.Format("2006-01-02 15:04:05") //后面的参数是固定的 否则将无输出
+}
+
+func DateFormatTimeToTime(data time.Time) time.Time {
+	datestr := data.Format("2006-01-02 00:00:00")
+	const Layout = "2006-01-02 15:04:05" //时间常量
+	loc, _ := time.LoadLocation("Asia/Shanghai")
+	time1, _ := time.ParseInLocation(Layout, datestr /*需要转换的时间类型字符串*/, loc)
+	return time1
+}
+
+func DateFormatTimeTostrdate(data time.Time) string {
+	datestr := data.Format("2006-01-02 00:00:00")
+	b := []byte(datestr)
+	return string(b[0:10])
 }
 
 //2006-01-02 15:04:05
@@ -26,10 +39,8 @@ func DateNowFormat() string {
 
 //处理时间字符串转时间
 func StrTimeTotime(strTime string) time.Time {
-
 	const Layout = "2006-01-02 15:04:05" //时间常量
 	loc, _ := time.LoadLocation("Asia/Shanghai")
-
 	tim, _ := time.ParseInLocation(Layout, strTime /*需要转换的时间类型字符串*/, loc)
 	log.Println(tim)
 	return tim
@@ -39,6 +50,17 @@ func StrTimeTotime(strTime string) time.Time {
 func StrTimeToNowtime() time.Time {
 	strTime := time.Now().Format("2006-01-02 15:04:05")
 	const Layout = "2006-01-02 15:04:05" //时间常量
+	loc, _ := time.LoadLocation("Asia/Shanghai")
+
+	tim, _ := time.ParseInLocation(Layout, strTime /*需要转换的时间类型字符串*/, loc)
+	log.Println(tim)
+	return tim
+}
+
+//处理时间字符串转时间
+func DateToNowdate() time.Time {
+	strTime := time.Now().Format("2006-01-02")
+	const Layout = "2006-01-02" //时间常量
 	loc, _ := time.LoadLocation("Asia/Shanghai")
 
 	tim, _ := time.ParseInLocation(Layout, strTime /*需要转换的时间类型字符串*/, loc)

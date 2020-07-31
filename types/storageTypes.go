@@ -32,11 +32,11 @@ type BJsjkJiestj struct {
 type BJsjkQingfhd struct {
 	FNbId int `gorm:"AUTO_INCREMENT ;primary_key; column:F_NB_ID"` //  `F_NB_ID` int NOT NULL AUTO_INCREMENT COMMENT '唯一自增id',
 
-	FNbQingfbxh  int64  `gorm:"column:F_NB_QINGFBXH"`  //   `F_NB_QINGFBXH` bigint DEFAULT NULL COMMENT '清分包序号',
-	FNbQingfje   int64  `gorm:"column:F_NB_QINGFJE"`   //   `F_NB_QINGFJE` bigint DEFAULT NULL COMMENT '清分金额',
-	FNbTongjqfje int64  `gorm:"column:F_NB_TONGJQFJE"` //   `F_NB_TONGJQFJE` bigint DEFAULT NULL COMMENT '统计清分金额',
-	FNbHedjg     int    `gorm:"column:F_NB_HEDJG"`     //   `F_NB_HEDJG` int DEFAULT NULL COMMENT '核对结果 是否一致,1:一致，2:不一致',
-	FDtTongjrq   string `gorm:"column:F_DT_TONGJRQ"`   //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
+	FNbQingfbxh  int64     `gorm:"column:F_NB_QINGFBXH"`  //   `F_NB_QINGFBXH` bigint DEFAULT NULL COMMENT '清分包序号',
+	FNbQingfje   int64     `gorm:"column:F_NB_QINGFJE"`   //   `F_NB_QINGFJE` bigint DEFAULT NULL COMMENT '清分金额',
+	FNbTongjqfje int64     `gorm:"column:F_NB_TONGJQFJE"` //   `F_NB_TONGJQFJE` bigint DEFAULT NULL COMMENT '统计清分金额',
+	FNbHedjg     int       `gorm:"column:F_NB_HEDJG"`     //   `F_NB_HEDJG` int DEFAULT NULL COMMENT '核对结果 是否一致,1:一致，2:不一致',
+	FDtTongjrq   time.Time `gorm:"column:F_DT_TONGJRQ"`   //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
 }
 
 //3 省内拒付数据统计表 `b_jsjk_shengnjfsjtj`

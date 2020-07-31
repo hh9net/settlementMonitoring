@@ -53,3 +53,12 @@ type TotalBlacklistData struct {
 type ClearlAndDisputeData struct {
 	ClearlingAndDisputedata []types.ClearlingAndDisputeData `json:"clearlinganddisputedata" example:"1244547"`
 }
+
+//Clearlingcheck
+type ClearlingcheckOneData struct {
+	Clearlingpakgxh int64  `json:"clearlingpakgxh" example:"1244547"`
+	Clearlingpakgje int64  `json:"clearlingpakgje" example:"1244547"`
+	Tongjqfje       int64  `json:"tongjqfje" example:"1244547"`
+	Hedjg           int    `json:"hedjg" example:"1244547"`
+	Tongjrq         string `json:"tongjrq" example:"1244547"`
+}

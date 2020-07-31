@@ -153,11 +153,10 @@ func RedisHMSet(conn *redis.Conn, key string, v map[string]string) error {
 	//构建 hmset 的参数列表
 	kvs := make([]interface{}, len(v)*2+1)
 	kvs[0] = key
-
 	var i int
 	for kk, vv := range v {
 		i++
-		kvs[i] = `"` + kk + `"`
+		kvs[i] = kk
 		i++
 		kvs[i] = `"` + vv + `"`
 	}

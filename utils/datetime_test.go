@@ -3,6 +3,7 @@ package utils
 import (
 	"github.com/sirupsen/logrus"
 	"testing"
+	"time"
 )
 
 func TestStrTimeTotime(t *testing.T) {
@@ -26,5 +27,14 @@ func TestYesterdaydate(t *testing.T) {
 //OldData
 func TestOldData(t *testing.T) {
 	OldData(14)
+}
 
+//StrdateToNowdate()
+func TestDateToNowdate(t *testing.T) {
+	logrus.Println(DateToNowdate())
+}
+
+// DateFormatTimeToTime
+func TestDateFormatTimeToTime(t *testing.T) {
+	logrus.Println(DateFormatTimeTostrdate(time.Now()))
 }

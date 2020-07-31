@@ -204,9 +204,38 @@ func QueryClearlingAndDisputePackage(c *gin.Context) {
 		return
 	}
 	if code == 209 {
-		c.JSON(http.StatusOK, dto.QueryClearlingAndDisputeResponse{Code: code, CodeMsg: types.StatusText(208), Data: *totaldata, Message: "查询清分包、争议包的接收时间、包号 成功"})
+		c.JSON(http.StatusOK, dto.QueryClearlingAndDisputeResponse{Code: code, CodeMsg: types.StatusText(209), Data: *totaldata, Message: "查询清分包、争议包的接收时间、包号 成功"})
 	}
 	if code == 0 {
-		c.JSON(http.StatusOK, dto.Response{Code: code, Data: types.StatusText(types.StatusQueryblacklistdataError), Message: "查询清分包、争议包的接收时间、包号 失败"})
+		c.JSON(http.StatusOK, dto.Response{Code: code, Data: types.StatusText(types.StatusQueryClearlingAndDisputePkgError), Message: "查询清分包、争议包的接收时间、包号 失败"})
+	}
+}
+
+//StatisticalClearlingcheck
+/*  接口6方法注释   */
+//@Summary 清分核对 api
+//@Tags 清分核对
+//@version 1.0
+//@Accept application/json
+//@Param req body dto.Reqlogin true "请求参数"
+//@Success 200 object dto.Response 成功后返回值
+//@Failure 404 object dto.ResponseFailure 查询失败
+//@Router /sw/clearlingcheck [get]
+func Clearlingcheck(c *gin.Context) {
+	respFailure := dto.ResponseFailure{}
+	// 查询清分包、争议包的接收时间、包号
+	code, err, totaldata := service.StatisticalClearlingcheck()
+	if err != nil {
+		logrus.Errorf("QueryClearlingAndDisputePackagedata  err: %v", err.Error())
+		respFailure.Code = code
+		respFailure.Message = fmt.Sprintf("QueryClearlingAndDisputePackagedata err: %v", err.Error())
+		c.JSON(http.StatusOK, respFailure)
+		return
+	}
+	if code == 210 {
+		c.JSON(http.StatusOK, dto.QueryClearlingAndDisputeResponse{Code: code, CodeMsg: types.StatusText(210), Data: *totaldata, Message: "查询清分核对结果 成功"})
+	}
+	if code == 0 {
+		c.JSON(http.StatusOK, dto.Response{Code: code, Data: types.StatusText(types.StatusQueryClearlingAndDisputePkgError), Message: "查询清分核对结果 失败"})
 	}
 }

@@ -530,15 +530,15 @@ func QueryDisputedata(yesterday string) (error, *types.BJsZhengyjyclxx) {
 
 //4.1.11	清分核对
 //1、统计清分数据
-func StatisticalClearlingcheck() (error, bool) {
+func StatisticalClearlingcheck() error {
 	//1、获取昨日的清分包数据
 	qerr, clear := QueryClearlingdata(utils.Yesterdaydate())
 	if qerr != nil {
-		return qerr, false
+		return qerr
 	}
 	if clear == nil {
 		log.Println("昨日没有清分包")
-		return errors.New("昨日没有清分包，需要检查清分包是否接收"), false
+		return errors.New("昨日没有清分包，需要检查清分包是否接收")
 	}
 
 	//2、统计昨日记账包总金额
@@ -546,22 +546,37 @@ func StatisticalClearlingcheck() (error, bool) {
 	//统计存在争议数据
 	disputerr, Disput := DisputedDataCanClearling(clear.FNbXiaoxxh)
 	if disputerr != nil {
-		return disputerr, false
+		return disputerr
 	}
 	log.Println("清分包清分总金额", clear.FNbQingfzje)
 	log.Println("今日核对清分结果的总金额", keepAccount+Disput.FNbQuerxyjzdzje)
+	var is int
 	if clear.FNbQingfzje == keepAccount+Disput.FNbQuerxyjzdzje {
+		is = 1
 		log.Println("清分核对正确")
 	} else {
+		is = 2
 		log.Println("清分核对不正确")
-		return nil, false
 	}
-	return nil, true
+	//把清分核对结果存数据库
+	data := new(types.BJsjkQingfhd)
+	//赋值
+	data.FNbQingfbxh = clear.FNbXiaoxxh                      //   `F_NB_QINGFBXH` bigint DEFAULT NULL COMMENT '清分包序号',
+	data.FNbQingfje = clear.FNbQingfzje                      //   `F_NB_QINGFJE` bigint DEFAULT NULL COMMENT '清分金额',
+	data.FNbTongjqfje = keepAccount + Disput.FNbQuerxyjzdzje //   `F_NB_TONGJQFJE` bigint DEFAULT NULL COMMENT '统计清分金额',
+	data.FNbHedjg = is                                       //   `F_NB_HEDJG` int DEFAULT NULL COMMENT '核对结果 是否一致,1:一致，2:不一致',
+	data.FDtTongjrq = utils.DateToNowdate()                  //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
+	cherr := CheckResult(data)
+	if cherr != nil {
+		return cherr
+	}
+
+	return nil
 }
 
 //记帐处理结果仅返回有争议（可疑）的交易记录明细。未包含在争议交易记录明细中的交易，均默认为发行方已确认可以付款。
 //Amount：确认记帐总金额
-//统计记账包总金额
+//2、统计记账包总金额
 func StatisticalkeepAccount() int64 {
 	db := utils.GormClient.Client
 	var total_money []int64
@@ -577,7 +592,7 @@ func StatisticalkeepAccount() int64 {
 	return total_money[0]
 }
 
-//统计清分包中可以清分的争议数据的金额
+//3、统计清分包中可以清分的争议数据的金额
 func DisputedDataCanClearling(qingfxiaoxiid int64) (error, *types.BJsZhengyjyclxx) {
 	//Amount 确认需要记帐的总金额
 	db := utils.GormClient.Client
@@ -605,3 +620,36 @@ func DisputedDataCanClearling(qingfxiaoxiid int64) (error, *types.BJsZhengyjyclx
 	log.Println("查询争议处理包数据表结果:", zytjsj)
 	return nil, zytjsj
 }
+
+//4、把核对结果插入数据库
+func CheckResult(clear *types.BJsjkQingfhd) error {
+	db := utils.GormClient.Client
+	data := new(types.BJsjkQingfhd)
+	data.FNbQingfbxh = clear.FNbQingfbxh   //   `F_NB_QINGFBXH` bigint DEFAULT NULL COMMENT '清分包序号',
+	data.FNbQingfje = clear.FNbQingfje     //   `F_NB_QINGFJE` bigint DEFAULT NULL COMMENT '清分金额',
+	data.FNbTongjqfje = clear.FNbTongjqfje //   `F_NB_TONGJQFJE` bigint DEFAULT NULL COMMENT '统计清分金额',
+	data.FNbHedjg = clear.FNbHedjg         //   `F_NB_HEDJG` int DEFAULT NULL COMMENT '核对结果 是否一致,1:一致，2:不一致',
+	data.FDtTongjrq = clear.FDtTongjrq     //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
+
+	if err := db.Table("b_jsjk_qingfhd").Create(&data).Error; err != nil {
+		// 错误处理...
+		log.Println("Insert b_jsjk_qingfhd error", err)
+		return err
+	}
+	log.Println("新增清分核对结果成功！", data.FNbQingfbxh)
+	return nil
+}
+
+//查询最新一条清分核对结果
+func QueryCheckResultOne() (error, *types.BJsjkQingfhd) {
+	db := utils.GormClient.Client
+	qingfhddata := new(types.BJsjkQingfhd)
+	if err := db.Table("b_jsjk_qingfhd").Last(&qingfhddata).Error; err != nil {
+		log.Println("查询清分包数据 最新数据时 QueryClearlingdata error :", err)
+		return err, nil
+	}
+	log.Println("查询清分包数据表结果:", qingfhddata)
+	return nil, qingfhddata
+}
+
+//6.1.8	省外结算数据分类

@@ -15,6 +15,7 @@ const (
 	StatusQueryAbnormaldataSuccess               = 207 //查询异常数据总金额、总笔数 成功
 	StatusQueryblacklistdataSuccess              = 208 //查询黑名单总数、较2小时前变化值 成功
 	StatusQueryClearlingAndDisputePkgSuccess     = 209 //查询清分包、争议包的接收时间、包号 成功
+	StatusClearlingcheckOneDataSuccess           = 210 //查询清分核对结果成功
 
 	StatusRepeatedRegistration             = 401 //注册重复
 	StatusPleaseRegister                   = 402 //请先注册
@@ -26,6 +27,8 @@ const (
 	StatusQueryAbnormaldataError           = 408 //查询异常数据总金额、总笔数 失败
 	StatusQueryblacklistdataError          = 409 //查询黑名单总数、较2小时前变化值 失败
 	StatusQueryClearlingAndDisputePkgError = 410 //查询清分包、争议包的接收时间、包号 失败
+	StatusClearlingcheckOneDataError       = 411 //查询清分核对结果 失败
+
 )
 
 var statusText = map[int]string{
@@ -52,6 +55,8 @@ var statusText = map[int]string{
 	StatusQueryblacklistdataError:                "Query blacklist data Error",
 	StatusQueryClearlingAndDisputePkgSuccess:     "Query Clearling And Dispute Pkg Success",
 	StatusQueryClearlingAndDisputePkgError:       "Query Clearling And Dispute Pkg Error",
+	StatusClearlingcheckOneDataSuccess:           "Query Clearling check OneData Success",
+	StatusClearlingcheckOneDataError:             "Query Clearling check OneData Error",
 }
 
 // StatusText returns a text for the HTTP status code. It returns the empty

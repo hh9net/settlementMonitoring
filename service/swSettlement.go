@@ -133,7 +133,7 @@ func Queryblacklistdata() (int, error, *dto.TotalBlacklistData) {
 //查询清分包、争议包的接收时间、包号 14天
 func QueryClearlingAndDisputePackagedata() (int, error, *dto.ClearlAndDisputeData) {
 
-	//查询清分包、争议包的接收时间、包号[最新的数据]前14天数据
+	//查询清分包、争议包的接收时间、包号[最新的数据]前14天数据[1天]
 
 	chmgeterr, cleardata := utils.RedisHMGet(utils.RedisInit(), "clear", utils.OldData(14))
 	if chmgeterr != nil {
@@ -149,9 +149,11 @@ func QueryClearlingAndDisputePackagedata() (int, error, *dto.ClearlAndDisputeDat
 	for _, clearData := range *cleardata {
 		clearAndDis := new(types.ClearlingAndDisputeData)
 		if clearData == "no data" {
+			data = append(data, types.ClearlingAndDisputeData{ClearPacgNo: "no clear package"})
 			continue
 		}
-		str := strings.Split(clearData, "|")
+		vs := strings.Split(clearData, `"`)
+		str := strings.Split(vs[1], `|`)
 		clearAndDis.ClearPacgNo = str[0]
 		clearAndDis.Cleardatetime = str[1]
 		data = append(data, *clearAndDis)
@@ -159,14 +161,36 @@ func QueryClearlingAndDisputePackagedata() (int, error, *dto.ClearlAndDisputeDat
 
 	for i, disputData := range *disputdata {
 		if disputData == "no data" {
+			//data = append(data, types.ClearlingAndDisputeData{ClearPacgNo: "no clear package", DisputPacgeNo: "no disput package"})
+			data[i].DisputPacgeNo = "no disput package"
 			continue
 		}
-		disstr := strings.Split(disputData, "|")
+		dvs := strings.Split(disputData, `"`)
+		disstr := strings.Split(dvs[1], `|`)
 		data[i].Disputdatetime = disstr[1]
 		data[i].DisputPacgeNo = disstr[0]
 	}
 
 	log.Println("查询清分包、争议包的接收时间、包号  成功。data数组长度:", len(data))
+	//if len(data)!=
 	//返回数据赋值
 	return 209, nil, &dto.ClearlAndDisputeData{data}
+}
+
+//清分核对 StatisticalClearlingcheck
+func StatisticalClearlingcheck() (int, error, *dto.ClearlingcheckOneData) {
+	//清分核对
+	err, checkdata := db.QueryCheckResultOne()
+	if err != nil {
+		return 0, err, nil
+	}
+	log.Println("清分核对结果:", checkdata)
+	//返回数据赋值
+
+	return 210, nil, &dto.ClearlingcheckOneData{Clearlingpakgxh: checkdata.FNbQingfbxh,
+		Clearlingpakgje: checkdata.FNbQingfje,
+		Tongjqfje:       checkdata.FNbTongjqfje,
+		Hedjg:           checkdata.FNbHedjg,
+		Tongjrq:         utils.DateFormatTimeTostrdate(checkdata.FDtTongjrq),
+	}
 }

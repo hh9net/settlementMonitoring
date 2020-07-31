@@ -39,7 +39,13 @@ func HandleDayTasks() {
 		if qcderr != nil {
 			log.Println("查询清分包、争议包的包号、接收时间定时任务:", qcderr)
 		}
-		//
+		//任务五
+		//清分核对
+		cherr := StatisticalClearlingcheck()
+		if qcerr != nil {
+			log.Println("清分核对定时任务:", cherr)
+		}
+
 	}
 }
 
