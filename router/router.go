@@ -55,6 +55,7 @@ func AuthAPIInit(route *gin.RouterGroup) {
 	route.GET("/sw/totalblacklistdata", controller.Queryblacklistdata)
 	//清分、争议包监控:查询清分包、争议包的接收时间、包号【每天统计一次】
 	route.GET("/sw/clearlingAndDisputePackageSettlement", controller.QueryClearlingAndDisputePackage)
+	//清分核对
 
 }
 

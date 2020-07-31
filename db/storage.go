@@ -1,6 +1,7 @@
 package db
 
 import (
+	"fmt"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"settlementMonitoring/config"
@@ -409,8 +410,8 @@ func QueryAbnormalData(lx int) (int, int64, error) {
 	if lx == 1 {
 		//出口异常表
 		db.Table("b_zdz_chedckyssjlycb").Count(&zdzcount)
-		zdzsqlstr := `select SUM(F_NB_JINE) as total_money from b_zdz_chedckyssjlycb `
-		db.Raw(zdzsqlstr).Pluck("SUM(F_NB_JINE) as total_money", &zdztotal_money)
+		zdzsqlstr := `select SUM(F_NB_JINE) as zdztotal_money from b_zdz_chedckyssjlycb `
+		db.Raw(zdzsqlstr).Pluck("SUM(F_NB_JINE) as zdztotal_money", &zdztotal_money)
 		logrus.Printf("查询总对总异常数据表 异常的交易笔数%d，查询异常的交易总金额为：%d", zdzcount, zdztotal_money)
 
 		return zdzcount, zdztotal_money[0], nil
@@ -419,8 +420,8 @@ func QueryAbnormalData(lx int) (int, int64, error) {
 	if lx == 2 {
 		//出口异常表
 		db.Table("b_dd_chedckyssjlycb").Count(&ddcount)
-		sqlstr := `select SUM(F_NB_JINE) as total_money from b_dd_chedckyssjlycb `
-		db.Raw(sqlstr).Pluck("SUM(F_NB_JINE) as total_money", &ddtotal_money)
+		sqlstr := `select SUM(F_NB_JINE) as ddtotal_money from b_dd_chedckyssjlycb `
+		db.Raw(sqlstr).Pluck("SUM(F_NB_JINE) as ddtotal_money", &ddtotal_money)
 
 		logrus.Printf("查询单点异常数据表 异常的交易笔数%d，查询异常的交易总金额为：%d", ddcount, ddtotal_money)
 
@@ -492,11 +493,16 @@ func PacketMonitoring() {
 
 //4.1.10	清分、争议包更新状态监控
 //1、查询清分包数据
-func QueryClearlingdata() (error, *types.BJsQingftjxx) {
+func QueryClearlingdata(yesterday string) (error, *types.BJsQingftjxx) {
 	db := utils.GormClient.Client
 	qingftjsj := new(types.BJsQingftjxx)
 	//赋值
-	if err := db.Table("b_js_qingftjxx").Last(&qingftjsj).Error; err != nil {
+	if err := db.Table("b_js_qingftjxx").Where("F_DT_JIESSJ>=?", yesterday+" 00:00:00").Where("F_DT_JIESSJ<=?", yesterday+" 23:59:59").Last(&qingftjsj).Error; err != nil {
+
+		if fmt.Sprint(err) == "record not found" {
+			logrus.Println("QueryClearlingdata err== `record not found`:", err)
+			return nil, nil
+		}
 		logrus.Println("查询清分包数据 最新数据时 QueryClearlingdata error :", err)
 		return err, nil
 	}
@@ -505,11 +511,80 @@ func QueryClearlingdata() (error, *types.BJsQingftjxx) {
 }
 
 //2、查询争议处理包数据
-func QueryDisputedata() (error, *types.BJsZhengyjyclxx) {
+func QueryDisputedata(yesterday string) (error, *types.BJsZhengyjyclxx) {
 	db := utils.GormClient.Client
 	zytjsj := new(types.BJsZhengyjyclxx)
 	//赋值
-	if err := db.Table("b_js_zhengyjyclxx").Last(&zytjsj).Error; err != nil {
+	if err := db.Table("b_js_zhengyjyclxx").Where("F_DT_JIESSJ>=?", yesterday+" 00:00:00").Where("F_DT_JIESSJ<=?", yesterday+" 23:59:59").Last(&zytjsj).Error; err != nil {
+
+		if fmt.Sprint(err) == "record not found" {
+			logrus.Println("QueryDisputedata err == `record not found`:", err)
+			return nil, nil
+		}
+		logrus.Println("查询争议处理包数据表最新数据时 QueryDisputedata error :", err)
+		return err, nil
+	}
+	logrus.Println("查询争议处理包数据表结果:", zytjsj)
+	return nil, zytjsj
+}
+
+//4.1.11	清分核对
+//1、统计清分数据
+func StatisticalClearlingcheck() error {
+	//获取昨日的清分包数据
+	qerr, clear := QueryClearlingdata(utils.Yesterdaydate())
+	if qerr != nil {
+		return qerr
+	}
+
+	//统计记账包总金额
+	keepAccount := StatisticalkeepAccount()
+	//统计存在争议数据
+	DisputedDataCanClearling(clear.FNbXiaoxxh)
+	return nil
+}
+
+//记帐处理结果仅返回有争议（可疑）的交易记录明细。未包含在争议交易记录明细中的交易，均默认为发行方已确认可以付款。
+//Amount：确认记帐总金额
+//统计记账包总金额
+func StatisticalkeepAccount() int64 {
+	db := utils.GormClient.Client
+
+	var total_money []int64
+	//时间范围
+	begin := utils.Yesterdaydate() + " 00:00:00"
+	end := utils.Yesterdaydate() + " 23:59:59"
+	sqlstr := `select SUM(F_NB_ZONGJE) as total_money from b_js_jizclxx  where F_DT_JIESSJ>=? and F_DT_JIESSJ<=?`
+	db.Raw(sqlstr, begin, end).Pluck("SUM(F_NB_ZONGJE) as total_money", &total_money)
+	logrus.Printf("统计记账包总金额为：%d", total_money)
+
+	if total_money == nil {
+		return 0
+	}
+	return total_money[0]
+}
+
+//统计清分包中可以清分的争议数据的金额
+func DisputedDataCanClearling(qingfxiaoxiid int64) (error, *types.BJsZhengyjyclxx) {
+	//Amount 确认需要记帐的总金额
+	db := utils.GormClient.Client
+	zytjsj := new(types.BJsZhengyjyclxx)
+	qingftjsj := new(types.BJsQingftjxx)
+	if err := db.Table("b_js_qingftjxx").Where("F_DT_JIESSJ>=?", yesterday+" 00:00:00").Where("F_DT_JIESSJ<=?", yesterday+" 23:59:59").Last(&qingftjsj).Error; err != nil {
+
+		if fmt.Sprint(err) == "record not found" {
+			logrus.Println("QueryClearlingdata err== `record not found`:", err)
+			return nil, nil
+		}
+		logrus.Println("查询清分包数据 最新数据时 QueryClearlingdata error :", err)
+		return err, nil
+	}
+	logrus.Println("查询清分包数据表结果:", qingftjsj)
+	if err := db.Table("b_js_zhengyjyclxx").Where("F_VC_ZHENGYJGWJID=?", fid).Last(&zytjsj).Error; err != nil {
+		if fmt.Sprint(err) == "record not found" {
+			logrus.Println("QueryDisputedata err == `record not found`:", err)
+			return nil, nil
+		}
 		logrus.Println("查询争议处理包数据表最新数据时 QueryDisputedata error :", err)
 		return err, nil
 	}

@@ -314,7 +314,7 @@ type BJsjkJiesjkptyhb struct {
 	FVcYonghnc string `gorm:"column:F_VC_YONGHNC"` //  `F_VC_YONGHNC` varchar(32) DEFAULT NULL COMMENT '用户昵称''用户昵称',
 }
 
-//    B_JS_QINGFTJXX【清分统计消息】b_js_qingftjxx
+// 24   B_JS_QINGFTJXX【清分统计消息】b_js_qingftjxx
 type BJsQingftjxx struct {
 	FVcBanbh         string    `gorm:"column:F_VC_BANBH"`                              //F_VC_BANBH	版本号	VARCHAR(32)
 	FNbXiaoxlb       int       `gorm:"column:F_NB_XIAOXLB"`                            //F_NB_XIAOXLB	消息类别	INT
@@ -334,7 +334,7 @@ type BJsQingftjxx struct {
 	FNbWeiyid        int       `gorm:"AUTO_INCREMENT; primary_key;column:F_NB_WEIYID"` //`F_NB_WEIYID` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增主键',
 }
 
-//   B_JS_ZHENGYCLXX【争议交易处理消息】b_js_zhengyjyclxx
+// 25  B_JS_ZHENGYCLXX【争议交易处理消息】b_js_zhengyjyclxx
 type BJsZhengyjyclxx struct {
 	FVcBanbh        string    `gorm:"column:F_VC_BANBH"`                              //F_VC_BANBH	版本号	VARCHAR(32)
 	FNbXiaoxlb      int       `gorm:"column:F_NB_XIAOXLB"`                            //F_NB_XIAOXLB	消息类别	INT
@@ -353,6 +353,55 @@ type BJsZhengyjyclxx struct {
 	FNbZhixjg       int       `gorm:"column:F_NB_ZHIXJG"`                             //F_NB_ZHIXJG` int DEFAULT NULL COMMENT '执行结果 1：消息已正常接收（用于Advice Response时含已接受建议）、2：消息头错误，如MessageClass或MessageType不符合定义，SenderId不存在等、3：消息格式不正确，即XML Schema验证未通过、4：消息格式正确但内容错误，包括数量不符，内容重复等、5：消息重复、6：消息正常接收，但不接受建议（仅用于Advice Response）、7：消息版本错误',
 	FVcXiaoxwjlj    string    `gorm:"column:F_VC_XIAOXWJLJ"`                          //F_VC_XIAOXWJLJ	消息文件路径	VARCHAR(512)
 	FNbWeiyid       int       `gorm:"AUTO_INCREMENT; primary_key;column:F_NB_WEIYID"` //`F_NB_WEIYID` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增主键',
+}
+
+// 26    B_JS_ZHENGYJYCLMX【争议交易处理明细】
+type BJsZhengyjyclmx struct {
+	FNbZhengyjyclxxxh int64 //F_NB_ZHENGYJYCLXXXH	争议交易处理消息序号	BIGINT
+	FNbFenzxh         int   //F_NB_FENZXH	分组序号	INT
+	FNbYuansjyxxxh    int64 //F_NB_YUANSJYXXXH	原始交易消息序号	BIGINT
+	FNbZunjlsl        int   //F_NB_ZUNJLSL	组内记录数量	INT
+	FNbZunjezh        int   //F_NB_ZUNJEZH	组内金额总和	INT
+	FNbYuansbnxh      int   //F_NB_YUANSBNXH	原始包内序号	INT
+	FNbChuljg         int   //F_NB_CHULJG	处理结果	INT
+	FNbWeiyid         int   //`F_NB_WEIYID` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增主键',
+}
+
+// 27 B_JS_JIZCLXX【记账处理消息】
+type BJsJizclxx struct {
+	FVcBanbh       string    //F_VC_BANBH	版本号	VARCHAR(32)
+	FNbXiaoxlb     int       //F_NB_XIAOXLB	消息类别	INT
+	FNbXiaoxlx     int       //F_NB_XIAOXLX	消息类型	INT
+	FVcFaszid      string    //F_VC_FASZID	发送者ID	VARCHAR(32)
+	FVcJieszid     string    //F_VC_JIESZID	接收者ID	VARCHAR(32)
+	FNbXiaoxxh     int64     //F_NB_XIAOXXH	消息序号	BIGINT
+	FDtJiessj      string    //F_DT_JIESSJ	接收时间	DATETIME
+	FNbYuansjyxxxh int64     //F_NB_YUANSJYXXXH	原始交易消息序号	BIGINT
+	FNbJilsl       int       //F_NB_JILSL	记录数量	INT
+	FNbZongje      int64     //F_NB_ZONGJE	总金额	INT
+	FNbZhengysl    int       //F_NB_ZHENGYSL	争议数量	INT
+	FNbZhixjg      int       //F_NB_ZHIXJG	执行结果	INT
+	FDtChulsj      time.Time //F_DT_CHULSJ	处理时间	DATETIME
+	FVcXiaoxwjlj   string    //F_VC_XIAOXWJLJ	消息文件路径	VARCHAR(512)
+	FNbWeiyid      int       //`F_NB_WEIYID` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增主键',
+}
+
+//29   B_JS_JIZCLMX【记账处理明细】
+type BJsJizclmx struct {
+	FNbYuansjyxxxh int64 //F_NB_YUANSJYXXXH	原始交易消息序号	BIGINT
+	FNbBaonxh      int   //F_NB_BAONXH	包内序号	INT
+	FNbChuljg      int   //F_NB_CHULJG	处理结果	INT
+	FNbWeiyid      int   //`F_NB_WEIYID` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增主键',
+}
+
+//    B_JS_QINGFTONGJIMX【清分统计明细】b_js_qingftjmx
+type BJsQingftjmx struct {
+	FNbQingftjxxxh    int64  //F_NB_QINGFTJXXXH	清分统计消息序号	BIGINT
+	FNbFenzxh         int    //F_NB_FENZXH	分组序号	INT
+	FVcTongxbzxxtid   string //F_VC_TONGXBZXXTID	通行宝中心系统ID	VARCHAR(32)
+	FNbYuansjyxxxh    int64  //F_NB_YUANSJYXXXH	原始交易消息序号	BIGINT
+	FNbZhengycljgwjid int    //F_NB_ZHENGYCLJGWJID	争议处理结果文件ID	INT
+	FNbWeiyid         int    //`F_NB_WEIYID` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增主键',
 }
 
 type Result struct {

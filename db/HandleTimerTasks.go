@@ -213,15 +213,25 @@ func QueryTingccJieSuan() error {
 func QueryClearlingAndDisputePackage() error {
 
 	//1、获取清分包、争议包数据
-	qcerr, clear := QueryClearlingdata()
+	qcerr, clear := QueryClearlingdata(utils.Yesterdaydate())
 	if qcerr != nil {
 		return qcerr
 	}
-	Clear := types.ClearlingAndDispute{
-		DataType:  "clear",
-		PackageNo: strconv.Itoa(int(clear.FNbXiaoxxh)),
-		DateTime:  utils.DateTimeFormat(clear.FDtJiessj),
+	var Clear types.ClearlingAndDispute
+	if clear == nil {
+		Clear = types.ClearlingAndDispute{
+			DataType:  "clear",
+			PackageNo: "",
+			DateTime:  "",
+		}
+	} else {
+		Clear = types.ClearlingAndDispute{
+			DataType:  "clear",
+			PackageNo: strconv.Itoa(int(clear.FNbXiaoxxh)),
+			DateTime:  utils.DateTimeFormat(clear.FDtJiessj),
+		}
 	}
+
 	m := make(map[string]string, 0)
 	// key:日期    value:"包号"｜"时间"
 
@@ -232,16 +242,26 @@ func QueryClearlingAndDisputePackage() error {
 		return hmseterr
 	}
 
-	qderr, dispute := QueryDisputedata()
+	//1查询争议处理数据
+	qderr, dispute := QueryDisputedata(utils.Yesterdaydate())
 	if qderr != nil {
 		return qderr
 	}
-
-	Disput := types.ClearlingAndDispute{
-		DataType:  "disput",
-		PackageNo: strconv.Itoa(int(dispute.FNbXiaoxxh)),
-		DateTime:  utils.DateTimeFormat(dispute.FDtJiessj),
+	var Disput types.ClearlingAndDispute
+	if dispute == nil {
+		Disput = types.ClearlingAndDispute{
+			DataType:  "disput",
+			PackageNo: "",
+			DateTime:  "",
+		}
+	} else {
+		Disput = types.ClearlingAndDispute{
+			DataType:  "disput",
+			PackageNo: strconv.Itoa(int(dispute.FNbXiaoxxh)),
+			DateTime:  utils.DateTimeFormat(dispute.FDtJiessj),
+		}
 	}
+
 	//2、把数据存储于redis  接收时间、包号
 	m[utils.Yesterdaydate()] = Disput.PackageNo + "|" + Disput.DateTime
 

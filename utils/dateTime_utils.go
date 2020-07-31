@@ -71,7 +71,7 @@ func Yesterdaydate() string {
 
 //currentTime := time.Now()
 //oldTime := currentTime.AddDate(0, 0, -2)
-//获取昨天的日期
+//获取前num天的日期
 func OldData(num int) []string {
 	days := num
 	nTime := time.Now()

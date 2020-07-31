@@ -3,7 +3,6 @@ package db
 import (
 	"github.com/sirupsen/logrus"
 	"log"
-	"settlementMonitoring/config"
 	"settlementMonitoring/types"
 	"testing"
 	"time"
@@ -11,7 +10,7 @@ import (
 
 func TestNewTables(t *testing.T) {
 	Newdb()
-	NewTables()
+	//NewTables()
 }
 func TestQueryTable(t *testing.T) {
 	//数据库生成的表名是结构体名称的复数形式
@@ -179,7 +178,7 @@ func TestQueryblacklistTable(t *testing.T) {
 
 //QueryBlacklistcount
 func TestQueryBlacklistcount(t *testing.T) {
-	config.InitConfigs()  //初始化配置
+	//config.InitConfigs()  //初始化配置
 	QueryBlacklistcount() //"表数64获取黑名单总数:3165万6389"
 	//"表数64获取黑名单总数:3165万6389"
 }
@@ -231,5 +230,25 @@ func TestQueryTingjiesuanById(t *testing.T) {
 //QueryClearlingdata()
 func TestQueryClearlingdata(t *testing.T) {
 	Newdb()
-	QueryClearlingdata()
+	log.Println(QueryClearlingdata("2020-07-30"))
+}
+
+//StatisticalkeepAccount
+func TestStatisticalkeepAccount(t *testing.T) {
+	Newdb()
+	StatisticalkeepAccount()
+}
+
+//QueryDisputedata
+func TestQueryDisputedata(t *testing.T) {
+	Newdb()
+	log.Println(QueryDisputedata("2020-07-30"))
+
+}
+
+//DisputedDataCanClearling
+func TestDisputedDataCanClearling(t *testing.T) {
+	Newdb()
+	log.Println(DisputedDataCanClearling("20200729"))
+
 }
