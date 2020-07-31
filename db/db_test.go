@@ -236,7 +236,7 @@ func TestQueryClearlingdata(t *testing.T) {
 //StatisticalkeepAccount
 func TestStatisticalkeepAccount(t *testing.T) {
 	Newdb()
-	StatisticalkeepAccount()
+	StatisticalkeepAccount() //41400 【30日】
 }
 
 //QueryDisputedata
@@ -249,6 +249,13 @@ func TestQueryDisputedata(t *testing.T) {
 //DisputedDataCanClearling
 func TestDisputedDataCanClearling(t *testing.T) {
 	Newdb()
-	log.Println(DisputedDataCanClearling("20200729"))
+	log.Println(DisputedDataCanClearling(317671)) //9550
+
+}
+
+//StatisticalClearlingcheck()
+func TestStatisticalClearlingcheck(t *testing.T) {
+	Newdb()
+	log.Println(StatisticalClearlingcheck())
 
 }

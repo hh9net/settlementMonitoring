@@ -266,8 +266,9 @@ func (h consumerGroupHandler) ConsumeClaim(sess sarama.ConsumerGroupSession, cla
 func ProcessMessage(topic string, msg []byte) {
 	log.Println("topic:", topic)
 	var (
-		Totalstr  string
-		Parkingid string
+		Totalstr     string
+		Parkingid    string
+		Card_network string
 	)
 	switch topic {
 	case "billDataCollectTopic":
@@ -279,6 +280,7 @@ func ProcessMessage(topic string, msg []byte) {
 		}
 		Totalstr = data.Data.Money
 		Parkingid = data.Data.Parking_id
+		Card_network = data.Data.Card_network
 		log.Println(data.Head.Source_type)
 	case "zdzBillExitDataCollectTopic":
 
@@ -290,6 +292,7 @@ func ProcessMessage(topic string, msg []byte) {
 		}
 		Totalstr = data.Data.Money
 		Parkingid = data.Data.Parking_id
+		Card_network = data.Data.Card_network
 		log.Println(data.Head.Source_type)
 	case "topic1":
 		log.Println(string(msg))
@@ -303,6 +306,7 @@ func ProcessMessage(topic string, msg []byte) {
 	if rhgeterr != nil {
 		return
 	}
+	//该停车场为第一次出现
 	if value == nil {
 		rhseterr := RedisHSet(conn, "jiesstatistical", Parkingid, Totalstr+"|"+strconv.Itoa(1))
 		if rhseterr != nil {
@@ -312,13 +316,13 @@ func ProcessMessage(topic string, msg []byte) {
 		return
 	}
 	vstr := string(value.([]uint8))
-	log.Println("The hget value is ", vstr)
+	log.Println("The hget value is ：", vstr)
 
 	if !StringExist(vstr, "|") {
 		return
 	}
-
-	v := strings.Split(vstr, "|")
+	vs := strings.Split(vstr, `"`)
+	v := strings.Split(vs[1], `|`)
 	zje, _ := strconv.Atoi(v[0])
 	zts, _ := strconv.Atoi(v[1])
 
@@ -337,38 +341,86 @@ func ProcessMessage(topic string, msg []byte) {
 		return
 	}
 	log.Println("停车场总金额、总笔数更新到redis 成功！")
+	switch Card_network {
+	//省内结算总金额
+	case "3201":
+		//1、查询数据getredis
+		geterr, getvalue := RedisGet(conn, "snjiesuantotal")
+		if geterr != nil {
+			return
+		}
+		if getvalue == nil {
+			log.Println("结算总金额、总笔数 get redis  属于第一次")
+			setRedis := RedisSet(conn, "snjiesuantotal", Totalstr+"|"+strconv.Itoa(1))
+			if setRedis != nil {
+				return
+			}
+			return
+		}
 
-	//1、查询数据getredis
-	geterr, getvalue := RedisGet(conn, "jiesuantotal")
-	if geterr != nil {
-		return
+		getvstr := string(getvalue.([]uint8))
+		log.Println("The  get redis value is ", getvstr)
+
+		if !StringExist(getvstr, "|") {
+			return
+		}
+		//\"3000|3\" 去掉 " 号
+		vst := strings.Split(vstr, `"`)
+		getjsv := strings.Split(vst[1], `|`)
+
+		//处理数据 处理 结算总金额、总笔数
+		jszje, _ := strconv.Atoi(getjsv[0])
+		jszts, _ := strconv.Atoi(getjsv[1])
+
+		//2、处理数据
+		jszts = jszts + 1
+		jszje = jszje + total
+		log.Println("jszje:", getjsv[0], "total:", total, "jszje + total:", jszje)
+		//3、更新到redis
+		setredis := RedisSet(conn, "snjiesuantotal", strconv.Itoa(jszje)+"|"+strconv.Itoa(jszts))
+		if setredis != nil {
+			return
+		}
+
+	default:
+		//省外结算总金额
+		//1、查询数据getredis
+		geterr, getvalue := RedisGet(conn, "swjiesuantotal")
+		if geterr != nil {
+			return
+		}
+		if getvalue == nil {
+			log.Println("结算总金额、总笔数 get redis  属于第一次")
+			setRedis := RedisSet(conn, "swjiesuantotal", Totalstr+"|"+strconv.Itoa(1))
+			if setRedis != nil {
+				return
+			}
+		}
+
+		getvstr := string(getvalue.([]uint8))
+		log.Println("The  get redis value is ", getvstr)
+
+		if !StringExist(getvstr, "|") {
+			return
+		}
+		//\"3000|3\" 去掉 " 号
+		vst := strings.Split(vstr, `"`)
+		getjsv := strings.Split(vst[1], `|`)
+
+		//处理数据 处理 结算总金额、总笔数
+		jszje, _ := strconv.Atoi(getjsv[0])
+		jszts, _ := strconv.Atoi(getjsv[1])
+
+		//2、处理数据
+		jszts = jszts + 1
+		jszje = jszje + total
+		log.Println("jszje:", getjsv[0], "total:", total, "jszje + total:", jszje)
+		//3、更新到redis
+		setredis := RedisSet(conn, "swjiesuantotal", strconv.Itoa(jszje)+"|"+strconv.Itoa(jszts))
+		if setredis != nil {
+			return
+		}
 	}
-	if getvalue == nil {
-		log.Println("结算总金额、总笔数 get redis error")
-		return
-	}
-
-	getvstr := string(getvalue.([]uint8))
-	log.Println("The  get redis value is ", getvstr)
-
-	if !StringExist(getvstr, "|") {
-		return
-	}
-	//处理数据 处理 结算总金额、总笔数
-	getjsv := strings.Split(getvstr, "|")
-	jszje, _ := strconv.Atoi(getjsv[0])
-	jszts, _ := strconv.Atoi(getjsv[1])
-
-	//2、处理数据
-	jszts = jszts + 1
-	jszje = jszje + total
-	log.Println("jszje:", getjsv[0], "total:", total, "jszje + total:", jszje)
-	//3、更新到redis
-	setredis := RedisSet(conn, "jiesuantotal", strconv.Itoa(jszje)+"|"+strconv.Itoa(jszts))
-	if setredis != nil {
-		return
-	}
-
 }
 
 func handleErrors(group *sarama.ConsumerGroup, wg *sync.WaitGroup) {

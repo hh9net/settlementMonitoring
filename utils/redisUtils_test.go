@@ -20,12 +20,12 @@ func TestRedisExample(t *testing.T) {
 
 //RedisSet
 func TestRedisSet(t *testing.T) {
-	RedisSet(RedisInit(), "kabc", "12345")
+	RedisSet(RedisInit(), "kabc123", "1234|523")
 }
 
 //RedisGet
 func TestRedisGet(t *testing.T) {
-	RedisGet(RedisInit(), "kabc")
+	RedisGet(RedisInit(), "kabc123")
 }
 
 //RedisHSet  覆盖set
@@ -43,11 +43,10 @@ func TestRedisHGet(t *testing.T) {
 func TestRedisHMSet(t *testing.T) {
 	clear := make(map[string]string, 0)
 	clear["field"] = "abc"
-	RedisHMSet(RedisInit(), "clearlingTJ", clear)
+	RedisHMSet(RedisInit(), "clearlingTJabc", clear)
 }
 
 //RedisHMGet
 func TestRedisHMGet(t *testing.T) {
-
 	RedisHMGet(RedisInit(), "clear", OldData(16))
 }

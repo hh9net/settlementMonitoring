@@ -1,5 +1,23 @@
 package types
 
+//单点
+type KafKaMsg struct {
+	Head KafKaHeader  `json:"head"`
+	Data BillExitData `json:"data"`
+}
+
+type KafKaHeader struct {
+	Topic       string `json:"topic"`      //消息类型 如exitdata
+	Index       string `json:"index"`      //消息序号,自增
+	Topicreply  string `json:"topicreply"` // 消息回执的主题
+	Id          string `json:"id"`         //数据ID
+	Topictime   string `json:"topictime"`  // 入kafka的时间
+	Lane_id     string `json:"lane_id"`
+	Parking_id  string `json:"parking_id"` //停车场id
+	Company_id  string `json:"company_id"`
+	Source_type string `json:"source_type"` // ddd
+}
+
 // 出口流水结构(exitdata)
 type BillExitData struct {
 	Bill_id          string `json:"bill_id"`          // 账单ID Y
@@ -112,26 +130,8 @@ type BillEntryData struct {
 	DeviceType       string `json:"devicetype"` // 车道还是读卡器
 }
 
-type KafKaHeader struct {
-	Topic       string `json:"topic"`      //消息类型 如exitdata
-	Index       string `json:"index"`      //消息序号,自增
-	Topicreply  string `json:"topicreply"` // 消息回执的主题
-	Id          string `json:"id"`         //数据ID
-	Topictime   string `json:"topictime"`  // 入kafka的时间
-	Lane_id     string `json:"lane_id"`
-	Parking_id  string `json:"parking_id"` //停车场id
-	Company_id  string `json:"company_id"`
-	Source_type string `json:"source_type"` // ddd
-}
-
 type KafKaReplyData struct {
 	Id string `json:"id"`
-}
-
-//单点
-type KafKaMsg struct {
-	Head KafKaHeader  `json:"head"`
-	Data BillExitData `json:"data"`
 }
 
 //
@@ -144,6 +144,24 @@ type BillHourData struct {
 	Datetime_hour string `json:"datetime_hour"` //	Y	YYYYMMDDHH
 	Recordcnt     string `json:"recordcnt"`     // Y	记录总数
 	Moneycnt      string `json:"moneycnt"`      //	Y	金额总数
+}
+
+//总对总
+type KafkaMessage struct {
+	Head KafkaMessageHead `json:"head"`
+	Data BillExitRequest  `json:"data"`
+}
+
+type KafkaMessageHead struct {
+	Topic       string `json:"topic"`       //消息类型 如exitdata//主题
+	Index       string `json:"index"`       //消息序号,自增//计数
+	Topicreply  string `json:"topicreply"`  // 消息回执的主题//回调topic
+	Id          string `json:"id"`          //数据ID
+	Topictime   string `json:"topictime"`   // 入kafka的时间//接收时间
+	Lane_id     string `json:"lane_id"`     //车道id
+	Parking_id  string `json:"parking_id"`  //停车场id
+	Company_id  string `json:"company_id"`  //公司id
+	Source_type string `json:"source_type"` //资源类型
 }
 
 //
@@ -188,22 +206,4 @@ type BillExitRequest struct {
 	Sign_data        string `json:"sign_data"`        //数据签名
 	Bill_id          string `json:"bill_id"`          //结算平台ID
 	Before_money     string `json:"before_money"`     //交易前余额
-}
-
-//总对总
-type KafkaMessage struct {
-	Head KafkaMessageHead `json:"head"`
-	Data BillExitRequest  `json:"data"`
-}
-
-type KafkaMessageHead struct {
-	Topic       string `json:"topic"`       //消息类型 如exitdata//主题
-	Index       string `json:"index"`       //消息序号,自增//计数
-	Topicreply  string `json:"topicreply"`  // 消息回执的主题//回调topic
-	Id          string `json:"id"`          //数据ID
-	Topictime   string `json:"topictime"`   // 入kafka的时间//接收时间
-	Lane_id     string `json:"lane_id"`     //车道id
-	Parking_id  string `json:"parking_id"`  //停车场id
-	Company_id  string `json:"company_id"`  //公司id
-	Source_type string `json:"source_type"` //资源类型
 }

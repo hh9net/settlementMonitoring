@@ -20,6 +20,10 @@ func QuerTotalSettlementData() (int, error, *dto.TotalSettlementData) {
 	if rhgeterr != nil {
 		return 0, rhgeterr, nil
 	}
+	if value == nil {
+		log.Println("查询数据库获取总金额、总笔数为空 ")
+		return 0, errors.New("get redis value==nil"), nil
+	}
 
 	vstr := string(value.([]uint8))
 	log.Println("The get redis value is ", vstr)
@@ -28,7 +32,9 @@ func QuerTotalSettlementData() (int, error, *dto.TotalSettlementData) {
 		return 0, errors.New("get redis error"), nil
 	}
 
-	v := strings.Split(vstr, "|")
+	vs := strings.Split(vstr, `"`)
+
+	v := strings.Split(vs[1], `|`)
 	zje, _ := strconv.Atoi(v[0])
 	zts, _ := strconv.Atoi(v[1])
 	log.Println("查询成功", "jine: ", int64(zje), "Count", zts)

@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/garyburd/redigo/redis"
@@ -37,7 +38,8 @@ func NewRedis() {
 func RedisInit() *redis.Conn {
 	log.Infoln("starting redis")
 	//连接数据库
-	address := "127.0.0.1:6379"
+	//address := "127.0.0.1:6379"
+	address := "192.168.200.170:6379"
 	conn, err := redis.Dial("tcp", address /*,redis.DialPassword("123456")*/)
 	if err != nil {
 		panic(err)
@@ -58,12 +60,15 @@ func RedisSelectDB(conn *redis.Conn) {
 //set设置值
 func RedisSet(conn *redis.Conn, key string, value string) error {
 	RedisSelectDB(conn)
-	result, err := (*conn).Do("SET", key, value)
-	if err != nil {
-		log.Print(err)
-		return err
+
+	if v, err := json.Marshal(value); err == nil {
+		result, err := (*conn).Do("SET", key, string(v))
+		if err != nil {
+			log.Print(err)
+			return err
+		}
+		fmt.Println("set result:", result, "set value:", value) //设置成功，ok
 	}
-	fmt.Println("set result:", result, "set value:", value) //设置成功，ok
 
 	return nil
 }
@@ -86,7 +91,8 @@ func RedisGet(conn *redis.Conn, key string) (error, interface{}) {
 func RedisHSet(conn *redis.Conn, key string, item string, value string) error {
 	RedisSelectDB(conn)
 	//hset
-	_, err := (*conn).Do("HSet", key, item, value)
+	v, _ := json.Marshal(value)
+	_, err := (*conn).Do("HSet", key, item, string(v))
 	if err != nil {
 		fmt.Println("hset出错，错误信息：", err)
 		return err
@@ -151,9 +157,9 @@ func RedisHMSet(conn *redis.Conn, key string, v map[string]string) error {
 	var i int
 	for kk, vv := range v {
 		i++
-		kvs[i] = kk
+		kvs[i] = `"` + kk + `"`
 		i++
-		kvs[i] = vv
+		kvs[i] = `"` + vv + `"`
 	}
 	//hash存
 	values, err := (*conn).Do("HMSET", kvs...)
@@ -169,6 +175,7 @@ func RedisHMSet(conn *redis.Conn, key string, v map[string]string) error {
 	log.Print("values:", (values.(string)))
 	return nil
 }
+
 func RedisExample() {
 	//连接数据库
 	//address:="192.168.200.170:6379"
