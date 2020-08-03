@@ -236,6 +236,35 @@ func Clearlingcheck(c *gin.Context) {
 		c.JSON(http.StatusOK, dto.QueryClearlingAndDisputeResponse{Code: code, CodeMsg: types.StatusText(210), Data: *totaldata, Message: "查询清分核对结果 成功"})
 	}
 	if code == 0 {
-		c.JSON(http.StatusOK, dto.Response{Code: code, Data: types.StatusText(types.StatusQueryClearlingAndDisputePkgError), Message: "查询清分核对结果 失败"})
+		c.JSON(http.StatusOK, dto.Response{Code: code, Data: types.StatusText(types.StatusQueryClearlingcheckOneDataError), Message: "查询清分核对结果 失败"})
+	}
+}
+
+//Dataclassification
+/*  接口6方法注释   */
+//@Summary 省外数据分类 api
+//@Tags 省外数据分类
+//@version 1.0
+//@Accept application/json
+//@Param req body dto.Reqlogin true "请求参数"
+//@Success 200 object dto.Response 成功后返回值
+//@Failure 404 object dto.ResponseFailure 查询失败
+//@Router /sw/dataclassification [get]
+func Dataclassification(c *gin.Context) {
+	respFailure := dto.ResponseFailure{}
+	// 查询省外数据分类
+	code, err, totaldata := service.Dataclassification()
+	if err != nil {
+		logrus.Errorf("QueryClearlingAndDisputePackagedata  err: %v", err.Error())
+		respFailure.Code = code
+		respFailure.Message = fmt.Sprintf("QueryClearlingAndDisputePackagedata err: %v", err.Error())
+		c.JSON(http.StatusOK, respFailure)
+		return
+	}
+	if code == 211 {
+		c.JSON(http.StatusOK, dto.QueryClearlingAndDisputeResponse{Code: code, CodeMsg: types.StatusText(211), Data: *totaldata, Message: "查询省外数据分类 成功"})
+	}
+	if code == 0 {
+		c.JSON(http.StatusOK, dto.Response{Code: code, Data: types.StatusText(types.StatusQueryDataclassificationError), Message: "查询省外数据分类 失败"})
 	}
 }

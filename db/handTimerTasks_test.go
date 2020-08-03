@@ -40,3 +40,9 @@ func TestQueryClearlingAndDisputePackage(t *testing.T) {
 	Newdb()
 	QueryClearlingAndDisputePackage()
 }
+
+//DataClassification()
+func TestDataClassification(t *testing.T) {
+	Newdb()
+	DataClassification()
+}

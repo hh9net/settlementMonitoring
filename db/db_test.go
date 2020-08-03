@@ -276,3 +276,21 @@ func TestQueryCompletioncount(t *testing.T) {
 	Newdb()
 	log.Println(QuerySWDataClassification())
 }
+
+//InsertSWDataClassification()
+func TestInsertSWDataClassification(t *testing.T) {
+	Newdb()
+	log.Println(InsertSWDataClassification())
+}
+
+//QuerySWDataClassificationTable()
+func TestQuerySWDataClassificationTable(t *testing.T) {
+	Newdb()
+	log.Println(QuerySWDataClassificationTable())
+}
+
+//QuerySWDataClassificationTableByID
+func TestQuerySWDataClassificationTableByID(t *testing.T) {
+	Newdb()
+	log.Println(QuerySWDataClassificationTableByID(2))
+}

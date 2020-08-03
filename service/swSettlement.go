@@ -191,6 +191,44 @@ func StatisticalClearlingcheck() (int, error, *dto.ClearlingcheckOneData) {
 		Clearlingpakgje: checkdata.FNbQingfje,
 		Tongjqfje:       checkdata.FNbTongjqfje,
 		Hedjg:           checkdata.FNbHedjg,
-		Tongjrq:         utils.DateFormatTimeTostrdate(checkdata.FDtTongjrq),
+		Tongjrq:         checkdata.FVcTongjrq,
+	}
+}
+
+//Dataclassification
+func Dataclassification() (int, error, *dto.Dataclassification) {
+
+	//查询记录
+	err, dataclassification := db.QuerySWDataClassificationTable()
+	if err != nil {
+		return 0, err, nil
+	}
+	log.Println("清分核对结果:", dataclassification)
+
+	if dataclassification.FNbJiaoyzts == 0 {
+		err2, data := db.QuerySWDataClassificationTableByID(dataclassification.FNbId - 1)
+		if err2 != nil {
+			return 0, err2, nil
+		}
+		return 211, nil, &dto.Dataclassification{Shengwzcount: data.FNbJiaoyzts,
+			Yiqfcount:   data.FNbQingfsjts,  //已清分总条数（不含坏账）
+			Jizcount:    data.FNbJizsjts,    //记账
+			Zhengycount: data.FNbZhengysjts, //争议
+			Weidbcount:  data.FNbWeidbsjts,  //未打包
+			Yidbcount:   data.FNbYidbsjts,   //已打包
+			Yifscount:   data.FNbYifssjts,   //已发送
+			Huaizcount:  data.FNbHuaizsjts,  //坏账
+		}
+	}
+
+	//返回数据赋值
+	return 211, nil, &dto.Dataclassification{Shengwzcount: dataclassification.FNbJiaoyzts,
+		Yiqfcount:   dataclassification.FNbQingfsjts,  //已清分总条数（不含坏账）
+		Jizcount:    dataclassification.FNbJizsjts,    //记账
+		Zhengycount: dataclassification.FNbZhengysjts, //争议
+		Weidbcount:  dataclassification.FNbWeidbsjts,  //未打包
+		Yidbcount:   dataclassification.FNbYidbsjts,   //已打包
+		Yifscount:   dataclassification.FNbYifssjts,   //已发送
+		Huaizcount:  dataclassification.FNbHuaizsjts,  //坏账
 	}
 }

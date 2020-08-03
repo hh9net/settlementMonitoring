@@ -62,3 +62,14 @@ type ClearlingcheckOneData struct {
 	Hedjg           int    `json:"hedjg" example:"1244547"`
 	Tongjrq         string `json:"tongjrq" example:"1244547"`
 }
+
+type Dataclassification struct {
+	Shengwzcount int `json:"shengwzcount" example:"1244547"` //省外结算总数据
+	Yiqfcount    int `json:"yiqfcount" example:"1244547"`    //已清分总条数（不含坏账）
+	Jizcount     int `json:"jizcount " example:"1244547"`    //记账
+	Zhengycount  int `json:"zhengycount" example:"1244547"`  //争议
+	Weidbcount   int `json:"weidbcount" example:"1244547"`   //未打包
+	Yidbcount    int `json:"yidbcount" example:"1244547"`    //已打包
+	Yifscount    int `json:"yifscount " example:"1244547"`   //已发送
+	Huaizcount   int `json:"huaizcount" example:"1244547"`   //坏账
+}

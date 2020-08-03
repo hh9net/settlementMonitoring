@@ -47,8 +47,10 @@ func HandleDayTasks() {
 		}
 		//任务六
 		//数据分类查询
-		data := QuerySWDataClassification()
-		log.Println(data)
+		qdcerr := DataClassification()
+		if qdcerr != nil {
+			log.Println("数据分类查询定时任务 error:", qdcerr)
+		}
 
 	}
 }
@@ -404,7 +406,40 @@ func QueryblacklistCount() error {
 	return nil
 }
 
-//新增数据分类
-func InsertDataClassification() {
+//数据分类
+func DataClassification() error {
+	//1、插入数据分类记录
+	inerr := InsertSWDataClassification()
+	if inerr != nil {
+		return inerr
+	}
 
+	//2、查询数据分类记录
+	qerr, dataclassification := QuerySWDataClassificationTable()
+	if qerr != nil {
+		return qerr
+	}
+
+	data := QuerySWDataClassification()
+
+	//4、赋值
+	dc := new(types.BJsjkShengwjssjfl)
+	dc.FNbJiaoyzts = data.Shengwzcount         //   `F_NB_JIAOYZTS` int DEFAULT NULL COMMENT '交易总条数',
+	dc.FNbQingfsjts = data.Yiqfcount           //   `F_NB_QINGFSJTS` int DEFAULT NULL COMMENT '清分数据条数',
+	dc.FNbJizsjts = data.Jizcount              //   `F_NB_JIZSJTS` int DEFAULT NULL COMMENT '记账数据条数',
+	dc.FNbZhengysjts = data.Zhengycount        //   `F_NB_ZHENGYSJTS` int DEFAULT NULL COMMENT '争议数据条数 待处理',
+	dc.FNbWeidbsjts = data.Weidbcount          //   `F_NB_WEIDBSJTS` int DEFAULT NULL COMMENT '未打包数据条数',
+	dc.FNbYidbsjts = data.Yidbcount            //   `F_NB_YIDBSJTS` int DEFAULT NULL COMMENT '已打包数据条数',
+	dc.FNbYifssjts = data.Yifscount            //   `F_NB_YIFSSJTS` int DEFAULT NULL COMMENT '已发送数据条数',
+	dc.FNbHuaizsjts = data.Huaizcount          //   `F_NB_HUAIZSJTS` int DEFAULT NULL COMMENT '坏账数据条数',
+	dc.FDtTongjwcsj = utils.StrTimeToNowtime() //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
+	dc.FVcTongjrq = utils.DateNowFormat()      //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
+
+	//5、更新
+	uperr := UpdateSWDataClassificationTable(dc, dataclassification.FNbId)
+	if uperr != nil {
+		return uperr
+	}
+
+	return nil
 }

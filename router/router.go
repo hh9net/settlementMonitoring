@@ -57,7 +57,9 @@ func AuthAPIInit(route *gin.RouterGroup) {
 	route.GET("/sw/clearlingAndDisputePackageSettlement", controller.QueryClearlingAndDisputePackage)
 	//清分核对StatisticalClearlingcheck()
 	route.GET("/sw/clearlingcheck", controller.Clearlingcheck)
-	//
+	//省外数据分类
+	route.GET("/sw/dataclassification", controller.Dataclassification)
+
 }
 
 //以下为cors实现

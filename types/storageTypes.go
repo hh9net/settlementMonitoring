@@ -18,11 +18,11 @@ type BJsjkJiestj struct {
 type BJsjkQingfhd struct {
 	FNbId int `gorm:"AUTO_INCREMENT ;primary_key; column:F_NB_ID"` //  `F_NB_ID` int NOT NULL AUTO_INCREMENT COMMENT '唯一自增id',
 
-	FNbQingfbxh  int64     `gorm:"column:F_NB_QINGFBXH"`  //   `F_NB_QINGFBXH` bigint DEFAULT NULL COMMENT '清分包序号',
-	FNbQingfje   int64     `gorm:"column:F_NB_QINGFJE"`   //   `F_NB_QINGFJE` bigint DEFAULT NULL COMMENT '清分金额',
-	FNbTongjqfje int64     `gorm:"column:F_NB_TONGJQFJE"` //   `F_NB_TONGJQFJE` bigint DEFAULT NULL COMMENT '统计清分金额',
-	FNbHedjg     int       `gorm:"column:F_NB_HEDJG"`     //   `F_NB_HEDJG` int DEFAULT NULL COMMENT '核对结果 是否一致,1:一致，2:不一致',
-	FDtTongjrq   time.Time `gorm:"column:F_DT_TONGJRQ"`   //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
+	FNbQingfbxh  int64  `gorm:"column:F_NB_QINGFBXH"`  //   `F_NB_QINGFBXH` bigint DEFAULT NULL COMMENT '清分包序号',
+	FNbQingfje   int64  `gorm:"column:F_NB_QINGFJE"`   //   `F_NB_QINGFJE` bigint DEFAULT NULL COMMENT '清分金额',
+	FNbTongjqfje int64  `gorm:"column:F_NB_TONGJQFJE"` //   `F_NB_TONGJQFJE` bigint DEFAULT NULL COMMENT '统计清分金额',
+	FNbHedjg     int    `gorm:"column:F_NB_HEDJG"`     //   `F_NB_HEDJG` int DEFAULT NULL COMMENT '核对结果 是否一致,1:一致，2:不一致',
+	FVcTongjrq   string `gorm:"column:F_VC_TONGJRQ"`   //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
 }
 
 //3 省内拒付数据统计表 `b_jsjk_shengnjfsjtj`
@@ -63,67 +63,67 @@ type BJsjkShengnjsqs struct {
 type BJsjkShengnjssjfl struct {
 	FNbId int `gorm:"AUTO_INCREMENT; primary_key ;column:F_NB_ID"` //  `F_NB_ID` int NOT NULL AUTO_INCREMENT COMMENT '唯一自增id',
 
-	FNbShengnzjysl int    `gorm:"column:F_NB_SHENGNZJYSL "` //   `F_NB_SHENGNZJYSL` int DEFAULT NULL COMMENT '省内总交易数量',
-	FNbQingksl     int    `gorm:"column:F_NB_QINGKSL"`      //   `F_NB_QINGKSL` int DEFAULT NULL COMMENT '请款数量',
-	FNbWeifssl     int    `gorm:"column:F_NB_WEIFSSL"`      //   `F_NB_WEIFSSL` int DEFAULT NULL COMMENT '未发送数据量',
-	FNbJufsjl      int    `gorm:"column:F_NB_FASSJL"`       //   `F_NB_FASSJL` int DEFAULT NULL COMMENT '发送数据量',
-	FNbjufsjl      int    `gorm:"column:F_NB_JUFSJL"`       //   `F_NB_JUFSJL` int DEFAULT NULL COMMENT '拒付数据量',
-	FDtKaistjsj    string `gorm:"column:F_DT_KAISTJSJ"`     //   `F_DT_KAISTJSJ` datetime DEFAULT NULL COMMENT '开始统计时间',
-	FDtTongjwcsj   string `gorm:"column:F_DT_TONGJWCSJ"`    //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
-	FDtTongjrq     string `gorm:"column:F_DT_TONGJRQ"`      //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
+	FNbShengnzjysl int       `gorm:"column:F_NB_SHENGNZJYSL"` //   `F_NB_SHENGNZJYSL` int DEFAULT NULL COMMENT '省内总交易数量',
+	FNbQingksl     int       `gorm:"column:F_NB_QINGKSL"`     //   `F_NB_QINGKSL` int DEFAULT NULL COMMENT '请款数量',
+	FNbWeifssl     int       `gorm:"column:F_NB_WEIFSSL"`     //   `F_NB_WEIFSSL` int DEFAULT NULL COMMENT '未发送数据量',
+	FNbJufsjl      int       `gorm:"column:F_NB_FASSJL"`      //   `F_NB_FASSJL` int DEFAULT NULL COMMENT '发送数据量',
+	FNbjufsjl      int       `gorm:"column:F_NB_JUFSJL"`      //   `F_NB_JUFSJL` int DEFAULT NULL COMMENT '拒付数据量',
+	FDtKaistjsj    time.Time `gorm:"column:F_DT_KAISTJSJ"`    //   `F_DT_KAISTJSJ` datetime DEFAULT NULL COMMENT '开始统计时间',
+	FDtTongjwcsj   time.Time `gorm:"column:F_DT_TONGJWCSJ"`   //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
+	FVcTongjrq     string    `gorm:"column:F_VC_TONGJRQ"`     //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
 }
 
 //7 省内请款统计表 `b_jsjk_shengnqktj`
 type BJsjkShengnqktj struct {
 	FNbId int `gorm:"AUTO_INCREMENT; primary_key ;column:F_NB_ID"` //  `F_NB_ID` int NOT NULL AUTO_INCREMENT COMMENT '唯一自增id',
 
-	FNbQingkzje  int64  `gorm:"column:F_NB_QINGKZJE"`  //   `F_NB_QINGKZJE` bigint DEFAULT NULL COMMENT '请款总金额 （分）',
-	FNbQingkzts  int    `gorm:"column:F_NB_QINGKZTS"`  //   `F_NB_QINGKZTS` int DEFAULT NULL COMMENT '请款总条数',
-	FDtKaistjsj  string `gorm:"column:F_DT_KAISTJSJ"`  //   `F_DT_KAISTJSJ` datetime DEFAULT NULL COMMENT '开始统计时间',
-	FDtTongjwcsj string `gorm:"column:F_DT_TONGJWCSJ"` //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
-	FDtTongjrq   string `gorm:"column:F_DT_TONGJRQ"`   //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
+	FNbQingkzje  int64     `gorm:"column:F_NB_QINGKZJE"`  //   `F_NB_QINGKZJE` bigint DEFAULT NULL COMMENT '请款总金额 （分）',
+	FNbQingkzts  int       `gorm:"column:F_NB_QINGKZTS"`  //   `F_NB_QINGKZTS` int DEFAULT NULL COMMENT '请款总条数',
+	FDtKaistjsj  time.Time `gorm:"column:F_DT_KAISTJSJ"`  //   `F_DT_KAISTJSJ` datetime DEFAULT NULL COMMENT '开始统计时间',
+	FDtTongjwcsj time.Time `gorm:"column:F_DT_TONGJWCSJ"` //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
+	FDtTongjrq   string    `gorm:"column:F_DT_TONGJRQ"`   //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
 }
 
 //8  省内实时数据监控表 b_jsjk_shengnsssjjk
 type BJsjkShengnsssjjk struct {
 	FNbId int `gorm:"AUTO_INCREMENT; primary_key; column:F_NB_ID"` //`F_NB_ID` int NOT NULL AUTO_INCREMENT COMMENT '唯一自增id',
 
-	FNbShengncsje    int64  `gorm:"column:F_NB_SHENGNCSJE"`    //   `F_NB_SHENGNCSJE` bigint DEFAULT NULL COMMENT '省内产生金额',
-	FNbShengnyfssjje int64  `gorm:"column:F_NB_SHENGNYFSSJJE"` //   `F_NB_SHENGNYFSSJJE` bigint DEFAULT NULL COMMENT '省内已发送数据金额',
-	FNbShengnyjzsjje int64  `gorm:"column:F_NB_SHENGNYJZSJJE"` //   `F_NB_SHENGNYJZSJJE` bigint DEFAULT NULL COMMENT '省内已记账数据金额',
-	FNbShengncsts    int    `gorm:"column:F_NB_SHENGNCSTS"`    //   `F_NB_SHENGNCSTS` int DEFAULT NULL COMMENT '省内产生条数',
-	FNbShengnyfssjts int    `gorm:"column:F_NB_SHENGNYFSSJTS"` //   `F_NB_SHENGNYFSSJTS` int DEFAULT NULL COMMENT '省内已发送数据条数',
-	FNbShengnyjzsjts int    `gorm:"column:F_NB_SHENGNYJZSJTS"` //   `F_NB_SHENGNYJZSJTS` int DEFAULT NULL COMMENT '省内已记账数据条数',
-	FDtKaistjsj      string `gorm:"column:F_DT_KAISTJSJ"`      //   `F_DT_KAISTJSJ` datetime DEFAULT NULL COMMENT '开始统计时间',
-	FDtTongjwcsj     string `gorm:"column:F_DT_TONGJWCSJ"`     //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
-	FDtTongjrq       string `gorm:"column:F_DT_TONGJRQ"`       //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
+	FNbShengncsje    int64     `gorm:"column:F_NB_SHENGNCSJE"`    //   `F_NB_SHENGNCSJE` bigint DEFAULT NULL COMMENT '省内产生金额',
+	FNbShengnyfssjje int64     `gorm:"column:F_NB_SHENGNYFSSJJE"` //   `F_NB_SHENGNYFSSJJE` bigint DEFAULT NULL COMMENT '省内已发送数据金额',
+	FNbShengnyjzsjje int64     `gorm:"column:F_NB_SHENGNYJZSJJE"` //   `F_NB_SHENGNYJZSJJE` bigint DEFAULT NULL COMMENT '省内已记账数据金额',
+	FNbShengncsts    int       `gorm:"column:F_NB_SHENGNCSTS"`    //   `F_NB_SHENGNCSTS` int DEFAULT NULL COMMENT '省内产生条数',
+	FNbShengnyfssjts int       `gorm:"column:F_NB_SHENGNYFSSJTS"` //   `F_NB_SHENGNYFSSJTS` int DEFAULT NULL COMMENT '省内已发送数据条数',
+	FNbShengnyjzsjts int       `gorm:"column:F_NB_SHENGNYJZSJTS"` //   `F_NB_SHENGNYJZSJTS` int DEFAULT NULL COMMENT '省内已记账数据条数',
+	FDtKaistjsj      time.Time `gorm:"column:F_DT_KAISTJSJ"`      //   `F_DT_KAISTJSJ` datetime DEFAULT NULL COMMENT '开始统计时间',
+	FDtTongjwcsj     time.Time `gorm:"column:F_DT_TONGJWCSJ"`     //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
+	FDtTongjrq       string    `gorm:"column:F_DT_TONGJRQ"`       //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
 }
 
 //9 省内停车场结算趋势表 `b_jsjk_shengntccjsqs`
 type BJsjkShengntccjsqs struct {
 	FNbId int `gorm:"AUTO_INCREMENT; primary_key ;column:F_NB_ID"` //  `F_NB_ID` int NOT NULL AUTO_INCREMENT COMMENT '唯一自增id',
 
-	FNbShengnjyje int64  `gorm:"column:F_NB_SHENGNJYJE"` //   `F_NB_SHENGNJYJE` bigint DEFAULT NULL COMMENT '省内交易金额',
-	FNbShengnqkje int64  `gorm:"column:F_NB_SHENGNQKJE"` //   `F_NB_SHENGNQKJE` bigint DEFAULT NULL COMMENT '省内请款金额',
-	FNbChae       int64  `gorm:"column:F_NB_CHAE"`       //   `F_NB_CHAE` bigint DEFAULT NULL COMMENT '差额',
-	FNbJiaoyts    int    `gorm:"column:F_NB_JIAOYTS"`    //   `F_NB_JIAOYTS` int DEFAULT NULL COMMENT '交易条数',
-	FNbQingkts    int    `gorm:"column:F_NB_QINGKTS"`    //   `F_NB_QINGKTS` int DEFAULT NULL COMMENT '请款条数',
-	FVcTingccid   string `gorm:"column:F_VC_TINGCCID"`   //   `F_VC_TINGCCID` varchar(32) DEFAULT NULL COMMENT '停车场id',
-	FVcGongsid    string `gorm:"column:F_VC_GONGSID"`    //   `F_VC_GONGSID` varchar(32) DEFAULT NULL COMMENT '公司id',
-	FDtKaistjsj   string `gorm:"column:F_DT_KAISTJSJ"`   //   `F_DT_KAISTJSJ` datetime DEFAULT NULL COMMENT '开始统计时间',
-	FDtTongjwcsj  string `gorm:"column:F_DT_TONGJWCSJ"`  //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
-	FDtKuaizsj    string `gorm:"column:F_DT_KUAIZSJ"`    //   `F_DT_KUAIZSJ` datetime DEFAULT NULL COMMENT '快照时间',
+	FNbShengnjyje int64     `gorm:"column:F_NB_SHENGNJYJE"` //   `F_NB_SHENGNJYJE` bigint DEFAULT NULL COMMENT '省内交易金额',
+	FNbShengnqkje int64     `gorm:"column:F_NB_SHENGNQKJE"` //   `F_NB_SHENGNQKJE` bigint DEFAULT NULL COMMENT '省内请款金额',
+	FNbChae       int64     `gorm:"column:F_NB_CHAE"`       //   `F_NB_CHAE` bigint DEFAULT NULL COMMENT '差额',
+	FNbJiaoyts    int       `gorm:"column:F_NB_JIAOYTS"`    //   `F_NB_JIAOYTS` int DEFAULT NULL COMMENT '交易条数',
+	FNbQingkts    int       `gorm:"column:F_NB_QINGKTS"`    //   `F_NB_QINGKTS` int DEFAULT NULL COMMENT '请款条数',
+	FVcTingccid   string    `gorm:"column:F_VC_TINGCCID"`   //   `F_VC_TINGCCID` varchar(32) DEFAULT NULL COMMENT '停车场id',
+	FVcGongsid    string    `gorm:"column:F_VC_GONGSID"`    //   `F_VC_GONGSID` varchar(32) DEFAULT NULL COMMENT '公司id',
+	FDtKaistjsj   time.Time `gorm:"column:F_DT_KAISTJSJ"`   //   `F_DT_KAISTJSJ` datetime DEFAULT NULL COMMENT '开始统计时间',
+	FDtTongjwcsj  time.Time `gorm:"column:F_DT_TONGJWCSJ"`  //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
+	FVcKuaizsj    string    `gorm:"column:F_VC_KUAIZSJ"`    //   `F_DT_KUAIZSJ` datetime DEFAULT NULL COMMENT '快照时间',
 }
 
 //10 省内已发送数据统计表  `b_jsjk_shengnyfssjtj`
 type BJsjkShengnyfssjtj struct {
 	FNbId int `gorm:"AUTO_INCREMENT; primary_key ;column:F_NB_ID"` //  `F_NB_ID` int NOT NULL AUTO_INCREMENT COMMENT '唯一自增id',
 
-	FNbZongje    int64  `gorm:"column:F_NB_ZONGJE"`    //   `F_NB_ZONGJE` bigint DEFAULT NULL COMMENT '总金额 （分）',
-	FNbZongts    int    `gorm:"column:F_NB_ZONGTS"`    //   `F_NB_ZONGTS` int DEFAULT NULL COMMENT '总条数',
-	FDtKaistjsj  string `gorm:"column:F_DT_KAISTJSJ"`  //   `F_DT_KAISTJSJ` datetime DEFAULT NULL COMMENT '开始统计时间',
-	FDtTongjwcsj string `gorm:"column:F_DT_TONGJWCSJ"` //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
-	FDtKuaizsj   string `gorm:"column:F_DT_KUAIZSJ"`   //   `F_DT_KUAIZSJ` datetime DEFAULT NULL COMMENT '快照时间',
+	FNbZongje    int64     `gorm:"column:F_NB_ZONGJE"`    //   `F_NB_ZONGJE` bigint DEFAULT NULL COMMENT '总金额 （分）',
+	FNbZongts    int       `gorm:"column:F_NB_ZONGTS"`    //   `F_NB_ZONGTS` int DEFAULT NULL COMMENT '总条数',
+	FDtKaistjsj  time.Time `gorm:"column:F_DT_KAISTJSJ"`  //   `F_DT_KAISTJSJ` datetime DEFAULT NULL COMMENT '开始统计时间',
+	FDtTongjwcsj time.Time `gorm:"column:F_DT_TONGJWCSJ"` //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
+	FVcKuaizsj   string    `gorm:"column:F_VC_KUAIZSJ"`   //   `F_DT_KUAIZSJ` datetime DEFAULT NULL COMMENT '快照时间',
 }
 
 //11 省外结算趋势表  `b_jsjk_shengwjsqs`
@@ -137,24 +137,24 @@ type BJsjkShengwjsqs struct {
 	FNbQingfts   int    `gorm:"column:F_NB_QINGFTS"`   //   `F_NB_QINGFTS` int DEFAULT NULL COMMENT '清分条数',
 	FDtKaistjsj  string `gorm:"column:F_DT_KAISTJSJ"`  //   `F_DT_KAISTJSJ` datetime DEFAULT NULL COMMENT '开始统计时间',
 	FDtTongjwcsj string `gorm:"column:F_DT_TONGJWCSJ"` //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
-	FDtTongjrq   string `gorm:"column:F_DT_TONGJRQ"`   //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
+	FVcTongjrq   string `gorm:"column:F_VC_TONGJRQ"`   //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
 }
 
 //12 省外结算数据分类  `b_jsjk_shengwjssjfl`
 type BJsjkShengwjssjfl struct {
 	FNbId int `gorm:"AUTO_INCREMENT; primary_key ;column:F_NB_ID"` //  `F_NB_ID` int NOT NULL AUTO_INCREMENT COMMENT '唯一自增id',
 
-	FNbJiaoyzts   int    `gorm:"column:F_NB_JIAOYZTS"`   //   `F_NB_JIAOYZTS` int DEFAULT NULL COMMENT '交易总条数',
-	FNbQingfsjts  int    `gorm:"column:F_NB_QINGFSJTS"`  //   `F_NB_QINGFSJTS` int DEFAULT NULL COMMENT '清分数据条数',
-	FNbJizsjts    int    `gorm:"column:F_NB_JIZSJTS"`    //   `F_NB_JIZSJTS` int DEFAULT NULL COMMENT '记账数据条数',
-	FNbZhengysjts int    `gorm:"column:F_NB_ZHENGYSJTS"` //   `F_NB_ZHENGYSJTS` int DEFAULT NULL COMMENT '争议数据条数 待处理',
-	FNbWeidbsjts  int    `gorm:"column:F_NB_WEIDBSJTS"`  //   `F_NB_WEIDBSJTS` int DEFAULT NULL COMMENT '未打包数据条数',
-	FNbYidbsjts   int    `gorm:"column:F_NB_YIDBSJTS"`   //   `F_NB_YIDBSJTS` int DEFAULT NULL COMMENT '已打包数据条数',
-	FNbYifssjts   int    `gorm:"column:F_NB_YIFSSJTS"`   //   `F_NB_YIFSSJTS` int DEFAULT NULL COMMENT '已发送数据条数',
-	FNbHuaizsjts  int    `gorm:"column:F_NB_HUAIZSJTS"`  //   `F_NB_HUAIZSJTS` int DEFAULT NULL COMMENT '坏账数据条数',
-	FDtKaistjsj   string `gorm:"column:F_DT_KAISTJSJ"`   //   `F_DT_KAISTJSJ` datetime DEFAULT NULL COMMENT '开始统计时间',
-	FDtTongjwcsj  string `gorm:"column:F_DT_TONGJWCSJ"`  //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
-	FDtTongjrq    string `gorm:"column:F_DT_TONGJRQ"`    //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
+	FNbJiaoyzts   int       `gorm:"column:F_NB_JIAOYZTS"`   //   `F_NB_JIAOYZTS` int DEFAULT NULL COMMENT '交易总条数',
+	FNbQingfsjts  int       `gorm:"column:F_NB_QINGFSJTS"`  //   `F_NB_QINGFSJTS` int DEFAULT NULL COMMENT '清分数据条数',
+	FNbJizsjts    int       `gorm:"column:F_NB_JIZSJTS"`    //   `F_NB_JIZSJTS` int DEFAULT NULL COMMENT '记账数据条数',
+	FNbZhengysjts int       `gorm:"column:F_NB_ZHENGYSJTS"` //   `F_NB_ZHENGYSJTS` int DEFAULT NULL COMMENT '争议数据条数 待处理',
+	FNbWeidbsjts  int       `gorm:"column:F_NB_WEIDBSJTS"`  //   `F_NB_WEIDBSJTS` int DEFAULT NULL COMMENT '未打包数据条数',
+	FNbYidbsjts   int       `gorm:"column:F_NB_YIDBSJTS"`   //   `F_NB_YIDBSJTS` int DEFAULT NULL COMMENT '已打包数据条数',
+	FNbYifssjts   int       `gorm:"column:F_NB_YIFSSJTS"`   //   `F_NB_YIFSSJTS` int DEFAULT NULL COMMENT '已发送数据条数',
+	FNbHuaizsjts  int       `gorm:"column:F_NB_HUAIZSJTS"`  //   `F_NB_HUAIZSJTS` int DEFAULT NULL COMMENT '坏账数据条数',
+	FDtKaistjsj   time.Time `gorm:"column:F_DT_KAISTJSJ"`   //   `F_DT_KAISTJSJ` datetime DEFAULT NULL COMMENT '开始统计时间',
+	FDtTongjwcsj  time.Time `gorm:"column:F_DT_TONGJWCSJ"`  //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
+	FVcTongjrq    string    `gorm:"column:F_VC_TONGJRQ"`    //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
 }
 
 //13 省外结算争议数据统计表 `b_jsjk_shengwjszysjtj`
@@ -185,43 +185,43 @@ type BJsjkShengwqftj struct {
 type BJsjkShengwtccjsqs struct {
 	FNbId int `gorm:"AUTO_INCREMENT; primary_key; column:F_NB_ID"` //  `F_NB_ID` int NOT NULL AUTO_INCREMENT COMMENT '唯一自增id',
 
-	FNbJiaoyje   int64  `gorm:"column:F_NB_JIAOYJE"`   //   `F_NB_JIAOYJE` bigint DEFAULT NULL COMMENT '交易金额',
-	FNbQingfje   int64  `gorm:"column:F_NB_QINGFJE"`   //   `F_NB_QINGFJE` bigint DEFAULT NULL COMMENT '清分金额',
-	FNbChae      int64  `gorm:"column:F_NB_CHAE"`      //   `F_NB_CHAE` bigint DEFAULT NULL COMMENT '差额',
-	FNbJiaoyts   int    `gorm:"column:F_NB_JIAOYTS"`   //   `F_NB_JIAOYTS` int DEFAULT NULL COMMENT '交易条数',
-	FNbQingfts   int    `gorm:"column:F_NB_QINGFTS"`   //   `F_NB_QINGFTS` int DEFAULT NULL COMMENT '清分条数',
-	FVcGongsid   string `gorm:"column:F_VC_GONGSID"`   //   `F_VC_GONGSID` varchar(32) DEFAULT NULL COMMENT '公司id',
-	FVcTingccid  string `gorm:"column:F_VC_TINGCCID"`  //   `F_VC_TINGCCID` varchar(32) DEFAULT NULL COMMENT '停车场id',
-	FDtKaistjsj  string `gorm:"column:F_DT_KAISTJSJ"`  //   `F_DT_KAISTJSJ` datetime DEFAULT NULL COMMENT '开始统计时间',
-	FDtTongjwcsj string `gorm:"column:F_DT_TONGJWCSJ"` //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
-	FVcTongjrq   string `gorm:"column:F_VC_TONGJRQ"`   //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
+	FNbJiaoyje   int64     `gorm:"column:F_NB_JIAOYJE"`   //   `F_NB_JIAOYJE` bigint DEFAULT NULL COMMENT '交易金额',
+	FNbQingfje   int64     `gorm:"column:F_NB_QINGFJE"`   //   `F_NB_QINGFJE` bigint DEFAULT NULL COMMENT '清分金额',
+	FNbChae      int64     `gorm:"column:F_NB_CHAE"`      //   `F_NB_CHAE` bigint DEFAULT NULL COMMENT '差额',
+	FNbJiaoyts   int       `gorm:"column:F_NB_JIAOYTS"`   //   `F_NB_JIAOYTS` int DEFAULT NULL COMMENT '交易条数',
+	FNbQingfts   int       `gorm:"column:F_NB_QINGFTS"`   //   `F_NB_QINGFTS` int DEFAULT NULL COMMENT '清分条数',
+	FVcGongsid   string    `gorm:"column:F_VC_GONGSID"`   //   `F_VC_GONGSID` varchar(32) DEFAULT NULL COMMENT '公司id',
+	FVcTingccid  string    `gorm:"column:F_VC_TINGCCID"`  //   `F_VC_TINGCCID` varchar(32) DEFAULT NULL COMMENT '停车场id',
+	FDtKaistjsj  time.Time `gorm:"column:F_DT_KAISTJSJ"`  //   `F_DT_KAISTJSJ` datetime DEFAULT NULL COMMENT '开始统计时间',
+	FDtTongjwcsj time.Time `gorm:"column:F_DT_TONGJWCSJ"` //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
+	FVcTongjrq   string    `gorm:"column:F_VC_TONGJRQ"`   //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
 }
 
 //16 结算数据包监控表 `b_jsjk_shujbjk`
 type BJsjkShujbjk struct {
 	FNbId int `gorm:"AUTO_INCREMENT; primary_key; column:F_NB_ID"` //  `F_NB_ID` int NOT NULL AUTO_INCREMENT COMMENT '唯一自增id',
 
-	FNbDabsl        int    `gorm:"column:F_NB_DABSL"`        //   `F_NB_DABSL` int DEFAULT NULL COMMENT '打包数量',
-	FNbDabje        int    `gorm:"column:F_NB_DABJE"`        //   `F_NB_DABJE` bigint DEFAULT NULL COMMENT '打包金额',
-	FNbFasysjybsl   int    `gorm:"column:F_NB_FASYSJYBSL"`   //   `F_NB_FASYSJYBSL` int DEFAULT NULL COMMENT '已发送原始交易消息包数量',
-	FNbFasysjybje   int64  `gorm:"column:F_NB_FASYSJYBJE"`   //   `F_NB_FASYSJYBJE` bigint DEFAULT NULL COMMENT '已发送原始交易消息包金额',
-	FNbJizbsl       int    `gorm:"column:F_NB_JIZBSL"`       //   `F_NB_JIZBSL` int DEFAULT NULL COMMENT '记账包数量',
-	FNbJizbje       int64  `gorm:"column:F_NB_JIZBJE"`       //   `F_NB_JIZBJE` bigint DEFAULT NULL COMMENT '记账包金额',
-	FNbYuansjyydbsl int    `gorm:"column:F_NB_YUANSJYYDBSL"` //   `F_NB_YUANSJYYDBSL` int DEFAULT NULL COMMENT '原始交易消息应答包数量',
-	FDtKaistjsj     string `gorm:"column:F_DT_KAISTJSJ"`     //   `F_DT_KAISTJSJ` datetime DEFAULT NULL COMMENT '开始统计时间',
-	FDtTongjwcsj    string `gorm:"column:F_DT_TONGJWCSJ"`    //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
-	FDtKuaizsj      string `gorm:"column:F_DT_KUAIZSJ"`      //   `F_DT_KUAIZSJ` datetime DEFAULT NULL COMMENT '快照时间',
+	FNbDabsl        int       `gorm:"column:F_NB_DABSL"`        //   `F_NB_DABSL` int DEFAULT NULL COMMENT '打包数量',
+	FNbDabje        int       `gorm:"column:F_NB_DABJE"`        //   `F_NB_DABJE` bigint DEFAULT NULL COMMENT '打包金额',
+	FNbFasysjybsl   int       `gorm:"column:F_NB_FASYSJYBSL"`   //   `F_NB_FASYSJYBSL` int DEFAULT NULL COMMENT '已发送原始交易消息包数量',
+	FNbFasysjybje   int64     `gorm:"column:F_NB_FASYSJYBJE"`   //   `F_NB_FASYSJYBJE` bigint DEFAULT NULL COMMENT '已发送原始交易消息包金额',
+	FNbJizbsl       int       `gorm:"column:F_NB_JIZBSL"`       //   `F_NB_JIZBSL` int DEFAULT NULL COMMENT '记账包数量',
+	FNbJizbje       int64     `gorm:"column:F_NB_JIZBJE"`       //   `F_NB_JIZBJE` bigint DEFAULT NULL COMMENT '记账包金额',
+	FNbYuansjyydbsl int       `gorm:"column:F_NB_YUANSJYYDBSL"` //   `F_NB_YUANSJYYDBSL` int DEFAULT NULL COMMENT '原始交易消息应答包数量',
+	FDtKaistjsj     time.Time `gorm:"column:F_DT_KAISTJSJ"`     //   `F_DT_KAISTJSJ` datetime DEFAULT NULL COMMENT '开始统计时间',
+	FDtTongjwcsj    time.Time `gorm:"column:F_DT_TONGJWCSJ"`    //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
+	FVcKuaizsj      string    `gorm:"column:F_VC_KUAIZSJ"`      //   `F_DT_KUAIZSJ` datetime DEFAULT NULL COMMENT '快照时间',
 }
 
 //17 数据同步监控表 `b_jsjk_shujtbjk`
 type BJsjkShujtbjk struct {
 	FNbId int `gorm:"AUTO_INCREMENT ;primary_key ;column:F_NB_ID"` //  `F_NB_ID` int NOT NULL AUTO_INCREMENT COMMENT '唯一自增id',
 
-	FNbJiessjzl  int    `gorm:"column:F_NB_JIESJZL"`   //   `F_NB_JIESJZL` int DEFAULT NULL COMMENT '结算数据总量',F_NB_JIESSJZL
-	FNbYitbsjl   int    `gorm:"column:F_NB_YITBSJL"`   //   `F_NB_YITBSJL` int DEFAULT NULL COMMENT '已同步数据量',
-	FDtKaistjsj  string `gorm:"column:F_DT_KAISTJSJ"`  //   `F_DT_KAISTJSJ` datetime DEFAULT NULL COMMENT '开始统计时间',
-	FDtTongjwcsj string `gorm:"column:F_DT_TONGJWCSJ"` //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
-	FVcTongjrq   string `gorm:"column:F_VC_TONGJRQ"`   //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
+	FNbJiessjzl  int       `gorm:"column:F_NB_JIESJZL"`   //   `F_NB_JIESJZL` int DEFAULT NULL COMMENT '结算数据总量',F_NB_JIESSJZL
+	FNbYitbsjl   int       `gorm:"column:F_NB_YITBSJL"`   //   `F_NB_YITBSJL` int DEFAULT NULL COMMENT '已同步数据量',
+	FDtKaistjsj  time.Time `gorm:"column:F_DT_KAISTJSJ"`  //   `F_DT_KAISTJSJ` datetime DEFAULT NULL COMMENT '开始统计时间',
+	FDtTongjwcsj time.Time `gorm:"column:F_DT_TONGJWCSJ"` //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
+	FVcTongjrq   string    `gorm:"column:F_VC_TONGJRQ"`   //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
 
 }
 
@@ -243,13 +243,13 @@ type BJsjkTingccjssjtj struct {
 type BJsjkYicsjtcctj struct {
 	FNbId int `gorm:"AUTO_INCREMENT; primary_key ;column:F_NB_ID"` //  `F_NB_ID` int NOT NULL AUTO_INCREMENT COMMENT '唯一自增id',
 
-	FNbZongts    int    `gorm:"column:F_NB_ZONGTS"`    //   `F_NB_ZONGTS` int DEFAULT NULL COMMENT '总条数',
-	FNbZongje    int64  `gorm:"column:F_NB_ZONGJE"`    //   `F_NB_ZONGJE` bigint DEFAULT NULL COMMENT '总金额（分）',
-	FVcTingccid  string `gorm:"column:F_NB_TINGCCID"`  //   `F_NB_TINGCCID` varchar(32) DEFAULT NULL COMMENT '停车场id',
-	FNbTongjlx   int    `gorm:"column:F_NB_TONGJLX"`   //   `F_NB_TONGJLX` int DEFAULT NULL COMMENT '统计类型 1:单点、2:总对总',
-	FDtKaistjsj  string `gorm:"column:F_DT_KAISTJSJ"`  //   `F_DT_KAISTJSJ` datetime DEFAULT NULL COMMENT '开始统计时间',
-	FDtTongjwcsj string `gorm:"column:F_DT_TONGJWCSJ"` //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
-	FVcKuaizsj   string `gorm:"column:F_VC_KUAIZSJ"`   //   `F_VC_KUAIZSJ` datetime DEFAULT NULL COMMENT '快照时间',
+	FNbZongts    int       `gorm:"column:F_NB_ZONGTS"`    //   `F_NB_ZONGTS` int DEFAULT NULL COMMENT '总条数',
+	FNbZongje    int64     `gorm:"column:F_NB_ZONGJE"`    //   `F_NB_ZONGJE` bigint DEFAULT NULL COMMENT '总金额（分）',
+	FVcTingccid  string    `gorm:"column:F_NB_TINGCCID"`  //   `F_NB_TINGCCID` varchar(32) DEFAULT NULL COMMENT '停车场id',
+	FNbTongjlx   int       `gorm:"column:F_NB_TONGJLX"`   //   `F_NB_TONGJLX` int DEFAULT NULL COMMENT '统计类型 1:单点、2:总对总',
+	FDtKaistjsj  time.Time `gorm:"column:F_DT_KAISTJSJ"`  //   `F_DT_KAISTJSJ` datetime DEFAULT NULL COMMENT '开始统计时间',
+	FDtTongjwcsj time.Time `gorm:"column:F_DT_TONGJWCSJ"` //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
+	FVcKuaizsj   string    `gorm:"column:F_VC_KUAIZSJ"`   //   `F_VC_KUAIZSJ` datetime DEFAULT NULL COMMENT '快照时间',
 
 }
 
@@ -270,12 +270,12 @@ type BJsjkYicsjtj struct {
 type BJsjkYuqsjtj struct {
 	FNbId int `gorm:"AUTO_INCREMENT ;primary_key; column:F_NB_ID"` //  `F_NB_ID` int NOT NULL AUTO_INCREMENT COMMENT '唯一自增id',
 
-	FNbYuqzts    int    `gorm:"column:F_NB_YUQZTS"`    //   `F_NB_YUQZTS` int DEFAULT NULL COMMENT '逾期总条数',
-	FNbYuqzje    int64  `gorm:"column:F_NB_YUQZJE"`    //   `F_NB_YUQZJE` bigint DEFAULT NULL COMMENT '逾期总金额 （分）',
-	FVcTingccid  string `gorm:"column:F_VC_TINGCCID"`  //   `F_VC_TINGCCID` varchar(32) DEFAULT NULL COMMENT '停车场id',
-	FDtKaistjsj  string `gorm:"column:F_DT_KAISTJSJ"`  //   `F_DT_KAISTJSJ` datetime DEFAULT NULL COMMENT '开始统计时间',
-	FDtTongjwcsj string `gorm:"column:F_DT_TONGJWCSJ"` //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
-	FVcTongjrq   string `gorm:"column:F_ VC_TONGJRQ"`  //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
+	FNbYuqzts    int       `gorm:"column:F_NB_YUQZTS"`    //   `F_NB_YUQZTS` int DEFAULT NULL COMMENT '逾期总条数',
+	FNbYuqzje    int64     `gorm:"column:F_NB_YUQZJE"`    //   `F_NB_YUQZJE` bigint DEFAULT NULL COMMENT '逾期总金额 （分）',
+	FVcTingccid  string    `gorm:"column:F_VC_TINGCCID"`  //   `F_VC_TINGCCID` varchar(32) DEFAULT NULL COMMENT '停车场id',
+	FDtKaistjsj  time.Time `gorm:"column:F_DT_KAISTJSJ"`  //   `F_DT_KAISTJSJ` datetime DEFAULT NULL COMMENT '开始统计时间',
+	FDtTongjwcsj time.Time `gorm:"column:F_DT_TONGJWCSJ"` //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
+	FVcTongjrq   string    `gorm:"column:F_ VC_TONGJRQ"`  //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
 
 }
 
@@ -283,12 +283,12 @@ type BJsjkYuqsjtj struct {
 type BJsjkZhuanjssjjk struct {
 	FNbId int `gorm:"AUTO_INCREMENT ;primary_key; column:F_NB_ID"` //  `F_NB_ID` int NOT NULL AUTO_INCREMENT COMMENT '唯一自增id',
 
-	FNbChedyssjts int    `gorm:"column:F_NB_CHEDYSSJTS"` //  `F_NB_CHEDYSSJTS` int DEFAULT NULL COMMENT '车道原始数据条数',
-	FNbJiesbsjts  int    `gorm:"column:F_NB_JIESBSJTS"`  //  `F_NB_JIESBSJTS` int DEFAULT NULL COMMENT '结算表数据条数',
-	FNbTongjlx    int    `gorm:"column:F_NB_TONGJLX"`    //  `F_NB_TONGJLX` int DEFAULT NULL COMMENT '统计类型 1:单点、2:总对总',
-	FDtKaistjsj   string `gorm:"column:F_DT_KAISTJSJ"`   //  `F_DT_KAISTJSJ` datetime DEFAULT NULL COMMENT '开始统计时间',
-	FDtTongjwcsj  string `gorm:"column:F_DT_TONGJWCSJ"`  //  `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
-	FDtKuaizsj    string `gorm:"column:F_DT_KUAIZSJ"`    //  `F_DT_KUAIZSJ` datetime DEFAULT NULL COMMENT '快照时间',
+	FNbChedyssjts int       `gorm:"column:F_NB_CHEDYSSJTS"` //  `F_NB_CHEDYSSJTS` int DEFAULT NULL COMMENT '车道原始数据条数',
+	FNbJiesbsjts  int       `gorm:"column:F_NB_JIESBSJTS"`  //  `F_NB_JIESBSJTS` int DEFAULT NULL COMMENT '结算表数据条数',
+	FNbTongjlx    int       `gorm:"column:F_NB_TONGJLX"`    //  `F_NB_TONGJLX` int DEFAULT NULL COMMENT '统计类型 1:单点、2:总对总',
+	FDtKaistjsj   time.Time `gorm:"column:F_DT_KAISTJSJ"`   //  `F_DT_KAISTJSJ` datetime DEFAULT NULL COMMENT '开始统计时间',
+	FDtTongjwcsj  time.Time `gorm:"column:F_DT_TONGJWCSJ"`  //  `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
+	FVcKuaizsj    string    `gorm:"column:F_VC_KUAIZSJ"`    //  `F_DT_KUAIZSJ` datetime DEFAULT NULL COMMENT '快照时间',
 }
 
 //23 用户表 b_jsjk_jiesjkptyhb

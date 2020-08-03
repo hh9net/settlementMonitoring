@@ -248,7 +248,6 @@ func QueryShengnBadDebtsJieSuan() (int, int64) {
 //4.2.5	省内实时数据
 
 //省外业务数据层逻辑
-
 //4.1.2	查询数据库中省外已清分的交易 总条数、总金额
 //1、查询数据库中省外已清分的交易 总条数、总金额【包含坏账的金额和条数】
 func QueryShengwClearingJieSuan() (int, int64) {
@@ -412,8 +411,8 @@ func QueryAbnormalData(lx int) (int, int64, error) {
 	if lx == 1 {
 		//出口异常表
 		db.Table("b_zdz_chedckyssjlycb").Count(&zdzcount)
-		zdzsqlstr := `select SUM(F_NB_JINE) as zdztotal_money from b_zdz_chedckyssjlycb `
-		db.Raw(zdzsqlstr).Pluck("SUM(F_NB_JINE) as zdztotal_money", &zdztotal_money)
+		zdzsqlstr := `select SUM(F_NB_JINE) as zdztotal_money from b_zdz_chedckyssjlycb where  F_VC_SHANCBJ = ?`
+		db.Raw(zdzsqlstr, 0).Pluck("SUM(F_NB_JINE) as zdztotal_money", &zdztotal_money)
 		log.Printf("查询总对总异常数据表 异常的交易笔数%d，查询异常的交易总金额为：%d", zdzcount, zdztotal_money)
 
 		return zdzcount, zdztotal_money[0], nil
@@ -422,8 +421,8 @@ func QueryAbnormalData(lx int) (int, int64, error) {
 	if lx == 2 {
 		//出口异常表
 		db.Table("b_dd_chedckyssjlycb").Count(&ddcount)
-		sqlstr := `select SUM(F_NB_JINE) as ddtotal_money from b_dd_chedckyssjlycb `
-		db.Raw(sqlstr).Pluck("SUM(F_NB_JINE) as ddtotal_money", &ddtotal_money)
+		sqlstr := `select SUM(F_NB_JINE) as ddtotal_money from b_dd_chedckyssjlycb  where F_VC_SHANCBJ = ?`
+		db.Raw(sqlstr, 0).Pluck("SUM(F_NB_JINE) as ddtotal_money", &ddtotal_money)
 
 		log.Printf("查询单点异常数据表 异常的交易笔数%d，查询异常的交易总金额为：%d", ddcount, ddtotal_money)
 
@@ -567,7 +566,7 @@ func StatisticalClearlingcheck() error {
 	data.FNbQingfje = clear.FNbQingfzje                      //   `F_NB_QINGFJE` bigint DEFAULT NULL COMMENT '清分金额',
 	data.FNbTongjqfje = keepAccount + Disput.FNbQuerxyjzdzje //   `F_NB_TONGJQFJE` bigint DEFAULT NULL COMMENT '统计清分金额',
 	data.FNbHedjg = is                                       //   `F_NB_HEDJG` int DEFAULT NULL COMMENT '核对结果 是否一致,1:一致，2:不一致',
-	data.FDtTongjrq = utils.DateToNowdate()                  //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
+	data.FVcTongjrq = utils.DateNowFormat()                  //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
 	cherr := CheckResult(data)
 	if cherr != nil {
 		return cherr
@@ -631,7 +630,7 @@ func CheckResult(clear *types.BJsjkQingfhd) error {
 	data.FNbQingfje = clear.FNbQingfje     //   `F_NB_QINGFJE` bigint DEFAULT NULL COMMENT '清分金额',
 	data.FNbTongjqfje = clear.FNbTongjqfje //   `F_NB_TONGJQFJE` bigint DEFAULT NULL COMMENT '统计清分金额',
 	data.FNbHedjg = clear.FNbHedjg         //   `F_NB_HEDJG` int DEFAULT NULL COMMENT '核对结果 是否一致,1:一致，2:不一致',
-	data.FDtTongjrq = clear.FDtTongjrq     //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
+	data.FVcTongjrq = clear.FVcTongjrq     //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
 
 	if err := db.Table("b_jsjk_qingfhd").Create(&data).Error; err != nil {
 		// 错误处理...
@@ -714,4 +713,67 @@ func QuerySWDataClassification() *types.DataClassification {
 	dataClassification.Huaizcount = huaizcount  //坏账
 
 	return &dataClassification
+}
+
+//新增数据分类表记录
+func InsertSWDataClassification() error {
+	db := utils.GormClient.Client
+	data := new(types.BJsjkShengwjssjfl)
+	data.FDtKaistjsj = utils.StrTimeToNowtime()
+	data.FDtTongjwcsj = utils.StrTimeTodefaultdate()
+	if err := db.Table("b_jsjk_shengwjssjfl").Create(&data).Error; err != nil {
+		// 错误处理...
+		log.Println("新增数据分类表记录 Insert b_jsjk_shengwjssjfl error", err)
+		return err
+	}
+	log.Println("新增数据分类表记录成功！")
+	return nil
+}
+
+//查询最新一条
+func QuerySWDataClassificationTable() (error, *types.BJsjkShengwjssjfl) {
+	db := utils.GormClient.Client
+	shujufl := new(types.BJsjkShengwjssjfl)
+	if err := db.Table("b_jsjk_shengwjssjfl").Last(&shujufl).Error; err != nil {
+		log.Println(" QuerySWDataClassificationTable error :", err)
+		return err, nil
+	}
+	log.Println("查询省外结算数据分类表结果:", shujufl)
+	return nil, shujufl
+}
+
+//更新记录
+func UpdateSWDataClassificationTable(data *types.BJsjkShengwjssjfl, id int) error {
+	db := utils.GormClient.Client
+	swfltj := new(types.BJsjkShengwjssjfl)
+
+	swfltj.FNbJiaoyzts = data.FNbJiaoyzts     //   `F_NB_JIAOYZTS` int DEFAULT NULL COMMENT '交易总条数',
+	swfltj.FNbQingfsjts = data.FNbQingfsjts   //   `F_NB_QINGFSJTS` int DEFAULT NULL COMMENT '清分数据条数',
+	swfltj.FNbJizsjts = data.FNbJizsjts       //   `F_NB_JIZSJTS` int DEFAULT NULL COMMENT '记账数据条数',
+	swfltj.FNbZhengysjts = data.FNbZhengysjts //   `F_NB_ZHENGYSJTS` int DEFAULT NULL COMMENT '争议数据条数 待处理',
+	swfltj.FNbWeidbsjts = data.FNbWeidbsjts   //   `F_NB_WEIDBSJTS` int DEFAULT NULL COMMENT '未打包数据条数',
+	swfltj.FNbYidbsjts = data.FNbYidbsjts     //   `F_NB_YIDBSJTS` int DEFAULT NULL COMMENT '已打包数据条数',
+	swfltj.FNbYifssjts = data.FNbYifssjts     //   `F_NB_YIFSSJTS` int DEFAULT NULL COMMENT '已发送数据条数',
+	swfltj.FNbHuaizsjts = data.FNbHuaizsjts   //   `F_NB_HUAIZSJTS` int DEFAULT NULL COMMENT '坏账数据条数',
+	swfltj.FDtTongjwcsj = data.FDtTongjwcsj   //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
+	swfltj.FVcTongjrq = data.FVcTongjrq       //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
+
+	if err := db.Table("b_jsjk_shengwjssjfl").Where("F_NB_ID=?", id).Updates(&swfltj).Error; err != nil {
+		log.Println("更新 最新的省外结算数据分类 记录 时 error", err)
+		return err
+	}
+	log.Println("更新 最新的省外结算数据分类 记录 完成")
+	return nil
+}
+
+//根据 id 查询表获取数据
+func QuerySWDataClassificationTableByID(id int) (error, *types.BJsjkShengwjssjfl) {
+	db := utils.GormClient.Client
+	shujufl := new(types.BJsjkShengwjssjfl)
+	if err := db.Table("b_jsjk_shengwjssjfl").Where("F_NB_ID = ?", id).Last(&shujufl).Error; err != nil {
+		log.Println(" QuerySWDataClassificationTable error :", err)
+		return err, nil
+	}
+	log.Println("查询 省外结算数据分类表结果:", shujufl)
+	return nil, shujufl
 }
