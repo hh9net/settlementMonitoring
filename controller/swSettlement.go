@@ -226,9 +226,9 @@ func Clearlingcheck(c *gin.Context) {
 	// 查询清分包、争议包的接收时间、包号
 	code, err, totaldata := service.StatisticalClearlingcheck()
 	if err != nil {
-		logrus.Errorf("QueryClearlingAndDisputePackagedata  err: %v", err.Error())
+		logrus.Errorf("StatisticalClearlingcheck  err: %v", err.Error())
 		respFailure.Code = code
-		respFailure.Message = fmt.Sprintf("QueryClearlingAndDisputePackagedata err: %v", err.Error())
+		respFailure.Message = fmt.Sprintf("StatisticalClearlingcheck err: %v", err.Error())
 		c.JSON(http.StatusOK, respFailure)
 		return
 	}
@@ -255,9 +255,9 @@ func Dataclassification(c *gin.Context) {
 	// 查询省外数据分类
 	code, err, totaldata := service.Dataclassification()
 	if err != nil {
-		logrus.Errorf("QueryClearlingAndDisputePackagedata  err: %v", err.Error())
+		logrus.Errorf("QueryDataclassification  err: %v", err.Error())
 		respFailure.Code = code
-		respFailure.Message = fmt.Sprintf("QueryClearlingAndDisputePackagedata err: %v", err.Error())
+		respFailure.Message = fmt.Sprintf("QueryDataclassification err: %v", err.Error())
 		c.JSON(http.StatusOK, respFailure)
 		return
 	}
@@ -266,5 +266,34 @@ func Dataclassification(c *gin.Context) {
 	}
 	if code == 0 {
 		c.JSON(http.StatusOK, dto.Response{Code: code, Data: types.StatusText(types.StatusQueryDataclassificationError), Message: "查询省外数据分类 失败"})
+	}
+}
+
+//QueryDataTurnMonitor
+/*  接口6方法注释   */
+//@Summary 省外转结算 api
+//@Tags 省外转结算
+//@version 1.0
+//@Accept application/json
+//@Param req body dto.Reqlogin true "请求参数"
+//@Success 200 object dto.Response 成功后返回值
+//@Failure 404 object dto.ResponseFailure 查询失败
+//@Router /sw/dataturnmonitor [get]
+func QueryDataTurnMonitor(c *gin.Context) {
+	respFailure := dto.ResponseFailure{}
+	// 查询省外转结算
+	code, err, totaldata := service.QueryDataTurnMonitordata()
+	if err != nil {
+		logrus.Errorf("QueryDataTurnMonitordata err: %v", err.Error())
+		respFailure.Code = code
+		respFailure.Message = fmt.Sprintf("QueryDataTurnMonitordata err: %v", err.Error())
+		c.JSON(http.StatusOK, respFailure)
+		return
+	}
+	if code == 212 {
+		c.JSON(http.StatusOK, dto.QueryClearlingAndDisputeResponse{Code: code, CodeMsg: types.StatusText(212), Data: *totaldata, Message: "查询省外转结算 成功"})
+	}
+	if code == 0 {
+		c.JSON(http.StatusOK, dto.Response{Code: code, Data: types.StatusText(types.StatusQueryDataTurnMonitorError), Message: "查询省外转结算 失败"})
 	}
 }

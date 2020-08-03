@@ -653,7 +653,7 @@ func QueryCheckResultOne() (error, *types.BJsjkQingfhd) {
 	return nil, qingfhddata
 }
 
-//6.1.8	省外结算数据分类
+//4.1.8	省外结算数据分类
 func QuerySWDataClassification() *types.DataClassification {
 	db := utils.GormClient.Client
 	//省外总数据
@@ -777,3 +777,97 @@ func QuerySWDataClassificationTableByID(id int) (error, *types.BJsjkShengwjssjfl
 	log.Println("查询 省外结算数据分类表结果:", shujufl)
 	return nil, shujufl
 }
+
+//4.1.9	全天24小时转结算数监控
+func QueryDataTurnMonitor() *types.TurnData {
+	db := utils.GormClient.Client
+	//1、查处出 b_dd_chedckyssj，b_zdz_chedckyssj 数据量
+	ddckzcount := 0
+	db.Table("b_dd_chedckyssj").Not("F_VC_KAWLH = ?", 3201).Count(&ddckzcount)
+	log.Printf("查询单点出口表总交易笔数ddckzcount:%d", ddckzcount)
+
+	zdzckzcount := 0
+	db.Table("b_zdz_chedckyssj").Not("F_VC_KAWLH = ?", 3201).Count(&zdzckzcount)
+	log.Printf("查询总对总出口表总交易笔数zdzckzcount:%d", zdzckzcount)
+
+	//2、查处b_js_jiessj  数据量
+	jszcount := 0
+	db.Table("b_js_jiessj").Not("F_VC_KAWLH = ?", 3201).Count(&jszcount)
+	log.Printf("查询结算表总交易笔数jszcount:%d", jszcount)
+	turndata := new(types.TurnData)
+	turndata.DDzcount = ddckzcount
+	turndata.ZDZcount = zdzckzcount
+	turndata.Jieszcount = jszcount
+	return turndata
+}
+
+//新增转结算记录
+func InsertDataTurnMonitor(lx int) error {
+	db := utils.GormClient.Client
+	data := new(types.BJsjkZhuanjssjjk)
+	data.FNbTongjlx = lx
+	data.FDtKaistjsj = utils.StrTimeToNowtime()
+	data.FDtTongjwcsj = utils.StrTimeTodefaultdate()
+	if err := db.Table("b_jsjk_zhuanjssjjk").Create(&data).Error; err != nil {
+		// 错误处理...
+		log.Println("新增转结算记录Insert b_jsjk_zhuanjssjjk  error", err)
+		return err
+	}
+	log.Println("新增转结算记录成功！")
+	return nil
+}
+
+//查询转结算表最新记录
+func QueryDataTurnMonitorTable(lx int) (error, *types.BJsjkZhuanjssjjk) {
+	db := utils.GormClient.Client
+	shuju := new(types.BJsjkZhuanjssjjk)
+	if err := db.Table("b_jsjk_zhuanjssjjk").Where("F_NB_TONGJLX = ?", lx).Last(&shuju).Error; err != nil {
+		log.Println(" QueryDataTurnMonitorTable error :", err)
+		return err, nil
+	}
+	log.Println("查询转结算表最新记录结果:", shuju)
+	return nil, shuju
+}
+
+func QueryDataTurnMonitorTableByID(id int) (error, *types.BJsjkZhuanjssjjk) {
+	db := utils.GormClient.Client
+	shuju := new(types.BJsjkZhuanjssjjk)
+	if err := db.Table("b_jsjk_zhuanjssjjk").Where("F_NB_ID = ?", id).Last(&shuju).Error; err != nil {
+		log.Println(" QueryDataTurnMonitorTable error :", err)
+		return err, nil
+	}
+	log.Println("查询转结算表最新记录结果:", shuju)
+	return nil, shuju
+}
+
+//更新转结算表数据
+func UpdateDataTurnMonitorTable(data *types.BJsjkZhuanjssjjk, id int) error {
+	db := utils.GormClient.Client
+	zhuanjsjl := new(types.BJsjkZhuanjssjjk)
+	zhuanjsjl.FNbChedyssjts = data.FNbChedyssjts //  `F_NB_CHEDYSSJTS` int DEFAULT NULL COMMENT '车道原始数据条数',
+	zhuanjsjl.FNbJiesbsjts = data.FNbJiesbsjts   //  `F_NB_JIESBSJTS` int DEFAULT NULL COMMENT '结算表数据条数',
+	zhuanjsjl.FNbTongjlx = data.FNbTongjlx       //  `F_NB_TONGJLX` int DEFAULT NULL COMMENT '统计类型 1:单点、2:总对总',
+	zhuanjsjl.FDtTongjwcsj = data.FDtTongjwcsj   //  `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
+	zhuanjsjl.FVcKuaizsj = data.FVcKuaizsj       //  `F_DT_KUAIZSJ` datetime DEFAULT NULL COMMENT '快照时间',
+	if err := db.Table("b_jsjk_zhuanjssjjk").Where("F_NB_ID=?", id).Updates(&zhuanjsjl).Error; err != nil {
+		log.Println("更新转结算表数据 记录 时 error", err)
+		return err
+	}
+	log.Println("更新转结算表数据 记录 完成")
+	return nil
+}
+
+//5、查询最新的ts条转结算表数据
+func QueryDataTurnMonitortable(ts, lx int) (error, *[]types.BJsjkZhuanjssjjk) {
+	db := utils.GormClient.Client
+	hmdtjs := make([]types.BJsjkZhuanjssjjk, 0)
+	//赋值Order("created_at desc")
+	if err := db.Table("b_jsjk_zhuanjssjjk").Where("F_NB_TONGJLX = ?", lx).Order("F_NB_ID desc").Limit(ts).Find(&hmdtjs).Error; err != nil {
+		log.Println("查询最新的ts条转结算表数据时，QueryBlacklisttable error :", err)
+		return err, nil
+	}
+	log.Println("查询最新的ts条转结算表数据结果:", hmdtjs)
+	return nil, &hmdtjs
+}
+
+//

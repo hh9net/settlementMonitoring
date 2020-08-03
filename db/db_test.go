@@ -294,3 +294,17 @@ func TestQuerySWDataClassificationTableByID(t *testing.T) {
 	Newdb()
 	log.Println(QuerySWDataClassificationTableByID(2))
 }
+
+// DataTurnMonitor()
+func TestDataTurnMonitor(t *testing.T) {
+	Newdb()
+	for i := 0; i < 24; i++ {
+		log.Println(DataTurnMonitor())
+	}
+}
+
+//QueryDataTurnMonitortable
+func TestQueryDataTurnMonitortable(t *testing.T) {
+	Newdb()
+	log.Println(QueryDataTurnMonitortable(3, 2))
+}

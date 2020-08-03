@@ -10,3 +10,9 @@ func TestQuerTotalSettlementData(t *testing.T) {
 	db.Newdb()
 	QuerTotalSettlementData()
 }
+
+// QueryDataTurnMonitordata()
+func TestQueryDataTurnMonitordata(t *testing.T) {
+	db.Newdb()
+	QueryDataTurnMonitordata()
+}

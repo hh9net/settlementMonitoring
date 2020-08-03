@@ -116,7 +116,7 @@ func Queryblacklistdata() (int, error, *dto.TotalBlacklistData) {
 	if hmdjl.FNbHeimdzs == 0 {
 		id = id - 1
 	}
-	ts := 3 //需要查询条数【后面可以改】
+	ts := 12 //需要查询条数【后面可以改】
 	qdterr, hmdjls := db.QueryBlacklistTiaoshutable(id, ts)
 
 	if qdterr != nil {
@@ -177,7 +177,7 @@ func QueryClearlingAndDisputePackagedata() (int, error, *dto.ClearlAndDisputeDat
 	return 209, nil, &dto.ClearlAndDisputeData{data}
 }
 
-//清分核对 StatisticalClearlingcheck
+//省外清分核对 StatisticalClearlingcheck
 func StatisticalClearlingcheck() (int, error, *dto.ClearlingcheckOneData) {
 	//清分核对
 	err, checkdata := db.QueryCheckResultOne()
@@ -195,7 +195,7 @@ func StatisticalClearlingcheck() (int, error, *dto.ClearlingcheckOneData) {
 	}
 }
 
-//Dataclassification
+//省外数据分类
 func Dataclassification() (int, error, *dto.Dataclassification) {
 
 	//查询记录
@@ -231,4 +231,47 @@ func Dataclassification() (int, error, *dto.Dataclassification) {
 		Yifscount:   dataclassification.FNbYifssjts,   //已发送
 		Huaizcount:  dataclassification.FNbHuaizsjts,  //坏账
 	}
+}
+
+//转结算
+func QueryDataTurnMonitordata() (int, error, *[]dto.TurnDataResponse) {
+	ts := 24
+	//响应数据 list TurnDataResponse
+	TurndataResps := make([]dto.TurnDataResponse, ts)
+	datas := make([]dto.TurnData, ts)
+	//查询数据  '统计类型 1:单点、2:总对总',
+	//dd 1:单点、2:总对总'
+	ddqerr, ddtds := db.QueryDataTurnMonitortable(ts, 1)
+	if ddqerr != nil {
+		return 0, ddqerr, nil
+	}
+	for i, dd := range *ddtds {
+		datas[i].Jieszcount = dd.FNbJiesbsjts
+		datas[i].DDzcount = dd.FNbChedyssjts //dd
+	}
+
+	//zdz 1:单点、2:总对总'
+	zdzqerr, zdztds := db.QueryDataTurnMonitortable(ts, 2)
+	if zdzqerr != nil {
+		return 0, zdzqerr, nil
+	}
+	for i, dd := range *zdztds {
+		datas[i].ZDZcount = dd.FNbChedyssjts //zdz
+	}
+	log.Println("datas", datas)
+
+	//处理数据
+	for i, r := range datas {
+		TurndataResps[i].JieszCount = r.Jieszcount
+		TurndataResps[i].YuansCount = r.ZDZcount + r.DDzcount
+		TurndataResps[i].DifferCount = TurndataResps[i].YuansCount - r.Jieszcount
+	}
+	log.Println("响应数据：", TurndataResps)
+	//返回数据
+	return 212, nil, &TurndataResps
+}
+
+//4.1.6	前30天省外结算趋势 每天记录一次，统计30天的数据  交易金额、清分金额；
+func QuerySettlementTrend() {
+
 }

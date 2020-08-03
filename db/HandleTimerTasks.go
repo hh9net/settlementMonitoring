@@ -88,7 +88,11 @@ func HandleMinutesTasks() {
 
 	for {
 		log.Println(utils.DateTimeFormat(<-tiker.C), "执行线程3，处理按分钟的定时任务")
-
+		//任务一 转结算24小时监控
+		dterr := DataTurnMonitor()
+		if dterr != nil {
+			log.Println("转结算定时任务 error:", dterr)
+		}
 	}
 
 }
@@ -406,7 +410,7 @@ func QueryblacklistCount() error {
 	return nil
 }
 
-//数据分类
+//1.6数据分类
 func DataClassification() error {
 	//1、插入数据分类记录
 	inerr := InsertSWDataClassification()
@@ -439,6 +443,61 @@ func DataClassification() error {
 	uperr := UpdateSWDataClassificationTable(dc, dataclassification.FNbId)
 	if uperr != nil {
 		return uperr
+	}
+
+	return nil
+}
+
+//3.1转结算监控
+func DataTurnMonitor() error {
+	//1、新增转结算记录  '统计类型 1:单点、2:总对总',
+	inerr := InsertDataTurnMonitor(2)
+	if inerr != nil {
+		return inerr
+	}
+
+	//2、查询转结算数据
+	turndata := QueryDataTurnMonitor()
+
+	//3、查询最新结算记录   '统计类型 1:单点、2:总对总',
+	qerr, tabledata := QueryDataTurnMonitorTable(2)
+	if qerr != nil {
+		return qerr
+	}
+	//4、赋值
+	zdzdata := new(types.BJsjkZhuanjssjjk)
+	zdzdata.FNbChedyssjts = turndata.ZDZcount       //  `F_NB_CHEDYSSJTS` int DEFAULT NULL COMMENT '车道原始数据条数',
+	zdzdata.FNbJiesbsjts = turndata.Jieszcount      //  `F_NB_JIESBSJTS` int DEFAULT NULL COMMENT '结算表数据条数',
+	zdzdata.FDtTongjwcsj = utils.StrTimeToNowtime() //  `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
+	zdzdata.FVcKuaizsj = utils.DateTimeNowFormat()  //  `F_DT_KUAIZSJ` datetime DEFAULT NULL COMMENT '快照时间',
+
+	//5、根据id 更新数据
+	uperr := UpdateDataTurnMonitorTable(zdzdata, tabledata.FNbId)
+	if uperr != nil {
+		return uperr
+	}
+	//1、新增转结算记录 '统计类型 1:单点、2:总对总',
+	ddinerr := InsertDataTurnMonitor(1)
+	if ddinerr != nil {
+		return ddinerr
+	}
+	//2、查询最新结算记录   '统计类型 1:单点、2:总对总',
+	ddqerr, ddtabledata := QueryDataTurnMonitorTable(1)
+	if ddqerr != nil {
+		return ddqerr
+	}
+
+	//3、赋值
+	data := new(types.BJsjkZhuanjssjjk)
+	data.FNbChedyssjts = turndata.DDzcount       //  `F_NB_CHEDYSSJTS` int DEFAULT NULL COMMENT '车道原始数据条数',
+	data.FNbJiesbsjts = turndata.Jieszcount      //  `F_NB_JIESBSJTS` int DEFAULT NULL COMMENT '结算表数据条数',
+	data.FDtTongjwcsj = utils.StrTimeToNowtime() //  `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
+	data.FVcKuaizsj = utils.DateTimeNowFormat()  //  `F_DT_KUAIZSJ` datetime DEFAULT NULL COMMENT '快照时间',
+
+	//4、根据id 更新数据
+	dduperr := UpdateDataTurnMonitorTable(data, ddtabledata.FNbId)
+	if dduperr != nil {
+		return dduperr
 	}
 
 	return nil

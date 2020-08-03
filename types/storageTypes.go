@@ -419,3 +419,8 @@ type DataClassification struct {
 	Yifscount    int //已发送
 	Huaizcount   int //坏账
 }
+type TurnData struct {
+	Jieszcount int //结算表总数
+	DDzcount   int //单点出口总笔数
+	ZDZcount   int //总对总总笔数
+}

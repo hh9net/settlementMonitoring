@@ -17,6 +17,7 @@ const (
 	StatusQueryClearlingAndDisputePkgSuccess     = 209 //查询清分包、争议包的接收时间、包号 成功
 	StatusQueryClearlingcheckOneDataSuccess      = 210 //查询清分核对结果成功
 	StatusQueryDataclassificationSuccess         = 211 //查询省外数据分类 成功
+	StatusQueryDataTurnMonitorSuccess            = 212 //查询省外转结算 成功
 
 	StatusRepeatedRegistration             = 401 //注册重复
 	StatusPleaseRegister                   = 402 //请先注册
@@ -30,6 +31,7 @@ const (
 	StatusQueryClearlingAndDisputePkgError = 410 //查询清分包、争议包的接收时间、包号 失败
 	StatusQueryClearlingcheckOneDataError  = 411 //查询清分核对结果 失败
 	StatusQueryDataclassificationError     = 412 //查询省外数据分类 失败
+	StatusQueryDataTurnMonitorError        = 413 //查询省外转结算 失败
 
 )
 
@@ -61,6 +63,8 @@ var statusText = map[int]string{
 	StatusQueryClearlingcheckOneDataError:        "Query Clearling check OneData Error",
 	StatusQueryDataclassificationSuccess:         "Query Data classification Success",
 	StatusQueryDataclassificationError:           "Query Data classification Error",
+	StatusQueryDataTurnMonitorSuccess:            "Query Query Data Turn Monitor Success",
+	StatusQueryDataTurnMonitorError:              "Query Query Data Turn Monitor Error",
 }
 
 // StatusText returns a text for the HTTP status code. It returns the empty

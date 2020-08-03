@@ -73,3 +73,15 @@ type Dataclassification struct {
 	Yifscount    int `json:"yifscount " example:"1244547"`   //已发送
 	Huaizcount   int `json:"huaizcount" example:"1244547"`   //坏账
 }
+
+type TurnData struct {
+	Jieszcount int //结算表总数
+	DDzcount   int //单点出口总笔数
+	ZDZcount   int //总对总总笔数
+}
+
+type TurnDataResponse struct {
+	JieszCount  int `json:"jieszcount " example:"1244547"` //结算表总数
+	YuansCount  int `json:"ddcount" example:"1244547"`     //原始出口总笔数
+	DifferCount int `json:"differcount" example:"1244547"`
+}

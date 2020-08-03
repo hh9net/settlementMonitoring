@@ -59,6 +59,8 @@ func AuthAPIInit(route *gin.RouterGroup) {
 	route.GET("/sw/clearlingcheck", controller.Clearlingcheck)
 	//省外数据分类
 	route.GET("/sw/dataclassification", controller.Dataclassification)
+	//省外转结算监控
+	route.GET("/sw/dataturnmonitor", controller.QueryDataTurnMonitor)
 
 }
 

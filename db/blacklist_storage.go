@@ -110,7 +110,7 @@ func QueryBlacklistTiaoshutable(id, ts int) (error, *[]types.BJsjkHeimdjk) {
 	db := utils.GormClient.Client
 	hmdtjs := make([]types.BJsjkHeimdjk, 0)
 	//赋值
-	if err := db.Table("b_jsjk_heimdjk").Where("F_NB_ID<=? ", id).Where("F_NB_ID>?", id-ts).Limit(ts).Find(&hmdtjs).Error; err != nil {
+	if err := db.Table("b_jsjk_heimdjk").Where("F_NB_ID <= ? ", id).Where("F_NB_ID > ? ", id-ts).Limit(ts).Find(&hmdtjs).Error; err != nil {
 		log.Println("查询最新的黑名单数据的数据记录时，QueryBlacklisttable error :", err)
 		return err, nil
 	}
