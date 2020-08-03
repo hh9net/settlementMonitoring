@@ -22,7 +22,7 @@ func HandleDayTasks() {
 			log.Println("查询省外结算总金额、总笔数定时任务:", qerr)
 		}
 		//任务二
-		//查询省外已清分总金额、总笔数
+		//查询省外已清分总金额、总笔数(不含坏账)
 		qcerr := QuerTotalClarify()
 		if qcerr != nil {
 			log.Println("查询省外已清分总金额、总笔数定时任务:", qcerr)
@@ -45,6 +45,10 @@ func HandleDayTasks() {
 		if qcerr != nil {
 			log.Println("清分核对定时任务:", cherr)
 		}
+		//任务六
+		//数据分类查询
+		data := QuerySWDataClassification()
+		log.Println(data)
 
 	}
 }
@@ -56,22 +60,21 @@ func HandleHourTasks() {
 
 	for {
 		log.Println(utils.DateTimeFormat(<-tiker.C), "执行线程2，处理按小时的定时任务")
-		////任务1 待处理争议数据
-		//qderr := QueryShengwDisputedata()
-		//if qderr != nil {
-		//	log.Println("查询省外存在争议的总金额、总笔数定时任务 error:", qderr)
-		//}
-		////任务2 异常数据统计
-		//qycerr := QueryAbnormaldata()
-		//if qycerr != nil {
-		//	log.Println("查询异常数据统计的总金额、总笔数定时任务 error:", qycerr)
-		//}
+		//任务1 待处理争议数据
+		qderr := QueryShengwDisputedata()
+		if qderr != nil {
+			log.Println("查询省外存在争议的总金额、总笔数定时任务 error:", qderr)
+		}
+		//任务2 异常数据统计
+		qycerr := QueryAbnormaldata()
+		if qycerr != nil {
+			log.Println("查询异常数据统计的总金额、总笔数定时任务 error:", qycerr)
+		}
 		//任务3 处理黑名单统计
 		qhmderr := QueryblacklistCount()
 		if qhmderr != nil {
 			log.Println("查询黑名单统计总数定时任务 error:", qhmderr)
 		}
-
 	}
 
 }
@@ -147,7 +150,7 @@ func QuerTotalClarify() error {
 		log.Println("查询省外已清分总金额、总笔数,查询最新数据时  error!", qerr)
 		return qerr //不用返回前端
 	}
-	//3、查询包含坏账的已清分
+	//3、查询不包含坏账的已清分
 	count, amount := QueryShengwClearingJieSuan()
 	if count == 0 || amount == 0 {
 		log.Println("查询省外已清分总金额、总笔数   error!", count, amount)
@@ -399,4 +402,9 @@ func QueryblacklistCount() error {
 	}
 
 	return nil
+}
+
+//新增数据分类
+func InsertDataClassification() {
+
 }

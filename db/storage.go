@@ -255,13 +255,15 @@ func QueryShengwClearingJieSuan() (int, int64) {
 	db := utils.GormClient.Client
 	count := 0
 	//已清分
-	db.Table("b_js_jiessj").Where("F_NB_QINGFJG = ?", 1).Count(&count)
+	db.Table("b_js_jiessj").Where("F_NB_QINGFJG = ?", 1).Not("F_VC_KAWLH = ?", 3201).Count(&count)
 	var total_money []int64
-	sqlstr := `select SUM(F_NB_JINE) as total_money from b_js_jiessj where F_NB_QINGFJG = ?`
-	db.Raw(sqlstr, 1).Pluck("SUM(F_NB_JINE) as total_money", &total_money)
+	sqlstr := `select SUM(F_NB_JINE) as total_money from b_js_jiessj where F_NB_QINGFJG = ? and not F_VC_KAWLH = ?`
+	db.Raw(sqlstr, 1, 3201).Pluck("SUM(F_NB_JINE) as total_money", &total_money)
 
-	log.Printf("查询结算表总清分的交易笔数%d，查询已清分总金额为：%d", count, total_money)
-	return count, total_money[0]
+	log.Printf("查询结算表含坏账总清分的交易笔数%d，查询已清分总金额为：%d", count, total_money)
+	c, m := QueryShengwBadDebtsJieSuan()
+	log.Printf("查询结算表不含坏账总清分的交易笔数%d，查询已清分总金额为：%d", count-c, total_money[0]-m)
+	return count - c, total_money[0] - m
 }
 
 //2、新增省外已清分统计开始记录
@@ -318,11 +320,11 @@ func QueryShengwBadDebtsJieSuan() (int, int64) {
 	db := utils.GormClient.Client
 	count := 0
 	//1:已清分 F_NB_ZHENGYCLJG 争议处理结果：坏账2
-	db.Table("b_js_jiessj").Where("F_NB_QINGFJG = ?", 1).Where("F_NB_ZHENGYCLJG = ?", 2).Count(&count)
+	db.Table("b_js_jiessj").Where("F_NB_QINGFJG = ?", 1).Where("F_NB_ZHENGYCLJG = ?", 2).Not("F_VC_KAWLH = ?", 3201).Count(&count)
 
 	var total_money []int64
-	sqlstr := `select SUM(F_NB_JINE) as total_money from b_js_jiessj where F_NB_QINGFJG = ? and F_NB_ZHENGYCLJG = ?`
-	db.Raw(sqlstr, 1, 2).Pluck("SUM(F_NB_JINE) as total_money", &total_money)
+	sqlstr := `select SUM(F_NB_JINE) as total_money from b_js_jiessj where F_NB_QINGFJG = ? and F_NB_ZHENGYCLJG = ? and not F_VC_KAWLH = ?`
+	db.Raw(sqlstr, 1, 2, 3201).Pluck("SUM(F_NB_JINE) as total_money", &total_money)
 
 	log.Printf("查询结算表已清分的坏账交易笔数%d，查询已清分的坏账总金额为：%d", count, total_money)
 	return count, total_money[0]
@@ -343,12 +345,12 @@ func QueryDisputeJieSuanData() (int, int64) {
 	db := utils.GormClient.Client
 	count := 0
 	//2：争议数据 0：争议数据未处理
-	db.Table("b_js_jiessj").Where("F_NB_JIZJG  = ?", 2).Where("F_NB_ZHENGYCLJG = ?", 0).Count(&count)
+	db.Table("b_js_jiessj").Where("F_NB_JIZJG  = ?", 2).Where("F_NB_ZHENGYCLJG = ?", 0).Not("F_VC_KAWLH = ?", 3201).Count(&count)
 
 	var total_money []int64
-	sqlstr := `select SUM(F_NB_JINE) as total_money from b_js_jiessj where F_NB_JIZJG = ?  and F_NB_ZHENGYCLJG = ?`
+	sqlstr := `select SUM(F_NB_JINE) as total_money from b_js_jiessj where F_NB_JIZJG = ?  and F_NB_ZHENGYCLJG = ? and not F_VC_KAWLH = ?`
 	//2：争议数据 0：争议数据未处理
-	db.Raw(sqlstr, 2, 0).Pluck("SUM(F_NB_JINE) as total_money", &total_money)
+	db.Raw(sqlstr, 2, 0, 3201).Pluck("SUM(F_NB_JINE) as total_money", &total_money)
 
 	log.Printf("查询结算表 待处理存在争议的数据总笔数:%d笔，查询待处理存在争议的数据总金额为：%d分", count, total_money)
 	return count, total_money[0]
@@ -653,3 +655,63 @@ func QueryCheckResultOne() (error, *types.BJsjkQingfhd) {
 }
 
 //6.1.8	省外结算数据分类
+func QuerySWDataClassification() *types.DataClassification {
+	db := utils.GormClient.Client
+	//省外总数据
+	swzcount := 0
+	db.Table("b_js_jiessj").Not("F_VC_KAWLH = ?", 3201).Count(&swzcount)
+	log.Printf("查询省外结算交易，结算表总交易笔数:%d", swzcount)
+	//坏账       1:已清分 F_NB_ZHENGYCLJG 争议处理结果：坏账2
+	huaizcount := 0
+	db.Table("b_js_jiessj").Where("F_NB_QINGFJG = ?", 1).Where("F_NB_ZHENGYCLJG = ?", 2).Not("F_VC_KAWLH = ?", 3201).Count(&huaizcount)
+	log.Printf("查询结算表已清分的坏账交易笔数:%d ", huaizcount)
+
+	//已清分
+	yiqfcount := 0
+	db.Table("b_js_jiessj").Where("F_NB_QINGFJG = ?", 1).Not("F_VC_KAWLH = ?", 3201).Count(&yiqfcount)
+	log.Printf("查询结算表含坏账总清分的交易笔数:%d ", yiqfcount)
+	log.Printf("查询结算表不含坏账总清分的交易笔数:%d ", yiqfcount-huaizcount)
+
+	//结算表 已记账
+	jzcount := 0
+	db.Table("b_js_jiessj").Where("F_NB_JIZJG = ?", 1).Not("F_VC_KAWLH = ?", 3201).Count(&jzcount)
+	log.Printf("查询结算表 已记账的交易笔数:%d ", jzcount)
+
+	//存在争议
+	zycount := 0
+	db.Table("b_js_jiessj").Where("F_NB_JIZJG = ?", 2).Where("F_NB_ZHENGYCLJG = ?", 0).Not("F_VC_KAWLH = ?", 3201).Count(&zycount)
+	log.Printf("查询结算表 存在争议的交易笔数:%d ", zycount)
+
+	//未打包数据
+	weidbcount := 0
+	db.Table("b_js_jiessj").Where("F_NB_DABZT = ?", 0).Not("F_VC_KAWLH = ?", 3201).Count(&weidbcount)
+	log.Printf("查询结算表 未打包数据的交易笔数:%d ", weidbcount)
+
+	//打包中数据
+	dabzcount := 0
+	db.Table("b_js_jiessj").Where("F_NB_DABZT = ?", 1).Not("F_VC_KAWLH = ?", 3201).Count(&dabzcount)
+	log.Printf("查询结算表 打包中数据的交易笔数:%d ", dabzcount)
+
+	//已打包数据
+	yidbcount := 0
+	db.Table("b_js_jiessj").Where("F_NB_DABZT = ?", 2).Not("F_VC_KAWLH = ?", 3201).Count(&yidbcount)
+	log.Printf("查询结算表 已打包数据的交易笔数:%d ", yidbcount)
+
+	//已fs数据
+	var yifscount []int
+	zdzsqlstr := `select SUM(F_NB_JILSL) as yifscount from b_js_yuansjyxx where F_NB_FASZT = ? `
+	db.Raw(zdzsqlstr, 2).Pluck("SUM(F_NB_JILSL) as yifscount", &yifscount)
+	log.Printf("查询结算表 已发送的交易笔数:%d ", yifscount)
+	var dataClassification types.DataClassification
+	dataClassification.Yiqfcount = yiqfcount - huaizcount //已清分总条数（不含坏账）
+
+	dataClassification.Shengwzcount = swzcount  //省外结算总数据
+	dataClassification.Jizcount = jzcount       //记账
+	dataClassification.Zhengycount = zycount    //争议
+	dataClassification.Weidbcount = weidbcount  //未打包
+	dataClassification.Yidbcount = yidbcount    //已打包
+	dataClassification.Yifscount = yifscount[0] //已发送
+	dataClassification.Huaizcount = huaizcount  //坏账
+
+	return &dataClassification
+}

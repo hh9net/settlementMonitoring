@@ -2,20 +2,6 @@ package types
 
 import "time"
 
-//省外数据
-type JieSuanWssj struct {
-	Id      int64 `gorm:"AUTO_INCREMENT primary_key"` // 设置 id 为自增类型
-	JiaoyId int64 `gorm:"unique;not null"`
-	Jine    int64
-}
-
-//本省结算数据
-type JieSuanJiangssj struct {
-	Id      int64 `gorm:"AUTO_INCREMENT primary_key"` // 设置 id 为自增类型
-	JiaoyId int64 `gorm:"unique;not null"`
-	Jine    int64
-}
-
 //1 结算统计监控表 b_jsjk_jiestj
 type BJsjkJiestj struct {
 	FNbId int `gorm:"column:F_NB_ID; AUTO_INCREMENT ;primary_key"` //`F_NB_ID` '唯一自增id',
@@ -421,4 +407,15 @@ type ClearlingAndDisputeData struct {
 	Cleardatetime  string
 	DisputPacgeNo  string
 	Disputdatetime string
+}
+
+type DataClassification struct {
+	Shengwzcount int //省外结算总数据
+	Yiqfcount    int //已清分总条数（不含坏账）
+	Jizcount     int //记账
+	Zhengycount  int //争议
+	Weidbcount   int //未打包
+	Yidbcount    int //已打包
+	Yifscount    int //已发送
+	Huaizcount   int //坏账
 }

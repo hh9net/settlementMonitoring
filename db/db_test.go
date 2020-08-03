@@ -264,5 +264,15 @@ func TestStatisticalClearlingcheck(t *testing.T) {
 func TestQueryCheckResultOne(t *testing.T) {
 	Newdb()
 	log.Println(QueryCheckResultOne())
+}
 
+//QueryCompletionKeepaccount()
+func TestQueryCompletionKeepaccount(t *testing.T) {
+	Newdb()
+}
+
+//QueryCompletionKeepaccount()
+func TestQueryCompletioncount(t *testing.T) {
+	Newdb()
+	log.Println(QuerySWDataClassification())
 }

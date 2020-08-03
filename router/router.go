@@ -41,15 +41,15 @@ func AuthAPIInit(route *gin.RouterGroup) {
 	route.POST("/user/register", controller.Register)
 	//用户登录
 	route.POST("/user/login", controller.Login)
-	//查询省外总交易额、总笔数
+	//查询省外总交易额、总笔数 ok
 	route.GET("/sw/totalsettlementdata", controller.QueryTotalSettlementData)
-	//查询省外已清分（含有坏账）总交易额、总笔数
+	//查询省外已清分（含有坏账）总交易额、总笔数 ok
 	route.GET("/sw/totalclarify", controller.QueryTotalClarify)
-	//查询省外坏账总交易额、总笔数
+	//查询省外坏账总交易额、总笔数 ok
 	route.GET("/sw/totalBaddebts", controller.QueryTotalBaddebts)
-	//查询省外存在争议总交易额、总笔数
+	//查询省外存在争议总交易额、总笔数 ok
 	route.GET("/sw/totaldisputedata", controller.QueryShengwDisputedata)
-	//查询省外存在异常总交易额、总笔数
+	//查询省外存在异常总交易额、总笔数 ok
 	route.GET("/sw/totalAbnormaldata", controller.QueryAbnormaldata)
 	//查询黑名单总数
 	route.GET("/sw/totalblacklistdata", controller.Queryblacklistdata)
