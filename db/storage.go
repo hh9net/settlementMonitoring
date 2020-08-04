@@ -515,7 +515,7 @@ func QueryClearlingdata(yesterday string) (error, *types.BJsQingftjxx) {
 func QueryDisputedata(yesterday string) (error, *types.BJsZhengyjyclxx) {
 	db := utils.GormClient.Client
 	zytjsj := new(types.BJsZhengyjyclxx)
-	//赋值
+
 	if err := db.Table("b_js_zhengyjyclxx").Where("F_DT_JIESSJ>=?", yesterday+" 00:00:00").Where("F_DT_JIESSJ<=?", yesterday+" 23:59:59").Last(&zytjsj).Error; err != nil {
 
 		if fmt.Sprint(err) == "record not found" {
@@ -870,4 +870,43 @@ func QueryDataTurnMonitortable(ts, lx int) (error, *[]types.BJsjkZhuanjssjjk) {
 	return nil, &hmdtjs
 }
 
-//
+//4.1.6	前30天省外结算趋势 每天记录一次，统计30天的数据
+//查询昨日交易金额、清分金额；
+func QuerySettlementTrend(datetime string) {
+	db := utils.GormClient.Client
+
+	jszcount := 0
+	//昨日的交易条数
+	db.Table("b_js_jiessj").Where("F_DT_JIAOYSJ >= ?", datetime+" 00:00:00").Where("F_DT_JIAOYSJ <= ?", datetime+" 23:59:50").Not("F_VC_KAWLH = ?", 3201).Count(&jszcount)
+	log.Println("昨日的交易条数jszcount :", jszcount)
+	//昨日的交易金额
+	total_money := make([]int64, 1)
+	//时间范围
+	begin := datetime + " 00:00:00"
+	end := datetime + " 23:59:59"
+	sqlstr := `select SUM(F_NB_JINE) as total_money from b_js_jiessj  where F_DT_JIAOYSJ >= ? and F_DT_JIAOYSJ <= ? and not F_VC_KAWLH =? `
+	db.Raw(sqlstr, begin, end, 3201).Pluck("SUM(F_NB_JINE) as total_money", &total_money)
+	log.Println("昨日的交易金额total_money :", total_money[0])
+
+	//昨日清分条数  F_NB_QINGFJG=1  F_NB_ZHENGYCLJG ！=2坏账
+	qfzcount := 0
+	//昨日的交易条数
+	db.Table("b_js_jiessj").Where("F_NB_QINGFJG = ?", 1).Where("F_DT_JIAOYSJ >= ?", datetime+" 00:00:00").Where("F_DT_JIAOYSJ <= ?", datetime+" 23:59:50").Not("F_VC_KAWLH = ?", 3201).Not("F_NB_ZHENGYCLJG = ?", 2).Count(&qfzcount)
+	log.Println("昨日的清分条数qfzcount :", qfzcount)
+
+	//昨日清分金额  F_NB_QINGFJG=1  F_NB_ZHENGYCLJG ！=2坏账
+	qftotal_money := make([]int64, 1)
+	//时间范围
+	qfbegin := datetime + " 00:00:00"
+	qfend := datetime + " 23:59:59"
+	qfsqlstr := `select SUM(F_NB_JINE) as qftotal_money from b_js_jiessj  where F_DT_JIAOYSJ >= ? and F_DT_JIAOYSJ <= ? and F_NB_QINGFJG = ? and not F_NB_ZHENGYCLJG  =? and not F_VC_KAWLH =?`
+	db.Raw(qfsqlstr, qfbegin, qfend, 1, 2, 3201).Pluck("SUM(F_NB_JINE) as qftotal_money", &qftotal_money)
+	log.Println("昨日清分金额qftotal_money :", qftotal_money[0])
+
+}
+
+//获取30天的交易金额、条数、清分金额、条数
+func QuerySettlementTrendbyDay() {
+	//获取时间
+
+}

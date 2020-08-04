@@ -270,8 +270,3 @@ func QueryDataTurnMonitordata() (int, error, *[]dto.TurnDataResponse) {
 	//返回数据
 	return 212, nil, &TurndataResps
 }
-
-//4.1.6	前30天省外结算趋势 每天记录一次，统计30天的数据  交易金额、清分金额；
-func QuerySettlementTrend() {
-
-}

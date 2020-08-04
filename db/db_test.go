@@ -308,3 +308,9 @@ func TestQueryDataTurnMonitortable(t *testing.T) {
 	Newdb()
 	log.Println(QueryDataTurnMonitortable(3, 2))
 }
+
+//QuerySettlementTrend()
+func TestQuerySettlementTrend(t *testing.T) {
+	Newdb()
+	QuerySettlementTrend()
+}
