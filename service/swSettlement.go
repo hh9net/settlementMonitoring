@@ -295,3 +295,30 @@ func QuerySettlementTrend() (int, error, *[]dto.SettlementTrend) {
 	//返回数据
 	return 213, nil, &Datas
 }
+
+//
+func QueryPacketMonitoring() (int, error, *[]dto.PacketMonitoringdata) {
+	ts := 30
+	//响应数据 list TurnDataResponse
+	Datas := make([]dto.PacketMonitoringdata, ts)
+
+	//查询数据
+	qerr, ds := db.QueryPacketMonitoringtable(ts)
+	if qerr != nil {
+		return 0, qerr, nil
+	}
+
+	for i, d := range *ds {
+		Datas[i].Yuansbsl = d.FNbYuansjyydbsl
+		Datas[i].Dabaojine = d.FNbDabje
+		Datas[i].Dabaosl = d.FNbDabsl
+		Datas[i].Fasbjine = d.FNbFasysjybje
+		Datas[i].Fasbsl = d.FNbFasysjybsl
+		Datas[i].Jizbjine = d.FNbJizbje
+		Datas[i].Jizbsl = d.FNbJizbsl
+	}
+
+	log.Println("响应数据：", Datas)
+	//返回数据
+	return 214, nil, &Datas
+}

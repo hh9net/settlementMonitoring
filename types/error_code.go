@@ -18,6 +18,8 @@ const (
 	StatusQueryClearlingcheckOneDataSuccess      = 210 //查询清分核对结果成功
 	StatusQueryDataclassificationSuccess         = 211 //查询省外数据分类 成功
 	StatusQueryDataTurnMonitorSuccess            = 212 //查询省外转结算 成功
+	StatusQuerySettlementTrendSuccess            = 213 //查询省外结算趋势 成功
+	StatusQueryPacketMonitoringSuccess           = 214 //查询省外数据包监控 成功
 
 	StatusRepeatedRegistration             = 401 //注册重复
 	StatusPleaseRegister                   = 402 //请先注册
@@ -32,6 +34,8 @@ const (
 	StatusQueryClearlingcheckOneDataError  = 411 //查询清分核对结果 失败
 	StatusQueryDataclassificationError     = 412 //查询省外数据分类 失败
 	StatusQueryDataTurnMonitorError        = 413 //查询省外转结算 失败
+	StatusQuerySettlementTrendError        = 414 //查询省外结算趋势 失败
+	StatusQueryPacketMonitoringError       = 415 //查询省外数据包监控 失败
 
 )
 
@@ -63,8 +67,12 @@ var statusText = map[int]string{
 	StatusQueryClearlingcheckOneDataError:        "Query Clearling check OneData Error",
 	StatusQueryDataclassificationSuccess:         "Query Data classification Success",
 	StatusQueryDataclassificationError:           "Query Data classification Error",
-	StatusQueryDataTurnMonitorSuccess:            "Query Query Data Turn Monitor Success",
-	StatusQueryDataTurnMonitorError:              "Query Query Data Turn Monitor Error",
+	StatusQueryDataTurnMonitorSuccess:            "Query Data Turn Monitor Success",
+	StatusQueryDataTurnMonitorError:              "Query Data Turn Monitor Error",
+	StatusQuerySettlementTrendSuccess:            "Query Settlement Trend Success",
+	StatusQuerySettlementTrendError:              "Query Settlement Trend Error",
+	StatusQueryPacketMonitoringSuccess:           "Query Packet Monitoring Success",
+	StatusQueryPacketMonitoringError:             "Query Packet Monitoring Error",
 }
 
 // StatusText returns a text for the HTTP status code. It returns the empty

@@ -1072,3 +1072,16 @@ func UpdatePacketMonitoringTable(data *types.BJsjkShujbjk, id int) error {
 	log.Println("更新省外结算趋势表数据 记录 完成")
 	return nil
 }
+
+//查询最新的ts条省外数据包监控
+func QueryPacketMonitoringtable(ts int) (error, *[]types.BJsjkShujbjk) {
+	db := utils.GormClient.Client
+	jg := make([]types.BJsjkShujbjk, 0)
+	//赋值Order("created_at desc")
+	if err := db.Table("b_jsjk_shujbjk").Order("F_NB_ID desc").Limit(ts).Find(&jg).Error; err != nil {
+		log.Println("查询最新的ts条省外数据包监控表数据时，QueryPacketMonitoringtable error :", err)
+		return err, nil
+	}
+	log.Println("查询最新的ts条省外数据包监控结果:", jg)
+	return nil, &jg
+}

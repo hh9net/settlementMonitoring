@@ -94,3 +94,13 @@ type SettlementTrend struct {
 	QingfCount    int   `json:"qingfcount" example:"1244547"`     //今日清分
 	JiesuanCount  int   `json:"jiesuancount" example:"1244547"`   //今日结算条数
 }
+
+type PacketMonitoringdata struct {
+	Dabaosl   int   `json:"dabaosl" example:"1244547"`   //今日打包数量
+	Dabaojine int64 `json:"dabaojine" example:"1244547"` //打包金额
+	Fasbsl    int   `json:"fasbsl" example:"1244547"`    //已发送原始交易消息包数量
+	Fasbjine  int64 `json:"fasbjine" example:"1244547"`  //已发送原始交易消息包金额
+	Jizbsl    int   `json:"jizbsl" example:"1244547"`    //记账包数量
+	Jizbjine  int64 `json:"jizbjine" example:"1244547"`  //记账包金额
+	Yuansbsl  int   `json:"yuansbsl" example:"1244547"`  //原始交易消息应答包数量
+}

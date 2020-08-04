@@ -323,6 +323,35 @@ func QuerySettlementTrendbyDay(c *gin.Context) {
 		c.JSON(http.StatusOK, dto.QueryClearlingAndDisputeResponse{Code: code, CodeMsg: types.StatusText(213), Data: *totaldata, Message: "查询省外结算趋势 成功"})
 	}
 	if code == 0 {
-		c.JSON(http.StatusOK, dto.Response{Code: code, Data: types.StatusText(types.StatusQueryDataTurnMonitorError), Message: "查询省外结算趋势 失败"})
+		c.JSON(http.StatusOK, dto.Response{Code: code, Data: types.StatusText(types.StatusQuerySettlementTrendError), Message: "查询省外结算趋势 失败"})
+	}
+}
+
+//
+/*  接口6方法注释   */
+//@Summary 省外数据包监控 api
+//@Tags 省外数据包监控
+//@version 1.0
+//@Accept application/json
+//@Param req body dto.Reqlogin true "请求参数"
+//@Success 200 object dto.Response 成功后返回值
+//@Failure 404 object dto.ResponseFailure 查询失败
+//@Router /sw/settlementtrend [get]
+func PacketMonitoring(c *gin.Context) {
+	respFailure := dto.ResponseFailure{}
+	// 查询省外数据包监控
+	code, err, totaldata := service.QueryPacketMonitoring()
+	if err != nil {
+		logrus.Errorf("QueryPacketMonitoring err: %v", err.Error())
+		respFailure.Code = code
+		respFailure.Message = fmt.Sprintf("QueryPacketMonitoring err: %v", err.Error())
+		c.JSON(http.StatusOK, respFailure)
+		return
+	}
+	if code == 214 {
+		c.JSON(http.StatusOK, dto.QueryClearlingAndDisputeResponse{Code: code, CodeMsg: types.StatusText(214), Data: *totaldata, Message: "查询省外数据包监控 成功"})
+	}
+	if code == 0 {
+		c.JSON(http.StatusOK, dto.Response{Code: code, Data: types.StatusText(types.StatusQueryPacketMonitoringError), Message: "查询省外数据包监控 失败"})
 	}
 }
