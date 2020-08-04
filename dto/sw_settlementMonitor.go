@@ -85,3 +85,12 @@ type TurnDataResponse struct {
 	YuansCount  int `json:"ddcount" example:"1244547"`     //原始出口总笔数
 	DifferCount int `json:"differcount" example:"1244547"`
 }
+
+//省外结算趋势
+type SettlementTrend struct {
+	JiesuanAmount int64 `json:"jiesuanamount " example:"1244547"` //今日结算金额
+	QingfAmount   int64 `json:"qingfamount" example:"1244547"`    //今日清分总笔数
+	DifferAmount  int64 `json:"differamount" example:"1244547"`   //差额
+	QingfCount    int   `json:"qingfcount" example:"1244547"`     //今日清分
+	JiesuanCount  int   `json:"jiesuancount" example:"1244547"`   //今日结算条数
+}

@@ -16,3 +16,9 @@ func TestQueryDataTurnMonitordata(t *testing.T) {
 	db.Newdb()
 	QueryDataTurnMonitordata()
 }
+
+// QuerySettlementTrend()
+func TestQuerySettlementTrend(t *testing.T) {
+	db.Newdb()
+	QuerySettlementTrend()
+}

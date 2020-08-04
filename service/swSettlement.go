@@ -270,3 +270,28 @@ func QueryDataTurnMonitordata() (int, error, *[]dto.TurnDataResponse) {
 	//返回数据
 	return 212, nil, &TurndataResps
 }
+
+//结算趋势
+func QuerySettlementTrend() (int, error, *[]dto.SettlementTrend) {
+	ts := 30
+	//响应数据 list TurnDataResponse
+	Datas := make([]dto.SettlementTrend, ts)
+	//datas := make([]dto.TurnData, ts)
+	//查询数据
+	qerr, ds := db.QuerySettlementTrendbyday(ts)
+	if qerr != nil {
+		return 0, qerr, nil
+	}
+
+	for i, d := range *ds {
+		Datas[i].JiesuanAmount = d.FNbJiaoye
+		Datas[i].QingfAmount = d.FNbQingdje
+		Datas[i].DifferAmount = d.FNbChae
+		Datas[i].JiesuanCount = d.FNbJiaoyts
+		Datas[i].QingfCount = d.FNbQingfts
+	}
+
+	log.Println("响应数据：", Datas)
+	//返回数据
+	return 213, nil, &Datas
+}

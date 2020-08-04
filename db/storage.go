@@ -872,7 +872,7 @@ func QueryDataTurnMonitortable(ts, lx int) (error, *[]types.BJsjkZhuanjssjjk) {
 
 //4.1.6	前30天省外结算趋势 每天记录一次，统计30天的数据
 //查询昨日交易金额、清分金额；
-func QuerySettlementTrend(datetime string) {
+func QuerySettlementTrend(datetime string) *types.ClearandJiesuan {
 	db := utils.GormClient.Client
 
 	jszcount := 0
@@ -902,11 +902,86 @@ func QuerySettlementTrend(datetime string) {
 	qfsqlstr := `select SUM(F_NB_JINE) as qftotal_money from b_js_jiessj  where F_DT_JIAOYSJ >= ? and F_DT_JIAOYSJ <= ? and F_NB_QINGFJG = ? and not F_NB_ZHENGYCLJG  =? and not F_VC_KAWLH =?`
 	db.Raw(qfsqlstr, qfbegin, qfend, 1, 2, 3201).Pluck("SUM(F_NB_JINE) as qftotal_money", &qftotal_money)
 	log.Println("昨日清分金额qftotal_money :", qftotal_money[0])
-
+	log.Println("查询日期 datetime:", datetime)
+	return &types.ClearandJiesuan{ClearlingCount: qfzcount,
+		ClearlingMoney: qftotal_money[0],
+		JiesuanCount:   jszcount,
+		JiesuanMoney:   total_money[0]}
 }
 
-//获取30天的交易金额、条数、清分金额、条数
-func QuerySettlementTrendbyDay() {
-	//获取时间
+//获取30天的交易金额、条数、清分金额、条数   从小到大
+func QuerySettlementTrendbyDay() *[]types.ClearandJiesuan {
+	//获取时间 之前30天
+	datetimes := utils.OldData(30)
+	Data := make([]types.ClearandJiesuan, 0)
+	//获取数据
+	for _, d := range datetimes {
+		data := QuerySettlementTrend(d)
+		Data = append(Data, *data)
+	}
+	log.Println("查询30天的数据Data:", Data)
+	//返回数据
+	return &Data
+}
 
+//新增省外趋势表
+func InsertSettlementTrendbyDayTable() error {
+	db := utils.GormClient.Client
+	data := new(types.BJsjkShengwjsqs)
+
+	data.FDtKaistjsj = utils.StrTimeToNowtime()      //开始
+	data.FDtTongjwcsj = utils.StrTimeTodefaultdate() //
+	if err := db.Table("b_jsjk_shengwjsqs").Create(&data).Error; err != nil {
+		// 错误处理...
+		log.Println("新增省外趋势表记录Insert b_jsjk_shengwjsqs  error", err)
+		return err
+	}
+	log.Println("新增省外趋势表记录成功！")
+	return nil
+}
+
+//查询最新记录
+func QuerySettlementTrendbyDayTable() (error, *types.BJsjkShengwjsqs) {
+	db := utils.GormClient.Client
+	shuju := new(types.BJsjkShengwjsqs)
+	if err := db.Table("b_jsjk_shengwjsqs").Last(&shuju).Error; err != nil {
+		log.Println(" QuerySettlementTrendbyDayTable error :", err)
+		return err, nil
+	}
+	log.Println("查询转结算表最新记录结果:", shuju)
+	return nil, shuju
+}
+
+//更新数据
+func UpdateSettlementTrendbyDayTable(data *types.BJsjkShengwjsqs, id int) error {
+	db := utils.GormClient.Client
+	qushijl := new(types.BJsjkShengwjsqs)
+
+	qushijl.FNbJiaoye = data.FNbJiaoye       //   `F_NB_JIAOYJE` bigint DEFAULT NULL COMMENT '交易金额',
+	qushijl.FNbQingdje = data.FNbQingdje     //   `F_NB_QINGFJE` bigint DEFAULT NULL COMMENT '清分金额',
+	qushijl.FNbChae = data.FNbChae           //   `F_NB_CHAE` bigint DEFAULT NULL COMMENT '差额',
+	qushijl.FNbJiaoyts = data.FNbJiaoyts     //   `F_NB_JIAOYTS` int DEFAULT NULL COMMENT '交易条数',
+	qushijl.FNbQingfts = data.FNbQingfts     //   `F_NB_QINGFTS` int DEFAULT NULL COMMENT '清分条数',
+	qushijl.FDtTongjwcsj = data.FDtTongjwcsj //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
+	qushijl.FVcTongjrq = data.FVcTongjrq     //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
+
+	if err := db.Table("b_jsjk_shengwjsqs").Where("F_NB_ID=?", id).Updates(&qushijl).Error; err != nil {
+		log.Println("更新省外结算趋势表数据 记录 时 error", err)
+		return err
+	}
+	log.Println("更新省外结算趋势表数据 记录 完成")
+	return nil
+}
+
+//查询最新记录
+func QuerySettlementTrendbyday(ts int) (error, *[]types.BJsjkShengwjsqs) {
+	db := utils.GormClient.Client
+	hmdtjs := make([]types.BJsjkShengwjsqs, 0)
+	//赋值Order("created_at desc")
+	if err := db.Table("b_jsjk_shengwjsqs").Order("F_NB_ID desc").Limit(ts).Find(&hmdtjs).Error; err != nil {
+		log.Println("查询最新的ts条省外结算趋势表数据时，QuerySettlementTrendbyday error :", err)
+		return err, nil
+	}
+	log.Println("查询最新的ts条转结算表数据结果:", hmdtjs)
+	return nil, &hmdtjs
 }

@@ -48,5 +48,5 @@ func TestRedisHMSet(t *testing.T) {
 
 //RedisHMGet
 func TestRedisHMGet(t *testing.T) {
-	RedisHMGet(RedisInit(), "clear", OldData(14))
+	RedisHMGet(RedisInit(), "clear", OldData(30))
 }

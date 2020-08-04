@@ -312,5 +312,29 @@ func TestQueryDataTurnMonitortable(t *testing.T) {
 //QuerySettlementTrend()
 func TestQuerySettlementTrend(t *testing.T) {
 	Newdb()
-	QuerySettlementTrend()
+	QuerySettlementTrend("2020-08-03")
+}
+
+//QuerySettlementTrendbyDay()
+func TestQuerySettlementTrendbyDay(t *testing.T) {
+	Newdb()
+	QuerySettlementTrendbyDay()
+}
+
+//InsertSettlementTrendbyDayTable
+func TestInsertSettlementTrendbyDayTable(t *testing.T) {
+	Newdb()
+	InsertSettlementTrendbyDayTable()
+}
+
+//QuerySettlementTrendbyDayTable()
+func TestQuerySettlementTrendbyDayTable(t *testing.T) {
+	Newdb()
+	QuerySettlementTrendbyDayTable()
+}
+
+//QuerySettlementTrendbyday
+func TestQuerySettlementTrendbyday(t *testing.T) {
+	Newdb()
+	QuerySettlementTrendbyday(9)
 }

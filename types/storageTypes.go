@@ -130,14 +130,14 @@ type BJsjkShengnyfssjtj struct {
 type BJsjkShengwjsqs struct {
 	FNbId int `gorm:"AUTO_INCREMENT; primary_key; column:F_NB_ID"` //  `F_NB_ID` int NOT NULL AUTO_INCREMENT COMMENT '唯一自增id',
 
-	FNbJiaoye    int64  `gorm:"column:F_NB_JIAOYJE"`   //   `F_NB_JIAOYJE` bigint DEFAULT NULL COMMENT '交易金额',
-	FNbQingdje   int64  `gorm:"column:F_NB_QINGFJE"`   //   `F_NB_QINGFJE` bigint DEFAULT NULL COMMENT '清分金额',
-	FNbChae      int64  `gorm:"column:F_NB_CHAE"`      //   `F_NB_CHAE` bigint DEFAULT NULL COMMENT '差额',
-	FNbJiaoyts   int    `gorm:"column:F_NB_JIAOYTS"`   //   `F_NB_JIAOYTS` int DEFAULT NULL COMMENT '交易条数',
-	FNbQingfts   int    `gorm:"column:F_NB_QINGFTS"`   //   `F_NB_QINGFTS` int DEFAULT NULL COMMENT '清分条数',
-	FDtKaistjsj  string `gorm:"column:F_DT_KAISTJSJ"`  //   `F_DT_KAISTJSJ` datetime DEFAULT NULL COMMENT '开始统计时间',
-	FDtTongjwcsj string `gorm:"column:F_DT_TONGJWCSJ"` //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
-	FVcTongjrq   string `gorm:"column:F_VC_TONGJRQ"`   //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
+	FNbJiaoye    int64     `gorm:"column:F_NB_JIAOYJE"`   //   `F_NB_JIAOYJE` bigint DEFAULT NULL COMMENT '交易金额',
+	FNbQingdje   int64     `gorm:"column:F_NB_QINGFJE"`   //   `F_NB_QINGFJE` bigint DEFAULT NULL COMMENT '清分金额',
+	FNbChae      int64     `gorm:"column:F_NB_CHAE"`      //   `F_NB_CHAE` bigint DEFAULT NULL COMMENT '差额',
+	FNbJiaoyts   int       `gorm:"column:F_NB_JIAOYTS"`   //   `F_NB_JIAOYTS` int DEFAULT NULL COMMENT '交易条数',
+	FNbQingfts   int       `gorm:"column:F_NB_QINGFTS"`   //   `F_NB_QINGFTS` int DEFAULT NULL COMMENT '清分条数',
+	FDtKaistjsj  time.Time `gorm:"column:F_DT_KAISTJSJ"`  //   `F_DT_KAISTJSJ` datetime DEFAULT NULL COMMENT '开始统计时间',
+	FDtTongjwcsj time.Time `gorm:"column:F_DT_TONGJWCSJ"` //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
+	FVcTongjrq   string    `gorm:"column:F_VC_TONGJRQ"`   //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
 }
 
 //12 省外结算数据分类  `b_jsjk_shengwjssjfl`
@@ -419,8 +419,15 @@ type DataClassification struct {
 	Yifscount    int //已发送
 	Huaizcount   int //坏账
 }
+
 type TurnData struct {
 	Jieszcount int //结算表总数
 	DDzcount   int //单点出口总笔数
 	ZDZcount   int //总对总总笔数
+}
+type ClearandJiesuan struct {
+	ClearlingCount int   //清分总笔数
+	ClearlingMoney int64 //清分总金额
+	JiesuanCount   int   //交易结算金额
+	JiesuanMoney   int64 //交易总金额
 }

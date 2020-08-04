@@ -46,3 +46,9 @@ func TestDataClassification(t *testing.T) {
 	Newdb()
 	DataClassification()
 }
+
+//SettlementTrendbyDay()
+func TestSettlementTrendbyDay(t *testing.T) {
+	Newdb()
+	SettlementTrendbyDay()
+}

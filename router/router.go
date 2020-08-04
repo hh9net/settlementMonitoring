@@ -61,7 +61,8 @@ func AuthAPIInit(route *gin.RouterGroup) {
 	route.GET("/sw/dataclassification", controller.Dataclassification)
 	//省外转结算监控
 	route.GET("/sw/dataturnmonitor", controller.QueryDataTurnMonitor)
-
+	//省外结算趋势查询
+	route.GET("/sw/settlementtrend", controller.QuerySettlementTrendbyDay)
 }
 
 //以下为cors实现

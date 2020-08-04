@@ -51,6 +51,12 @@ func HandleDayTasks() {
 		if qdcerr != nil {
 			log.Println("数据分类查询定时任务 error:", qdcerr)
 		}
+		//任务七
+		//省外结算趋势
+		qserr := SettlementTrendbyDay()
+		if qserr != nil {
+			log.Println("省外结算趋势定时任务 error:", qserr)
+		}
 
 	}
 }
@@ -500,5 +506,39 @@ func DataTurnMonitor() error {
 		return dduperr
 	}
 
+	return nil
+}
+
+//1.7 省外结算趋势
+func SettlementTrendbyDay() error {
+	qsdatas := QuerySettlementTrendbyDay()
+	for _, qsdata := range *qsdatas {
+		//1、新增省外结算趋势
+		inerr := InsertSettlementTrendbyDayTable()
+		if inerr != nil {
+			return inerr
+		}
+		//2、查询最新一条
+		qerr, qsOnedata := QuerySettlementTrendbyDayTable()
+		if qerr != nil {
+			return qerr
+		}
+		//3、赋值
+		qushijl := new(types.BJsjkShengwjsqs)
+
+		qushijl.FNbJiaoye = qsdata.JiesuanMoney                       //   `F_NB_JIAOYJE` bigint DEFAULT NULL COMMENT '交易金额',
+		qushijl.FNbQingdje = qsdata.ClearlingMoney                    //   `F_NB_QINGFJE` bigint DEFAULT NULL COMMENT '清分金额',
+		qushijl.FNbChae = qsdata.JiesuanMoney - qsdata.ClearlingMoney //   `F_NB_CHAE` bigint DEFAULT NULL COMMENT '差额',
+		qushijl.FNbJiaoyts = qsdata.JiesuanCount                      //   `F_NB_JIAOYTS` int DEFAULT NULL COMMENT '交易条数',
+		qushijl.FNbQingfts = qsdata.ClearlingCount                    //   `F_NB_QINGFTS` int DEFAULT NULL COMMENT '清分条数',
+		qushijl.FDtTongjwcsj = utils.StrTimeToNowtime()               //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
+		qushijl.FVcTongjrq = utils.DateNowFormat()                    //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
+
+		//4、更新数据
+		uperr := UpdateSettlementTrendbyDayTable(qushijl, qsOnedata.FNbId)
+		if uperr != nil {
+			return uperr
+		}
+	}
 	return nil
 }
