@@ -52,8 +52,9 @@ import (
 )
 
 //var conffilepath = "./conf/config.toml" // go run main.go
-var conffilepath = "../conf/config.toml" // go run main.go
-type Config struct {                     //配置文件要通过tag来指定配置文件中的名称
+var conffilepath = "../conf/config.toml"
+
+type Config struct { //配置文件要通过tag来指定配置文件中的名称
 	//mysql 配置
 	MHostname     string `ini:"mysql_hostname"`
 	MPort         string `ini:"mysql_port"`

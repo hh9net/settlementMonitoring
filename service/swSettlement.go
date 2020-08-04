@@ -16,7 +16,7 @@ func QuerTotalSettlementData() (int, error, *dto.TotalSettlementData) {
 	//查询数据库获取总金额、总笔数
 	conn := utils.RedisInit() //初始化redis
 	// key:"jiestotal"  value："金额｜总条数"
-	rhgeterr, value := utils.RedisGet(conn, "jiesuantotal")
+	rhgeterr, value := utils.RedisGet(conn, "swjiesuantotal")
 	if rhgeterr != nil {
 		return 0, rhgeterr, nil
 	}

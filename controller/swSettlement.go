@@ -336,7 +336,7 @@ func QuerySettlementTrendbyDay(c *gin.Context) {
 //@Param req body dto.Reqlogin true "请求参数"
 //@Success 200 object dto.Response 成功后返回值
 //@Failure 404 object dto.ResponseFailure 查询失败
-//@Router /sw/settlementtrend [get]
+//@Router /sw/packetmonitoring [get]
 func PacketMonitoring(c *gin.Context) {
 	respFailure := dto.ResponseFailure{}
 	// 查询省外数据包监控

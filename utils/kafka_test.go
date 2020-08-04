@@ -72,7 +72,7 @@ func TestConsumerGroups(t *testing.T) {
 "index":"803", "topicreply":"172.18.70.21messageNoticeTopic", "id":"320107001111022020072911264400000175", "topictime":"2020-07-29 11:26:48", 
 "lane_id":"1102", "parking_id":"3201000016", "company_id":"3201070011", 
 "source_type":"zdz"}, 
-"data":{"card_network":"3301","obu_expire_date":"20220215","trade_time":"2020-07-29 11:26:44","plate_num":"苏D54321",
+"data":{"card_network":"3201","obu_expire_date":"20220215","trade_time":"2020-07-29 11:26:44","plate_num":"苏D54321",
 "obu_plate":"苏D54321","bill_description":"苏D54321|2020-07-29 11:26:43出场|红公馆|伟龙泊时捷ETC测试|停车1小时0分钟|10.00元",
 "obu_plate_color":"0","black_ver":"202007291126","obu_issuer":"bdadcbd532010001",
 "notify":"http://office.mobcb.com:11142/api/v3/external/etc/bill/exit/notify?mallId=BGM3OICRjHRm7ige","vehicle":"1",

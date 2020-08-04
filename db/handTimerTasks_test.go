@@ -58,3 +58,27 @@ func TestPacketMonitoring(t *testing.T) {
 	Newdb()
 	PacketMonitoring()
 }
+
+//ShengnJieSuanData()
+func TestShengnJieSuanData(t *testing.T) {
+	Newdb()
+	ShengnJieSuanData()
+}
+
+//QueryShengnRefusePayData()
+func TestQueryShengnRefusePayData(t *testing.T) {
+	Newdb()
+	QueryShengnRefusePayData()
+}
+
+//QueryShengnAlreadyPleaseData
+func TestQueryShengnAlreadyPleaseData(t *testing.T) {
+	Newdb()
+	QueryShengnAlreadyPleaseData()
+}
+
+//QuerySNDataClassificationData
+func TestQuerySNDataClassificationData(t *testing.T) {
+	Newdb()
+	QuerySNDataClassificationData()
+}

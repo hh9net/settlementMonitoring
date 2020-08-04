@@ -29,10 +29,11 @@ type BJsjkQingfhd struct {
 type BJsjkShengnjfsjtj struct {
 	FNbId int `gorm:"AUTO_INCREMENT ;primary_key; column:F_NB_ID"` //  `F_NB_ID` int NOT NULL AUTO_INCREMENT COMMENT '唯一自增id',
 
-	FNbJufzts    int    `gorm:"column:F_NB_JufZTS"`    //   `F_NB_JufZTS` int DEFAULT NULL COMMENT '拒付总条数',
-	FDtKaistjsj  string `gorm:"column:F_DT_KAISTJSJ"`  //   `F_DT_KAISTJSJ` datetime DEFAULT NULL COMMENT '开始统计时间',
-	FDtTongjwcsj string `gorm:"column:F_DT_TONGJWCSJ"` //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
-	FDtTongjrq   string `gorm:"column:F_DT_TONGJRQ"`   //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
+	FNbJufzje    int64     `gorm:"column:F_NB_JUFZJE"`    //`F_NB_JUFZJE` bigint DEFAULT NULL COMMENT '拒付总金额 （分）',
+	FNbJufzts    int       `gorm:"column:F_NB_JufZTS"`    //   `F_NB_JufZTS` int DEFAULT NULL COMMENT '拒付总条数',
+	FDtKaistjsj  time.Time `gorm:"column:F_DT_KAISTJSJ"`  //   `F_DT_KAISTJSJ` datetime DEFAULT NULL COMMENT '开始统计时间',
+	FDtTongjwcsj time.Time `gorm:"column:F_DT_TONGJWCSJ"` //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
+	FVcTongjrq   string    `gorm:"column:F_VC_TONGJRQ"`   //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
 }
 
 //4 黑名单监控表  `b_jsjk_heimdjk`
@@ -66,7 +67,7 @@ type BJsjkShengnjssjfl struct {
 	FNbShengnzjysl int       `gorm:"column:F_NB_SHENGNZJYSL"` //   `F_NB_SHENGNZJYSL` int DEFAULT NULL COMMENT '省内总交易数量',
 	FNbQingksl     int       `gorm:"column:F_NB_QINGKSL"`     //   `F_NB_QINGKSL` int DEFAULT NULL COMMENT '请款数量',
 	FNbWeifssl     int       `gorm:"column:F_NB_WEIFSSL"`     //   `F_NB_WEIFSSL` int DEFAULT NULL COMMENT '未发送数据量',
-	FNbJufsjl      int       `gorm:"column:F_NB_FASSJL"`      //   `F_NB_FASSJL` int DEFAULT NULL COMMENT '发送数据量',
+	FNbFassjl      int       `gorm:"column:F_NB_FASSJL"`      //   `F_NB_FASSJL` int DEFAULT NULL COMMENT '发送数据量',
 	FNbjufsjl      int       `gorm:"column:F_NB_JUFSJL"`      //   `F_NB_JUFSJL` int DEFAULT NULL COMMENT '拒付数据量',
 	FDtKaistjsj    time.Time `gorm:"column:F_DT_KAISTJSJ"`    //   `F_DT_KAISTJSJ` datetime DEFAULT NULL COMMENT '开始统计时间',
 	FDtTongjwcsj   time.Time `gorm:"column:F_DT_TONGJWCSJ"`   //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
@@ -81,7 +82,7 @@ type BJsjkShengnqktj struct {
 	FNbQingkzts  int       `gorm:"column:F_NB_QINGKZTS"`  //   `F_NB_QINGKZTS` int DEFAULT NULL COMMENT '请款总条数',
 	FDtKaistjsj  time.Time `gorm:"column:F_DT_KAISTJSJ"`  //   `F_DT_KAISTJSJ` datetime DEFAULT NULL COMMENT '开始统计时间',
 	FDtTongjwcsj time.Time `gorm:"column:F_DT_TONGJWCSJ"` //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
-	FDtTongjrq   string    `gorm:"column:F_DT_TONGJRQ"`   //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
+	FVcTongjrq   string    `gorm:"column:F_VC_TONGJRQ"`   //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
 }
 
 //8  省内实时数据监控表 b_jsjk_shengnsssjjk
@@ -455,6 +456,14 @@ type DataClassification struct {
 	Yidbcount    int //已打包
 	Yifscount    int //已发送
 	Huaizcount   int //坏账
+}
+
+type ShengNDataClassification struct {
+	Shengnzcount int //结算总数据
+	Yiqkcount    int //已清分总条数（不含坏账）
+	Weifscount   int //未打包
+	Yifscount    int //已发送
+	Jufuzcount   int //坏账
 }
 
 type TurnData struct {

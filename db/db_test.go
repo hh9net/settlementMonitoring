@@ -344,3 +344,27 @@ func TestQueryPacketMonitoring(t *testing.T) {
 	Newdb()
 	QueryPacketMonitoring()
 }
+
+//ShengnSendJieSuanData()
+func TestShengnSendJieSuanData(t *testing.T) {
+	Newdb()
+	ShengnSendJieSuanData()
+}
+
+//QueryShengnRefusePay()
+func TestQueryShengnRefusePay(t *testing.T) {
+	Newdb()
+	QueryShengnRefusePay()
+}
+
+//QueryAlreadyPlease()
+func TestQueryAlreadyPlease(t *testing.T) {
+	Newdb()
+	QueryAlreadyPlease()
+}
+
+//QuerySNDataClassification()
+func TestQuerySNDataClassification(t *testing.T) {
+	Newdb()
+	QuerySNDataClassification()
+}

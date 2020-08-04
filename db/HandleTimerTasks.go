@@ -55,9 +55,44 @@ func HandleDayTasks() {
 		//省外结算趋势
 		qserr := SettlementTrendbyDay()
 		if qserr != nil {
-			log.Println("省外结算趋势定时任务 error:", qserr)
+			log.Println("查询省外结算趋势定时任务 error:", qserr)
 		}
 
+		//省内业务
+		//任务 八
+		//省内结算监控
+		snjserr := ShengnJieSuanData()
+		if snjserr != nil {
+			log.Println("查询省内结算监控定时任务 error:", snjserr)
+		}
+
+		//任务 久
+		//省内发送结算数据金额、条数
+		snjsfserr := ShengnSendJieSuanData()
+		if snjserr != nil {
+			log.Println("查询省内发送结算数据金额、条数 定时任务 error:", snjsfserr)
+		}
+
+		//任务 十
+		//省内拒付数据金额、条数
+		snjferr := QueryShengnRefusePayData()
+		if snjferr != nil {
+			log.Println("查询省内拒付数据金额、条数 定时任务 error:", snjferr)
+		}
+
+		//任务 十一
+		//查询省内已请款数据金额、条数
+		qqingkerr := QueryShengnAlreadyPleaseData()
+		if qqingkerr != nil {
+			log.Println("查询省内已请款数据金额、条数 定时任务 error:", qqingkerr)
+		}
+
+		//任务 十二
+		//查询省内结算分类
+		qjsflerr := QuerySNDataClassificationData()
+		if qjsflerr != nil {
+			log.Println("查询省内结算分类 定时任务 error:", qjsflerr)
+		}
 	}
 }
 
@@ -144,7 +179,7 @@ func QuerTotalSettlementData() error {
 	//5、把数据更新到redis【覆盖】
 	conn := utils.RedisInit() //初始化redis
 	// key:"jiesuantotal"  value："金额｜总条数"
-	rhseterr := utils.RedisSet(conn, "jiesuantotal", strconv.Itoa(int(zje))+"|"+strconv.Itoa(zts))
+	rhseterr := utils.RedisSet(conn, "swjiesuantotal", strconv.Itoa(int(zje))+"|"+strconv.Itoa(zts))
 	if rhseterr != nil {
 		return rhseterr
 	}
@@ -549,7 +584,7 @@ func SettlementTrendbyDay() error {
 	return nil
 }
 
-//3.1 数据包实时监控
+//3.1 省外数据包实时监控
 func PacketMonitoring() error {
 	//1、新增数据包表
 	inerr := InsertPacketMonitoringTable()
@@ -580,5 +615,167 @@ func PacketMonitoring() error {
 	if uperr != nil {
 		return uperr
 	}
+	return nil
+}
+
+// 1.8 省内结算监控
+func ShengnJieSuanData() error {
+	//1、新增省内结算监控记录
+	inerr := InsertShengnJieSuanTable()
+	if inerr != nil {
+		return inerr
+	}
+	//2、查询省内结算监控最新记录
+	qerr, data := QueryShengnJieSuanTable()
+	if qerr != nil {
+		return qerr
+	}
+
+	//3、查询省内结算监控数据
+	count, amount := QueryShengnJieSuan()
+	//4、赋值
+	Data := new(types.BJsjkJiestj)
+	Data.FNbZongje = amount
+	Data.FNbZongts = count
+	Data.FDtTongjwcsj = utils.StrTimeToNowtime()
+	Data.FVcTongjrq = utils.DateNowFormat()
+	//5、更新数据
+	uperr := UpdateShengnJieSuanTable(Data, data.FNbId)
+	if uperr != nil {
+		return uperr
+	}
+
+	//6、把数据更新到redis
+	conn := utils.RedisInit() //初始化redis
+	// key:"snjiesuantotal"  value："金额｜总条数"
+	rseterr := utils.RedisSet(conn, "snjiesuantotal", strconv.Itoa(int(amount))+"|"+strconv.Itoa(count))
+	if rseterr != nil {
+		return rseterr
+	}
+	log.Println("更新省内结算统计最新统计记录成功")
+	return nil
+}
+
+//1.9 省内发送结算数据金额、条数
+func ShengnSendJieSuanData() error {
+
+	//1、新增记录
+	inerr := InsertShengnSendTable()
+	if inerr != nil {
+		return inerr
+	}
+	//2、查询最新记录
+	qerr, data := QueryShengnSendTable()
+	if qerr != nil {
+		return qerr
+	}
+
+	//3、查询省内结算数据
+	count, amount := QueryShengnSendjiessj()
+	//4、赋值
+	Data := new(types.BJsjkShengnyfssjtj)
+	Data.FNbZongje = amount
+	Data.FNbZongts = count
+	Data.FDtTongjwcsj = utils.StrTimeToNowtime()
+	Data.FVcKuaizsj = utils.KuaizhaoTimeNowFormat()
+	//5、更新数据
+	uperr := UpdateShengnSendTable(Data, data.FNbId)
+	if uperr != nil {
+		return uperr
+	}
+	log.Println("省内发送结算数据金额、条数成功")
+	return nil
+}
+
+//1.10 省内拒付数据金额、条数
+func QueryShengnRefusePayData() error {
+	//1、新增拒付数据记录
+	inerr := InsertShengnRefusePayTable()
+	if inerr != nil {
+		return inerr
+	}
+	//2、查询拒付数据最新记录
+	qerr, data := QueryShengnRefusePayTable()
+	if qerr != nil {
+		return qerr
+	}
+
+	//3、查询拒付数据数据
+	count, amount := QueryShengnRefusePay()
+	//4、赋值
+	Data := new(types.BJsjkShengnjfsjtj)
+	Data.FNbJufzje = amount
+	Data.FNbJufzts = count
+	Data.FDtTongjwcsj = utils.StrTimeToNowtime()
+	Data.FVcTongjrq = utils.DateNowFormat()
+	//5、更新拒付数据数据
+	uperr := UpdateShengnRefusePayTable(Data, data.FNbId)
+	if uperr != nil {
+		return uperr
+	}
+	log.Println("更新拒付数据金额、条数成功")
+	return nil
+}
+
+//1.11 查询省内已请款数据金额、条数
+func QueryShengnAlreadyPleaseData() error {
+	//1、新增省内已请款记录
+	inerr := InsertShengnAlreadyPleaseTable()
+	if inerr != nil {
+		return inerr
+	}
+	//2、查询省内已请款最新记录
+	qerr, data := QueryShengnAlreadyPleaseTable()
+	if qerr != nil {
+		return qerr
+	}
+
+	//3、查询省内已请款数据
+	count, amount := QueryAlreadyPlease()
+	//4、赋值
+	Data := new(types.BJsjkShengnqktj)
+	Data.FNbQingkzje = amount
+	Data.FNbQingkzts = count
+	Data.FDtTongjwcsj = utils.StrTimeToNowtime()
+	Data.FVcTongjrq = utils.DateNowFormat()
+	//5、更新省内已请款数据
+	uperr := UpdateShengnAlreadyPleaseTable(Data, data.FNbId)
+	if uperr != nil {
+		return uperr
+	}
+	log.Println("更新省内已请款金额、条数成功")
+	return nil
+}
+
+//1.12  查询省内结算分类
+func QuerySNDataClassificationData() error {
+	//1、新增省内结算分类
+	inerr := InsertSNDataClassificationTable()
+	if inerr != nil {
+		return inerr
+	}
+	//2、查询省内结算分类
+	qerr, data := QuerySNDataClassificationTable()
+	if qerr != nil {
+		return qerr
+	}
+
+	//3、查询省内结算分类
+	flshuju := QuerySNDataClassification()
+	//4、赋值
+	Data := new(types.BJsjkShengnjssjfl)
+	Data.FNbShengnzjysl = flshuju.Shengnzcount
+	Data.FNbQingksl = flshuju.Yiqkcount
+	Data.FNbWeifssl = flshuju.Weifscount
+	Data.FNbFassjl = flshuju.Yifscount
+	Data.FNbjufsjl = flshuju.Jufuzcount
+	Data.FDtTongjwcsj = utils.StrTimeToNowtime()
+	Data.FVcTongjrq = utils.DateNowFormat()
+	//5、更新省内结算分类
+	uperr := UpdateSNDataClassificationTable(Data, data.FNbId)
+	if uperr != nil {
+		return uperr
+	}
+	log.Println("更新省内结算分类成功")
 	return nil
 }

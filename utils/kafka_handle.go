@@ -359,13 +359,13 @@ func ProcessMessage(topic string, msg []byte) {
 		}
 
 		getvstr := string(getvalue.([]uint8))
-		log.Println("The  get redis value is ", getvstr)
+		log.Println("The  get redis value is :", getvstr)
 
 		if !StringExist(getvstr, "|") {
 			return
 		}
 		//\"3000|3\" 去掉 " 号
-		vst := strings.Split(vstr, `"`)
+		vst := strings.Split(getvstr, `"`)
 		getjsv := strings.Split(vst[1], `|`)
 
 		//处理数据 处理 结算总金额、总笔数
@@ -404,7 +404,7 @@ func ProcessMessage(topic string, msg []byte) {
 			return
 		}
 		//\"3000|3\" 去掉 " 号
-		vst := strings.Split(vstr, `"`)
+		vst := strings.Split(getvstr, `"`)
 		getjsv := strings.Split(vst[1], `|`)
 
 		//处理数据 处理 结算总金额、总笔数
