@@ -478,20 +478,6 @@ func UpdateAbnormalData(data *types.BJsjkYicsjtj, id int) error {
 	return nil
 }
 
-//4.1.5	数据包实时状态监控
-func PacketMonitoring() {
-
-}
-
-//今日打包数量
-//打包金额
-//已发送原始交易消息包数量
-//已发送原始交易消息包金额
-//记账包数量
-//记账包金额
-//原始交易消息应答包数量
-//func
-
 //4.1.10	清分、争议包更新状态监控
 //1、查询清分包数据
 func QueryClearlingdata(yesterday string) (error, *types.BJsQingftjxx) {
@@ -877,7 +863,7 @@ func QuerySettlementTrend(datetime string) *types.ClearandJiesuan {
 
 	jszcount := 0
 	//昨日的交易条数
-	db.Table("b_js_jiessj").Where("F_DT_JIAOYSJ >= ?", datetime+" 00:00:00").Where("F_DT_JIAOYSJ <= ?", datetime+" 23:59:50").Not("F_VC_KAWLH = ?", 3201).Count(&jszcount)
+	db.Table("b_js_jiessj").Where("F_DT_JIAOYSJ >= ?", datetime+" 00:00:00").Where("F_DT_JIAOYSJ <= ?", datetime+" 23:59:59").Not("F_VC_KAWLH = ?", 3201).Count(&jszcount)
 	log.Println("昨日的交易条数jszcount :", jszcount)
 	//昨日的交易金额
 	total_money := make([]int64, 1)
@@ -891,7 +877,7 @@ func QuerySettlementTrend(datetime string) *types.ClearandJiesuan {
 	//昨日清分条数  F_NB_QINGFJG=1  F_NB_ZHENGYCLJG ！=2坏账
 	qfzcount := 0
 	//昨日的交易条数
-	db.Table("b_js_jiessj").Where("F_NB_QINGFJG = ?", 1).Where("F_DT_JIAOYSJ >= ?", datetime+" 00:00:00").Where("F_DT_JIAOYSJ <= ?", datetime+" 23:59:50").Not("F_VC_KAWLH = ?", 3201).Not("F_NB_ZHENGYCLJG = ?", 2).Count(&qfzcount)
+	db.Table("b_js_jiessj").Where("F_NB_QINGFJG = ?", 1).Where("F_DT_JIAOYSJ >= ?", datetime+" 00:00:00").Where("F_DT_JIAOYSJ <= ?", datetime+" 23:59:59").Not("F_VC_KAWLH = ?", 3201).Not("F_NB_ZHENGYCLJG = ?", 2).Count(&qfzcount)
 	log.Println("昨日的清分条数qfzcount :", qfzcount)
 
 	//昨日清分金额  F_NB_QINGFJG=1  F_NB_ZHENGYCLJG ！=2坏账
@@ -984,4 +970,105 @@ func QuerySettlementTrendbyday(ts int) (error, *[]types.BJsjkShengwjsqs) {
 	}
 	log.Println("查询最新的ts条转结算表数据结果:", hmdtjs)
 	return nil, &hmdtjs
+}
+
+//4.1.5	数据包实时状态监控  10分钟查一次
+func QueryPacketMonitoring() *types.PacketMonitoringdata {
+	db := utils.GormClient.Client
+	datetime := utils.DateNowFormat()
+	//时间范围
+	begin := datetime + " 00:00:00"
+	end := datetime + " 23:59:59"
+
+	//今日打包数量
+	dbcount := 0
+	db.Table("b_js_yuansjyxx").Where("F_DT_DABSJ >= ?", begin).Where("F_DT_DABSJ <= ?", end).Count(&dbcount)
+	log.Printf("查询今日打包数量:%d", dbcount)
+
+	//打包金额 F_NB_ZONGJE
+	dbjine := make([]int64, 1)
+	dbsqlstr := `select SUM(F_NB_ZONGJE) as dbjjine from b_js_yuansjyxx where F_DT_DABSJ >= ? and F_DT_DABSJ <= ? `
+	db.Raw(dbsqlstr, begin, end).Pluck("SUM(F_NB_ZONGJE) as dbjjine", &dbjine)
+	log.Printf("查询今日打包金额:%d", dbjine[0])
+
+	//已发送原始交易消息包数量
+	fscount := 0
+	db.Table("b_js_yuansjyxx").Where("F_DT_FASSJ >= ?", begin).Where("F_DT_FASSJ <= ?", end).Count(&fscount)
+	log.Printf("查询今日发送原始交易包数量:%d", fscount)
+
+	//已发送原始交易消息包金额
+	fsjine := make([]int64, 1)
+	fssqlstr := `select SUM(F_NB_ZONGJE) as fsjjine from b_js_yuansjyxx where F_DT_FASSJ >= ? and F_DT_FASSJ <= ? `
+	db.Raw(fssqlstr, begin, end).Pluck("SUM(F_NB_ZONGJE) as fsjjine", &fsjine)
+	log.Printf("查询今日发送原始交易包金额:%d", fsjine[0])
+
+	//记账包数量
+	jzbcount := 0
+	db.Table("b_js_jizclxx").Where("F_DT_JIESSJ >= ?", begin).Where("F_DT_JIESSJ <= ?", end).Count(&jzbcount)
+	log.Printf("查询今日接收记账包数量:%d", jzbcount)
+	//记账包金额 F_DT_JIESSJ
+	jzbjine := make([]int64, 1)
+	jzbsqlstr := `select SUM(F_NB_ZONGJE) as jzbjjine from b_js_jizclxx where F_DT_JIESSJ >= ? and F_DT_JIESSJ <= ? `
+	db.Raw(jzbsqlstr, begin, end).Pluck("SUM(F_NB_ZONGJE) as jzbjjine", &jzbjine)
+	log.Printf("查询今日接收记账包金额:%d", jzbjine[0])
+
+	//原始交易消息应答包数量
+	ysydbcount := 0
+	db.Table("b_js_yuansjyydxx").Where("F_DT_XIAOXJSSJ >= ?", begin).Where("F_DT_XIAOXJSSJ <= ?", end).Count(&ysydbcount)
+	log.Printf("查询今日原始交易消息应答包数量:%d", ysydbcount)
+
+	return &types.PacketMonitoringdata{Dabaojine: dbjine[0], Dabaosl: dbcount,
+		Fasbsl: fscount, Fasbjine: fsjine[0],
+		Jizbjine: jzbjine[0], Jizbsl: jzbcount,
+		Yuansbsl: ysydbcount,
+	}
+}
+
+//新增数据包监控表记录
+func InsertPacketMonitoringTable() error {
+	db := utils.GormClient.Client
+	data := new(types.BJsjkShujbjk)
+
+	data.FDtKaistjsj = utils.StrTimeToNowtime()      //开始
+	data.FDtTongjwcsj = utils.StrTimeTodefaultdate() //
+	if err := db.Table("b_jsjk_shujbjk").Create(&data).Error; err != nil {
+		// 错误处理...
+		log.Println("新增数据包监控表记录 error", err)
+		return err
+	}
+	log.Println("新增数据包监控表记录成功！")
+	return nil
+}
+
+//查询最新一条
+func QueryPacketMonitoringTable() (error, *types.BJsjkShujbjk) {
+	db := utils.GormClient.Client
+	shuju := new(types.BJsjkShujbjk)
+	if err := db.Table("b_jsjk_shujbjk").Last(&shuju).Error; err != nil {
+		log.Println("查询最新一条数据包监控表记录 error :", err)
+		return err, nil
+	}
+	log.Println("查询数据包监控表最新记录结果:", shuju)
+	return nil, shuju
+}
+
+//更新数据包监控记录；
+func UpdatePacketMonitoringTable(data *types.BJsjkShujbjk, id int) error {
+	db := utils.GormClient.Client
+	shujub := new(types.BJsjkShujbjk)
+	shujub.FNbDabsl = data.FNbDabsl               //   `F_NB_DABSL` int DEFAULT NULL COMMENT '打包数量',
+	shujub.FNbDabje = data.FNbDabje               //   `F_NB_DABJE` bigint DEFAULT NULL COMMENT '打包金额',
+	shujub.FNbFasysjybsl = data.FNbFasysjybsl     //   `F_NB_FASYSJYBSL` int DEFAULT NULL COMMENT '已发送原始交易消息包数量',
+	shujub.FNbFasysjybje = data.FNbFasysjybje     //   `F_NB_FASYSJYBJE` bigint DEFAULT NULL COMMENT '已发送原始交易消息包金额',
+	shujub.FNbJizbsl = data.FNbJizbsl             //   `F_NB_JIZBSL` int DEFAULT NULL COMMENT '记账包数量',
+	shujub.FNbJizbje = data.FNbJizbje             //   `F_NB_JIZBJE` bigint DEFAULT NULL COMMENT '记账包金额',
+	shujub.FNbYuansjyydbsl = data.FNbYuansjyydbsl //   `F_NB_YUANSJYYDBSL` int DEFAULT NULL COMMENT '原始交易消息应答包数量',
+	shujub.FDtTongjwcsj = data.FDtTongjwcsj       //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
+	shujub.FVcKuaizsj = data.FVcKuaizsj           //   `F_DT_KUAIZSJ` datetime DEFAULT NULL COMMENT '快照时间',
+	if err := db.Table("b_jsjk_shujbjk").Where("F_NB_ID=?", id).Updates(&shujub).Error; err != nil {
+		log.Println("更新省外结算趋势表数据 记录 时 error", err)
+		return err
+	}
+	log.Println("更新省外结算趋势表数据 记录 完成")
+	return nil
 }

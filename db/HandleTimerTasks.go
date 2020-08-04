@@ -99,6 +99,12 @@ func HandleMinutesTasks() {
 		if dterr != nil {
 			log.Println("转结算定时任务 error:", dterr)
 		}
+		//任务二 数据包监控
+		perr := PacketMonitoring()
+		if perr != nil {
+			log.Println("数据包监控定时任务 error:", perr)
+		}
+
 	}
 
 }
@@ -539,6 +545,40 @@ func SettlementTrendbyDay() error {
 		if uperr != nil {
 			return uperr
 		}
+	}
+	return nil
+}
+
+//3.1 数据包实时监控
+func PacketMonitoring() error {
+	//1、新增数据包表
+	inerr := InsertPacketMonitoringTable()
+	if inerr != nil {
+		return inerr
+	}
+	//2、查询最新一次
+	qerr, qdata := QueryPacketMonitoringTable()
+	if qerr != nil {
+		return qerr
+	}
+	//3、查询数据包数据
+	data := QueryPacketMonitoring()
+	//4、赋值
+	pkgdata := new(types.BJsjkShujbjk)
+	pkgdata.FNbDabsl = data.Dabaosl                    //   `F_NB_DABSL` int DEFAULT NULL COMMENT '打包数量',
+	pkgdata.FNbDabje = data.Dabaojine                  //   `F_NB_DABJE` bigint DEFAULT NULL COMMENT '打包金额',
+	pkgdata.FNbFasysjybsl = data.Fasbsl                //   `F_NB_FASYSJYBSL` int DEFAULT NULL COMMENT '已发送原始交易消息包数量',
+	pkgdata.FNbFasysjybje = data.Fasbjine              //   `F_NB_FASYSJYBJE` bigint DEFAULT NULL COMMENT '已发送原始交易消息包金额',
+	pkgdata.FNbJizbsl = data.Jizbsl                    //   `F_NB_JIZBSL` int DEFAULT NULL COMMENT '记账包数量',
+	pkgdata.FNbJizbje = data.Jizbjine                  //   `F_NB_JIZBJE` bigint DEFAULT NULL COMMENT '记账包金额',
+	pkgdata.FNbYuansjyydbsl = data.Yuansbsl            //   `F_NB_YUANSJYYDBSL` int DEFAULT NULL COMMENT '原始交易消息应答包数量',
+	pkgdata.FDtTongjwcsj = utils.StrTimeToNowtime()    //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
+	pkgdata.FVcKuaizsj = utils.KuaizhaoTimeNowFormat() //   `F_DT_KUAIZSJ` datetime DEFAULT NULL COMMENT '快照时间',
+
+	//5、更新数据包监控
+	uperr := UpdatePacketMonitoringTable(pkgdata, qdata.FNbId)
+	if uperr != nil {
+		return uperr
 	}
 	return nil
 }

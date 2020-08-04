@@ -338,3 +338,9 @@ func TestQuerySettlementTrendbyday(t *testing.T) {
 	Newdb()
 	QuerySettlementTrendbyday(9)
 }
+
+//QueryPacketMonitoring()
+func TestQueryPacketMonitoring(t *testing.T) {
+	Newdb()
+	QueryPacketMonitoring()
+}

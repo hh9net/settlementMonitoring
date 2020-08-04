@@ -202,7 +202,7 @@ type BJsjkShujbjk struct {
 	FNbId int `gorm:"AUTO_INCREMENT; primary_key; column:F_NB_ID"` //  `F_NB_ID` int NOT NULL AUTO_INCREMENT COMMENT '唯一自增id',
 
 	FNbDabsl        int       `gorm:"column:F_NB_DABSL"`        //   `F_NB_DABSL` int DEFAULT NULL COMMENT '打包数量',
-	FNbDabje        int       `gorm:"column:F_NB_DABJE"`        //   `F_NB_DABJE` bigint DEFAULT NULL COMMENT '打包金额',
+	FNbDabje        int64     `gorm:"column:F_NB_DABJE"`        //   `F_NB_DABJE` bigint DEFAULT NULL COMMENT '打包金额',
 	FNbFasysjybsl   int       `gorm:"column:F_NB_FASYSJYBSL"`   //   `F_NB_FASYSJYBSL` int DEFAULT NULL COMMENT '已发送原始交易消息包数量',
 	FNbFasysjybje   int64     `gorm:"column:F_NB_FASYSJYBJE"`   //   `F_NB_FASYSJYBJE` bigint DEFAULT NULL COMMENT '已发送原始交易消息包金额',
 	FNbJizbsl       int       `gorm:"column:F_NB_JIZBSL"`       //   `F_NB_JIZBSL` int DEFAULT NULL COMMENT '记账包数量',
@@ -390,6 +390,43 @@ type BJsJizclmx struct {
 	FNbWeiyid      int   //`F_NB_WEIYID` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增主键',
 }
 
+//31   B_JS_YUANSJYXX【原始交易消息包表】
+type BJsYuansjyxx struct {
+	FVcBanbh       string    //F_VC_BANBH	版本号	VARCHAR(32)
+	FNbXiaoxlb     int       //F_NB_XIAOXLB	消息类别	INT
+	FNbXiaoxlx     int       //F_NB_XIAOXLX	消息类型	INT
+	FVcFaszid      string    //F_VC_FASZID	发送者ID	VARCHAR(32)
+	FVcJieszid     string    //F_VC_JIESZID	接收者ID	VARCHAR(32)
+	FNbXiaoxxh     int64     //F_NB_XIAOXXH	消息序号	BIGINT
+	FDtDabsj       string    //F_DT_DABSJ	打包时间	DATETIME
+	FNbFaszt       int       //F_NB_FASZT	发送状态	INT
+	FDtFassj       time.Time //F_DT_FASSJ  	发送时间	DATETIME
+	FNbYingdzt     int       //F_NB_YINGDZT	应答状态	INT
+	FVcQingfmbr    string    //F_VC_QINGFMBR	清分目标日	VARCHAR(32)
+	FVcTingccqffid string    //F_VC_TINGCCQFFID	停车场清分方ID	VARCHAR(32)
+	FVcFaxfwjgid   string    //F_VC_FAXFWJGID	发行服务机构ID	VARCHAR(32)
+	FNbJilsl       int       //F_NB_JILSL	记录数量	INT
+	FNbZongje      string    //F_NB_ZONGJE	总金额	INT
+	FVcXiaoxwjlj   string    //F_VC_XIAOXWJLJ	消息文件路径	VARCHAR(512)
+}
+
+// 32  B_JS_YUANSJYYDXX【原始交易应答消息】
+type BJsYuansjyydxx struct {
+	FVcBanbh     string    //F_VC_BANBH	版本号	VARCHAR(32)
+	FNbXiaoxlb   int       //F_NB_XIAOXLB	消息类别	INT
+	FNbXiaoxlx   int       //F_NB_XIAOXLX	消息类型	INT
+	FVcFaszid    string    //F_VC_FASZID	发送者ID	VARCHAR(32)
+	FVcJieszid   string    //F_VC_JIESZID	接收者ID	VARCHAR(32)
+	FNbXiaoxxh   int64     //F_NB_XIAOXXH	消息序号	BIGINT
+	FNbQuerdxxxh int64     //F_NB_QUERDXXXH	确认的消息序号	BIGINT
+	FDtChulsj    time.Time //F_DT_CHULSJ	处理时间	DATETIME
+	FNbZhixjg    int       //F_NB_ZHIXJG	执行结果	INT
+	FVcQingfmbr  string    //F_VC_QINGFMBR	清分目标日	VARCHAR(32)
+	FVcXiaoxwjlj string    //F_VC_XIAOXWJLJ	消息文件路径	VARCHAR(512)
+	FDtXiaoxjssj time.Time //F_DT_XIAOXJSSJ 消息接收时间
+	FNbWeiyid    int       //`F_NB_WEIYID` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增主键',
+}
+
 type Result struct {
 	Total     int64
 	Count     int
@@ -430,4 +467,14 @@ type ClearandJiesuan struct {
 	ClearlingMoney int64 //清分总金额
 	JiesuanCount   int   //交易结算金额
 	JiesuanMoney   int64 //交易总金额
+}
+
+type PacketMonitoringdata struct {
+	Dabaosl   int   //今日打包数量
+	Dabaojine int64 //打包金额
+	Fasbsl    int   //已发送原始交易消息包数量
+	Fasbjine  int64 //已发送原始交易消息包金额
+	Jizbsl    int   //记账包数量
+	Jizbjine  int64 //记账包金额
+	Yuansbsl  int   //原始交易消息应答包数量
 }

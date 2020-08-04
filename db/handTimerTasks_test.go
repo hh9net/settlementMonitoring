@@ -52,3 +52,9 @@ func TestSettlementTrendbyDay(t *testing.T) {
 	Newdb()
 	SettlementTrendbyDay()
 }
+
+//PacketMonitoring()
+func TestPacketMonitoring(t *testing.T) {
+	Newdb()
+	PacketMonitoring()
+}
