@@ -50,14 +50,14 @@ type BJsjkHeimdjk struct {
 type BJsjkShengnjsqs struct {
 	FNbId int `gorm:"AUTO_INCREMENT; primary_key ;column:F_NB_ID"` //  `F_NB_ID` int NOT NULL AUTO_INCREMENT COMMENT '唯一自增id',
 
-	FNbShengnjyje int64  `gorm:"column:F_NB_SHENGNJYJE "` //   `F_NB_SHENGNJYJE` bigint DEFAULT NULL COMMENT '省内交易金额',
-	FNbShengnqksj int64  `gorm:"column:F_NB_SHENGNQKJE "` //   `F_NB_SHENGNQKJE` bigint DEFAULT NULL COMMENT '省内请款金额',
-	FNbChae       int64  `gorm:"column:F_NB_CHAE"`        //   `F_NB_CHAE` bigint DEFAULT NULL COMMENT '差额',
-	FNbJiaoyts    int    `gorm:"column:F_NB_JIAOYTS"`     //   `F_NB_JIAOYTS` int DEFAULT NULL COMMENT '交易条数',
-	FNbQingkts    int    `gorm:"column:F_NB_QINGKTS"`     //   `F_NB_QINGKTS` int DEFAULT NULL COMMENT '请款条数',
-	FDtKaistjsj   string `gorm:"column:F_DT_KAISTJSJ"`    //   `F_DT_KAISTJSJ` datetime DEFAULT NULL COMMENT '开始统计时间',
-	FDtTongjwcsj  string `gorm:"column:F_DT_TONGJWCSJ"`   //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
-	FDtKuaizsj    string `gorm:"column:F_DT_KUAIZSJ"`     //   `F_DT_KUAIZSJ` datetime DEFAULT NULL COMMENT '快照时间',
+	FNbShengnjyje int64     `gorm:"column:F_NB_SHENGNJYJE"` //   `F_NB_SHENGNJYJE` bigint DEFAULT NULL COMMENT '省内交易金额',
+	FNbShengnqksj int64     `gorm:"column:F_NB_SHENGNQKJE"` //   `F_NB_SHENGNQKJE` bigint DEFAULT NULL COMMENT '省内请款金额',
+	FNbChae       int64     `gorm:"column:F_NB_CHAE"`       //   `F_NB_CHAE` bigint DEFAULT NULL COMMENT '差额',
+	FNbJiaoyts    int       `gorm:"column:F_NB_JIAOYTS"`    //   `F_NB_JIAOYTS` int DEFAULT NULL COMMENT '交易条数',
+	FNbQingkts    int       `gorm:"column:F_NB_QINGKTS"`    //   `F_NB_QINGKTS` int DEFAULT NULL COMMENT '请款条数',
+	FDtKaistjsj   time.Time `gorm:"column:F_DT_KAISTJSJ"`   //   `F_DT_KAISTJSJ` datetime DEFAULT NULL COMMENT '开始统计时间',
+	FDtTongjwcsj  time.Time `gorm:"column:F_DT_TONGJWCSJ"`  //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
+	FVcKuaizsj    string    `gorm:"column:F_VC_KUAIZSJ"`    //   `F_DT_KUAIZSJ` datetime DEFAULT NULL COMMENT '快照时间',
 }
 
 //6 省内结算数据分类表`b_jsjk_shengnjssjfl`
@@ -97,7 +97,7 @@ type BJsjkShengnsssjjk struct {
 	FNbShengnyjzsjts int       `gorm:"column:F_NB_SHENGNYJZSJTS"` //   `F_NB_SHENGNYJZSJTS` int DEFAULT NULL COMMENT '省内已记账数据条数',
 	FDtKaistjsj      time.Time `gorm:"column:F_DT_KAISTJSJ"`      //   `F_DT_KAISTJSJ` datetime DEFAULT NULL COMMENT '开始统计时间',
 	FDtTongjwcsj     time.Time `gorm:"column:F_DT_TONGJWCSJ"`     //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
-	FDtTongjrq       string    `gorm:"column:F_DT_TONGJRQ"`       //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
+	FVcTongjrq       string    `gorm:"column:F_VC_TONGJRQ"`       //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
 }
 
 //9 省内停车场结算趋势表 `b_jsjk_shengntccjsqs`
@@ -486,4 +486,20 @@ type PacketMonitoringdata struct {
 	Jizbsl    int   //记账包数量
 	Jizbjine  int64 //记账包金额
 	Yuansbsl  int   //原始交易消息应答包数量
+}
+
+type RealTimeSettlementData struct {
+	Shengnjssl   int   //省内结算数量
+	Shengnjsjine int64 //省内结算金额
+	Fassl        int   //已发送 数量
+	Fasjine      int64 //已发送 金额
+	Jizsl        int   //记账数量
+	Jizjine      int64 //记账金额
+}
+
+type SNClearandJiesuan struct {
+	ClearlingCount int   //清分总笔数
+	ClearlingMoney int64 //清分总金额
+	JiesuanCount   int   //交易结算金额
+	JiesuanMoney   int64 //交易总金额
 }
