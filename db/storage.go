@@ -1134,7 +1134,7 @@ func QueryShengnSendjiessj() (int, int64) {
 	sqlstr := `select SUM(F_NB_JINE) as total_money from b_js_jiessj where F_VC_KAWLH = ? and F_NB_DABZT =?`
 	db.Raw(sqlstr, 3201, 2).Pluck("SUM(F_NB_JINE) as total_money", &total_money)
 
-	log.Printf("查询卡网络号为%d，结算表已打包笔数%d，查询总金额为：%d", 3201, count, total_money)
+	log.Printf("查询卡网络号为%d，结算表已发送笔数%d，查询总金额为：%d", 3201, count, total_money)
 	return count, total_money[0]
 }
 
@@ -1360,4 +1360,185 @@ func UpdateSNDataClassificationTable(data *types.BJsjkShengnjssjfl, id int) erro
 	}
 	log.Println("更新省内结算数据分类 完成")
 	return nil
+}
+
+//4.2.5	省内今日实时数据
+func QueryRealTimeSettlementData() *types.RealTimeSettlementData {
+	db := utils.GormClient.Client
+
+	//省内产生的结算数据金额、条数
+	snzcount := 0
+	db.Table("b_js_jiessj").Where("F_VC_KAWLH = ?", 3201).Count(&snzcount)
+	log.Printf("查询省内结算交易，结算表总交易笔数:%d", snzcount)
+
+	var total_money []int64
+	sqlstr := `select SUM(F_NB_JINE) as total_money from b_js_jiessj where F_VC_KAWLH = ?`
+	db.Raw(sqlstr, 3201).Pluck("SUM(F_NB_JINE) as total_money", &total_money)
+	log.Printf("查询卡网络号为%d，结算表今日总交易笔数%d，查询总金额为：%d", 3201, snzcount, total_money)
+
+	//省内发送的数据金额、条数 2 已发送用打包状态表示
+	fscount := 0
+	db.Table("b_js_jiessj").Where("F_VC_KAWLH = ?", 3201).Where("F_NB_DABZT =?", 2).Count(&fscount)
+	var fstotal_money []int64
+	fssqlstr := `select SUM(F_NB_JINE) as fstotal_money from b_js_jiessj where F_VC_KAWLH = ? and F_NB_DABZT =?`
+	db.Raw(fssqlstr, 3201, 2).Pluck("SUM(F_NB_JINE) as fstotal_money", &fstotal_money)
+
+	log.Printf("查询卡网络号为%d，结算表已发送笔数%d，查询总金额为：%d", 3201, fscount, fstotal_money)
+
+	//省内记账的数据金额、条数 F_NB_JIZJG=1
+	jzcount := 0
+	db.Table("b_js_jiessj").Where("F_VC_KAWLH = ?", 3201).Where("F_NB_JIZJG =?", 1).Count(&jzcount)
+	var jztotal_money []int64
+	jzsqlstr := `select SUM(F_NB_JINE) as jztotal_money from b_js_jiessj where F_VC_KAWLH = ? and F_NB_JIZJG =?`
+	db.Raw(jzsqlstr, 3201, 1).Pluck("SUM(F_NB_JINE) as jztotal_money", &jztotal_money)
+
+	log.Printf("查询卡网络号为%d，结算表已记账笔数%d，查询总金额为：%d", 3201, jzcount, jztotal_money)
+	return &types.RealTimeSettlementData{
+		Shengnjsjine: total_money[0],
+		Shengnjssl:   snzcount,
+		Fasjine:      fstotal_money[0],
+		Fassl:        fscount,
+		Jizjine:      jztotal_money[0],
+		Jizsl:        jzcount,
+	}
+}
+
+//新增省内今日实时数据
+func InsertSNRealTimeSettlementDataTable() error {
+	db := utils.GormClient.Client
+	data := new(types.BJsjkShengnsssjjk)
+
+	data.FDtKaistjsj = utils.StrTimeToNowtime()      //开始
+	data.FDtTongjwcsj = utils.StrTimeTodefaultdate() //
+	if err := db.Table("b_jsjk_shengnsssjjk").Create(&data).Error; err != nil {
+		// 错误处理...
+		log.Println("新增省内今日实时数据 error", err)
+		return err
+	}
+	log.Println("新增省内今日实时数据 成功！")
+	return nil
+}
+
+//3、查询省内今日实时数据最新一条数据
+func QuerySNRealTimeSettlementDataTable() (error, *types.BJsjkShengnsssjjk) {
+	db := utils.GormClient.Client
+	shuju := new(types.BJsjkShengnsssjjk)
+	if err := db.Table("b_jsjk_shengnsssjjk").Last(&shuju).Error; err != nil {
+		log.Println("查询最新一条省内今日实时数据 error :", err)
+		return err, nil
+	}
+	log.Println("查询省内今日实时数据:", shuju)
+	return nil, shuju
+}
+
+//更具id查询记录
+func QuerySNRealTimeSettlementDataTableByID(id int) (error, *types.BJsjkShengnsssjjk) {
+	db := utils.GormClient.Client
+	shuju := new(types.BJsjkShengnsssjjk)
+	if err := db.Table("b_jsjk_shengnsssjjk").Where("F_NB_ID=?", id).Last(&shuju).Error; err != nil {
+		log.Println("查询最新一条省内今日实时数据 error :", err)
+		return err, nil
+	}
+	log.Println("查询省内今日实时数据:", shuju)
+	return nil, shuju
+}
+
+//4、更新省内今日实时数据最新一条
+func UpdateSNRealTimeSettlementDataTable(data *types.BJsjkShengnsssjjk, id int) error {
+	db := utils.GormClient.Client
+	if err := db.Table("b_jsjk_shengnsssjjk").Where("F_NB_ID=?", id).Updates(&data).Error; err != nil {
+		log.Println("更新省内今日实时数据时 error", err)
+		return err
+	}
+	log.Println("更新省内今日实时数据 完成")
+	return nil
+}
+
+//4.2.6	前30日省内结算概览 一天一次 统计30条
+//查询前30日的省内结算趋势
+func QueryShengNSettlementTrend() *[]types.SNClearandJiesuan {
+	ds := utils.OldData(30)
+	datas := make([]types.SNClearandJiesuan, 0)
+	for _, d := range ds {
+		data := QueryShengNSettlementTrendData(d)
+		datas = append(datas, *data)
+	}
+	return &datas
+}
+
+//省内结算趋势
+func QueryShengNSettlementTrendData(datetime string) *types.SNClearandJiesuan {
+	db := utils.GormClient.Client
+	//时间范围
+	begin := datetime + " 00:00:00"
+	end := datetime + " 23:59:59"
+	//查询省内交易金额 省内交易条数
+	count := 0
+	db.Table("b_js_jiessj").Where("F_VC_KAWLH = ?", 3201).Where("F_DT_JIAOYSJ >= ?", begin).Where("F_DT_JIAOYSJ <= ?", end).Count(&count)
+	var total_money []int64
+	sqlstr := `select SUM(F_NB_JINE) as total_money from b_js_jiessj where F_VC_KAWLH = ? and (F_DT_JIAOYSJ >= ?) and (F_DT_JIAOYSJ <= ?)  `
+	db.Raw(sqlstr, 3201, begin, end).Pluck("SUM(F_NB_JINE) as total_money", &total_money)
+
+	log.Printf("查询卡网络号为%d，结算表总交易笔数%d，查询总金额为：%d", 3201, count, total_money)
+
+	//省内请款金额 省内请款条数
+	qkcount := 0
+	//"F_NB_ZHENGYCLJG =?",
+	db.Table("b_js_jiessj").Where("F_VC_KAWLH = ?", 3201).Where("F_NB_QINGFJG =?", 1).Not("F_NB_ZHENGYCLJG = ?", 2).Where("F_DT_JIAOYSJ >= ?", begin).Where("F_DT_JIAOYSJ <= ?", end).Count(&qkcount)
+	var qktotal_money []int64
+	qksqlstr := `select SUM(F_NB_JINE) as qktotal_money from b_js_jiessj where F_VC_KAWLH = ? and F_NB_QINGFJG = ?  and not F_NB_ZHENGYCLJG =? and (F_DT_JIAOYSJ >= ?) and (F_DT_JIAOYSJ <= ?)`
+	db.Raw(qksqlstr, 3201, 1, 2, begin, end).Pluck("SUM(F_NB_JINE) as qktotal_money", &qktotal_money)
+	log.Printf("查询卡网络号为%d，省内已请款数据笔数%d，查询省内已请款数据总金额为：%d", 3201, count, qktotal_money)
+	return &types.SNClearandJiesuan{
+		ClearlingMoney: qktotal_money[0],
+		ClearlingCount: qkcount,
+		JiesuanCount:   count,
+		JiesuanMoney:   total_money[0],
+	}
+}
+
+//新增省内结算趋势
+func InsertShengNSettlementTrendTable() error {
+	db := utils.GormClient.Client
+	data := new(types.BJsjkShengnjsqs)
+
+	data.FDtKaistjsj = utils.StrTimeToNowtime()      //开始
+	data.FDtTongjwcsj = utils.StrTimeTodefaultdate() //
+	if err := db.Table("b_jsjk_shengnjsqs").Create(&data).Error; err != nil {
+		// 错误处理...
+		log.Println("新增省内结算趋势 error", err)
+		return err
+	}
+	log.Println("新增省内结算趋势 成功！")
+	return nil
+}
+
+//3、查询省内结算趋势最新一条数据
+func QueryShengNSettlementTrendTable() (error, *types.BJsjkShengnjsqs) {
+	db := utils.GormClient.Client
+	shuju := new(types.BJsjkShengnjsqs)
+	if err := db.Table("b_jsjk_shengnjsqs").Last(&shuju).Error; err != nil {
+		log.Println("查询最新一条省内结算趋势 error :", err)
+		return err, nil
+	}
+	log.Println("查询省内结算趋势:", shuju)
+	return nil, shuju
+}
+
+//4、更新省内结算趋势最新一条
+func UpdateShengNSettlementTrendTable(data *types.BJsjkShengnjsqs, id int) error {
+	db := utils.GormClient.Client
+	if err := db.Table("b_jsjk_shengnjsqs").Where("F_NB_ID=?", id).Updates(&data).Error; err != nil {
+		log.Println("更新省内结算趋势时 error", err)
+		return err
+	}
+	log.Println("更新省内结算趋势 完成")
+	return nil
+}
+
+//4.2.7	海岭数据同步监控
+func QueryDataSync() {
+
+	//查询
+
 }

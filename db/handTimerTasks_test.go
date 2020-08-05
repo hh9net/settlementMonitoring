@@ -82,3 +82,13 @@ func TestQuerySNDataClassificationData(t *testing.T) {
 	Newdb()
 	QuerySNDataClassificationData()
 }
+
+//()
+func TestShengNRealTimeSettlementData(t *testing.T) {
+	Newdb()
+	ShengNRealTimeSettlementData()
+}
+func TestQueryShengNSettlementTrenddata(t *testing.T) {
+	Newdb()
+	QueryShengNSettlementTrenddata()
+}

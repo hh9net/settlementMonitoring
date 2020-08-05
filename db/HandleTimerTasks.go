@@ -1,10 +1,12 @@
 package db
 
 import (
+	"errors"
 	log "github.com/sirupsen/logrus"
 	"settlementMonitoring/types"
 	"settlementMonitoring/utils"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -93,6 +95,13 @@ func HandleDayTasks() {
 		if qjsflerr != nil {
 			log.Println("查询省内结算分类 定时任务 error:", qjsflerr)
 		}
+
+		//任务十三
+		//省内结算趋势
+		qsnqserr := QueryShengNSettlementTrenddata()
+		if qsnqserr != nil {
+			log.Println("查询省内结算分类 定时任务 error:", qsnqserr)
+		}
 	}
 }
 
@@ -139,7 +148,11 @@ func HandleMinutesTasks() {
 		if perr != nil {
 			log.Println("数据包监控定时任务 error:", perr)
 		}
-
+		//任务三 省内实时数据监控
+		snsserr := ShengNRealTimeSettlementData()
+		if snsserr != nil {
+			log.Println("省内实时数据监控 定时任务 error:", snsserr)
+		}
 	}
 
 }
@@ -584,7 +597,7 @@ func SettlementTrendbyDay() error {
 	return nil
 }
 
-//3.1 省外数据包实时监控
+//3.2 省外数据包实时监控
 func PacketMonitoring() error {
 	//1、新增数据包表
 	inerr := InsertPacketMonitoringTable()
@@ -777,5 +790,110 @@ func QuerySNDataClassificationData() error {
 		return uperr
 	}
 	log.Println("更新省内结算分类成功")
+	return nil
+}
+
+//3.2  	省内实时数据
+func ShengNRealTimeSettlementData() error {
+	//1、新增数据包表
+	inerr := InsertSNRealTimeSettlementDataTable()
+	if inerr != nil {
+		return inerr
+	}
+	//2、查询最新一次
+	qerr, xdata := QuerySNRealTimeSettlementDataTable()
+	if qerr != nil {
+		return qerr
+	}
+	//get redis
+	conn := utils.RedisInit() //初始化redis
+	// key:"jiestotal"  value："金额｜总条数"
+	rhgeterr, value := utils.RedisGet(conn, "snshishishuju")
+	if rhgeterr != nil {
+		return rhgeterr
+	}
+	if value == nil {
+		log.Println("查询 获取省内实时数据为空 ")
+		return errors.New("get redis value==nil")
+	}
+
+	vstr := string(value.([]uint8))
+	log.Println("The get redis value is ", vstr)
+
+	if !utils.StringExist(vstr, "|") {
+		return errors.New("get redis error")
+	}
+
+	vs := strings.Split(vstr, `"`)
+	v := strings.Split(vs[1], `|`)
+	zje, _ := strconv.Atoi(v[0])    //省内产生金额
+	zts, _ := strconv.Atoi(v[1])    //省内产生条数
+	fsjine, _ := strconv.Atoi(v[2]) //'省内已发送数据金额'
+	fszts, _ := strconv.Atoi(v[3])  //省内已发送数据条数
+	jzjine, _ := strconv.Atoi(v[4]) //省内已记账数据金额
+	jzzts, _ := strconv.Atoi(v[5])  //省内已记账数据条数
+	log.Println("查询成功", "省内产生金额: ", int64(zje), "省内产生条数:", zts, "省内已发送数据金额:", fsjine, "省内已发送数据条数:", fszts, "省内已记账数据金额:", jzjine, "省内已记账数据条数:", jzzts)
+
+	//3、查询数据包数据
+	data := QueryRealTimeSettlementData()
+
+	//4、赋值
+	ssdata := new(types.BJsjkShengnsssjjk)
+	ssdata.FNbShengncsje = data.Shengnjsjine - int64(zje)  //   `F_NB_SHENGNCSJE` bigint DEFAULT NULL COMMENT '省内产生金额',
+	ssdata.FNbShengnyfssjje = data.Fasjine - int64(fsjine) //   `F_NB_SHENGNYFSSJJE` bigint DEFAULT NULL COMMENT '省内已发送数据金额',
+	ssdata.FNbShengnyjzsjje = data.Jizjine - int64(jzjine) //   `F_NB_SHENGNYJZSJJE` bigint DEFAULT NULL COMMENT '省内已记账数据金额',
+	ssdata.FNbShengncsts = data.Shengnjssl - zts           //   `F_NB_SHENGNCSTS` int DEFAULT NULL COMMENT '省内产生条数',
+	ssdata.FNbShengnyfssjts = data.Fassl - fszts           //   `F_NB_SHENGNYFSSJTS` int DEFAULT NULL COMMENT '省内已发送数据条数',
+	ssdata.FNbShengnyjzsjts = data.Jizsl - jzzts           //   `F_NB_SHENGNYJZSJTS` int DEFAULT NULL COMMENT '省内已记账数据条数',
+	ssdata.FDtTongjwcsj = utils.StrTimeToNowtime()         //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
+	ssdata.FVcTongjrq = utils.KuaizhaoTimeNowFormat()      //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
+
+	//5、更新数据包监控
+	uperr := UpdateSNRealTimeSettlementDataTable(ssdata, xdata.FNbId)
+	if uperr != nil {
+		return uperr
+	}
+
+	//redis set新值
+	s := strconv.Itoa(int(data.Shengnjsjine)) + "|" + strconv.Itoa(data.Shengnjssl) + "|" + strconv.Itoa(int(data.Fasjine)) + "|" + strconv.Itoa(data.Fassl) + "|" + strconv.Itoa(int(data.Jizjine)) + "|" + strconv.Itoa(data.Jizsl)
+	rseterr := utils.RedisSet(conn, "snshishishuju", s)
+	if rseterr != nil {
+		return rseterr
+	}
+	log.Println("set redis 成功 ")
+	return nil
+}
+
+//1.13 省内结算趋势
+func QueryShengNSettlementTrenddata() error {
+	// 查询省内结算趋势
+	qsshujus := QueryShengNSettlementTrend()
+	for i, qsshuju := range *qsshujus {
+		//1、新增省内结算趋势
+		inerr := InsertShengNSettlementTrendTable()
+		if inerr != nil {
+			return inerr
+		}
+		//2、查询省内结算趋势
+		qerr, data := QueryShengNSettlementTrendTable()
+		if qerr != nil {
+			return qerr
+		}
+		//4、赋值
+		Data := new(types.BJsjkShengnjsqs)
+		Data.FNbShengnjyje = qsshuju.JiesuanMoney                    //   `F_NB_SHENGNJYJE` bigint DEFAULT NULL COMMENT '省内交易金额',
+		Data.FNbShengnqksj = qsshuju.ClearlingMoney                  //   `F_NB_SHENGNQKJE` bigint DEFAULT NULL COMMENT '省内请款金额',
+		Data.FNbChae = qsshuju.JiesuanMoney - qsshuju.ClearlingMoney //   `F_NB_CHAE` bigint DEFAULT NULL COMMENT '差额',
+		Data.FNbJiaoyts = qsshuju.JiesuanCount                       //   `F_NB_JIAOYTS` int DEFAULT NULL COMMENT '交易条数',
+		Data.FNbQingkts = qsshuju.ClearlingCount                     //   `F_NB_QINGKTS` int DEFAULT NULL COMMENT '请款条数',
+		Data.FVcKuaizsj = utils.KuaizhaoTimeNowFormat()              //   `F_DT_KUAIZSJ` datetime DEFAULT NULL COMMENT '快照时间',
+		Data.FDtTongjwcsj = utils.StrTimeToNowtime()
+		//5、更新省内结算趋势
+		uperr := UpdateShengNSettlementTrendTable(Data, data.FNbId)
+		if uperr != nil {
+			return uperr
+		}
+		log.Printf("更新第%d天省内结算趋势成功", i+1)
+	}
 	return nil
 }

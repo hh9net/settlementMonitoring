@@ -17,6 +17,7 @@ require (
 	github.com/lestrrat-go/file-rotatelogs v2.3.0+incompatible
 	github.com/lestrrat-go/strftime v1.0.1 // indirect
 	github.com/mailru/easyjson v0.7.1 // indirect
+	github.com/mattn/go-oci8 v0.0.8
 	github.com/pkg/errors v0.9.1
 	github.com/rifflock/lfshook v0.0.0-20180920164130-b9218ef580f5
 	github.com/satori/go.uuid v1.2.0

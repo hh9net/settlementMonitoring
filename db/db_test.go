@@ -368,3 +368,15 @@ func TestQuerySNDataClassification(t *testing.T) {
 	Newdb()
 	QuerySNDataClassification()
 }
+
+//QueryRealTimeSettlementData()
+func TestQueryRealTimeSettlementData(t *testing.T) {
+	Newdb()
+	QueryRealTimeSettlementData()
+}
+
+//QueryShengNSettlementTrend()
+func TestQueryShengNSettlementTrend(t *testing.T) {
+	Newdb()
+	QueryShengNSettlementTrendData("2020-08-05")
+}
