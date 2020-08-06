@@ -102,6 +102,25 @@ func HandleDayTasks() {
 		if qsnqserr != nil {
 			log.Println("查询省内结算分类 定时任务 error:", qsnqserr)
 		}
+
+		//任务 十四
+		//逾期数据
+		yuqierr := Overduedata()
+		if yuqierr != nil {
+			log.Println("查询逾期数据 定时任务 error:", yuqierr)
+		}
+
+		//任务 十五
+		//省外停车场结算趋势
+		qwqserr := SWSettlementTrendbyDay()
+		if qwqserr != nil {
+			log.Println("查询省外停车场结算趋势 定时任务 error:", qwqserr)
+		}
+		//1.16 省内停车场结算趋势
+		snqserr := SNSettlementTrendbyDay()
+		if snqserr != nil {
+			log.Println("查询省内停车场结算趋势 定时任务 error:", snqserr)
+		}
 	}
 }
 
@@ -126,6 +145,18 @@ func HandleHourTasks() {
 		qhmderr := QueryblacklistCount()
 		if qhmderr != nil {
 			log.Println("查询黑名单统计总数定时任务 error:", qhmderr)
+		}
+
+		//任务4 海玲数据同步
+		tberr := QueryDataSyncdata()
+		if tberr != nil {
+			log.Println("查询海玲数据同步定时任务 error:", tberr)
+		}
+
+		//任务5 异常数据top10
+		yctoperr := QueryAbnormalDataOfParkingdata()
+		if yctoperr != nil {
+			log.Println("查询异常数据top10定时任务 error:", yctoperr)
 		}
 	}
 
@@ -897,3 +928,204 @@ func QueryShengNSettlementTrenddata() error {
 	}
 	return nil
 }
+
+//2.4 海玲数据同步
+func QueryDataSyncdata() error {
+	// 查询海玲数据同步
+	hlnum, tongbcount := QueryDataSync()
+
+	//1、新增海玲数据同步
+	inerr := InsertDataSyncTable()
+	if inerr != nil {
+		return inerr
+	}
+	//2、查询最新一条海玲数据同步
+	qerr, data := QueryDataSyncTable()
+	if qerr != nil {
+		return qerr
+	}
+	//4、赋值
+	Data := new(types.BJsjkShujtbjk)
+	Data.FNbJiessjzl = hlnum                     //   `F_NB_JIESJZL` int DEFAULT NULL COMMENT '结算数据总量',F_NB_JIESSJZL
+	Data.FNbYitbsjl = tongbcount                 //   `F_NB_YITBSJL` int DEFAULT NULL COMMENT '已同步数据量',
+	Data.FDtTongjwcsj = utils.StrTimeToNowtime() //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
+	Data.FVcTongjrq = utils.DateNowFormat()      //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
+
+	//5、更新最新一条海玲数据同步记录
+	uperr := UpdateDataSyncTable(Data, data.FNbId)
+	if uperr != nil {
+		return uperr
+	}
+	log.Printf("更新最新一条海玲数据同步成功")
+	return nil
+}
+
+//AbnormalDataOfParking
+//2.5 海玲数据同步
+func QueryAbnormalDataOfParkingdata() error {
+	// 查询海玲数据同步
+	dddata, zdzdata := QueryAbnormalDataOfParking()
+
+	for _, dd := range *dddata {
+		//1、新增海玲数据同步
+		inerr := InsertAbnormalDataOfParkingTable(1)
+		if inerr != nil {
+			return inerr
+		}
+		//2、查询最新一条海玲数据同步
+		qerr, data := QueryAbnormalDataOfParkingTable()
+		if qerr != nil {
+			return qerr
+		}
+		//4、赋值
+		Data := new(types.BJsjkYicsjtcctj)
+
+		Data.FNbZongts = dd.Count                       //   `F_NB_ZONGTS` int DEFAULT NULL COMMENT '总条数',
+		Data.FNbZongje = dd.Total                       //   `F_NB_ZONGJE` bigint DEFAULT NULL COMMENT '总金额（分）',
+		Data.FVcTingccid = dd.Parkingid                 //   `F_NB_TINGCCID` varchar(32) DEFAULT NULL COMMENT '停车场id',
+		Data.FVcKuaizsj = utils.KuaizhaoTimeNowFormat() //   `F_VC_KUAIZSJ` datetime DEFAULT NULL COMMENT '快照时间',
+		Data.FDtTongjwcsj = utils.StrTimeToNowtime()    //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
+
+		//5、更新最新一条海玲数据同步记录
+		uperr := UpdateAbnormalDataOfParkingTable(Data, data.FNbId)
+		if uperr != nil {
+			return uperr
+		}
+		log.Printf("更新单点最新一条海玲数据同步成功")
+	}
+
+	for _, zdz := range *zdzdata {
+		//1、新增海玲数据同步
+		inerr := InsertAbnormalDataOfParkingTable(1)
+		if inerr != nil {
+			return inerr
+		}
+		//2、查询最新一条海玲数据同步
+		qerr, zdzdata := QueryAbnormalDataOfParkingTable()
+		if qerr != nil {
+			return qerr
+		}
+		//4、赋值
+		Data := new(types.BJsjkYicsjtcctj)
+
+		Data.FNbZongts = zdz.Count                      //   `F_NB_ZONGTS` int DEFAULT NULL COMMENT '总条数',
+		Data.FNbZongje = zdz.Total                      //   `F_NB_ZONGJE` bigint DEFAULT NULL COMMENT '总金额（分）',
+		Data.FVcTingccid = zdz.Parkingid                //   `F_NB_TINGCCID` varchar(32) DEFAULT NULL COMMENT '停车场id',
+		Data.FVcKuaizsj = utils.KuaizhaoTimeNowFormat() //   `F_VC_KUAIZSJ` datetime DEFAULT NULL COMMENT '快照时间',
+		Data.FDtTongjwcsj = utils.StrTimeToNowtime()    //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
+
+		//5、更新最新一条海玲数据同步记录
+		uperr := UpdateAbnormalDataOfParkingTable(Data, zdzdata.FNbId)
+		if uperr != nil {
+			return uperr
+		}
+		log.Printf("更新总对总最新一条海玲数据同步成功")
+	}
+
+	return nil
+}
+
+// QueryOverdueData
+//1.14 逾期数据
+func Overduedata() error {
+	//逾期数据
+	shujus := QueryOverdueData()
+	for _, yqdata := range *shujus {
+		//1、新增逾期数据
+		inerr := InsertOverdueDataTable()
+		if inerr != nil {
+			return inerr
+		}
+		//2、查询逾期数据
+		qerr, data := QueryOverdueDataTable()
+		if qerr != nil {
+			return qerr
+		}
+		//4、赋值
+		Data := new(types.BJsjkYuqsjtj)
+		Data.FNbYuqzts = yqdata.Count           //   `F_NB_YUQZTS` int DEFAULT NULL COMMENT '逾期总条数',
+		Data.FNbYuqzje = yqdata.Total           //   `F_NB_YUQZJE` bigint DEFAULT NULL COMMENT '逾期总金额 （分）',
+		Data.FVcTingccid = yqdata.Parkingid     //   `F_VC_TINGCCID` varchar(32) DEFAULT NULL COMMENT '停车场id',
+		Data.FVcTongjrq = utils.DateNowFormat() //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
+		Data.FDtTongjwcsj = utils.StrTimeToNowtime()
+		//5、更新逾期数据
+		uperr := UpdateOverdueDataTable(Data, data.FNbId)
+		if uperr != nil {
+			return uperr
+		}
+		log.Printf("更新逾期数据成功")
+	}
+	return nil
+}
+
+//1.15 省外停车场结算趋势
+func SWSettlementTrendbyDay() error {
+	qsdatas := QuerySWSettlementTrendOne()
+	for _, qsdata := range *qsdatas {
+		//1、新增省外结算趋势
+		inerr := InsertSWSettlementTrendTable()
+		if inerr != nil {
+			return inerr
+		}
+		//2、查询最新一条
+		qerr, qsOnedata := QuerySWSettlementTrendTable()
+		if qerr != nil {
+			return qerr
+		}
+		//3、赋值
+		qushijl := new(types.BJsjkShengwtccjsqs)
+
+		qushijl.FVcTingccid = qsdata.Parkingid                        //   `F_VC_TINGCCID` varchar(32) DEFAULT NULL COMMENT '停车场id',
+		qushijl.FNbJiaoyje = qsdata.JiesuanMoney                      //   `F_NB_JIAOYJE` bigint DEFAULT NULL COMMENT '交易金额',
+		qushijl.FNbQingfje = qsdata.ClearlingMoney                    //   `F_NB_QINGFJE` bigint DEFAULT NULL COMMENT '清分金额',
+		qushijl.FNbChae = qsdata.JiesuanMoney - qsdata.ClearlingMoney //   `F_NB_CHAE` bigint DEFAULT NULL COMMENT '差额',
+		qushijl.FNbJiaoyts = qsdata.JiesuanCount                      //   `F_NB_JIAOYTS` int DEFAULT NULL COMMENT '交易条数',
+		qushijl.FNbQingfts = qsdata.ClearlingCount                    //   `F_NB_QINGFTS` int DEFAULT NULL COMMENT '清分条数',
+		qushijl.FDtTongjwcsj = utils.StrTimeToNowtime()               //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
+		qushijl.FVcTongjrq = utils.DateNowFormat()                    //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
+
+		//4、更新数据
+		uperr := UpdateSWSettlementTrendTable(qushijl, qsOnedata.FNbId)
+		if uperr != nil {
+			return uperr
+		}
+	}
+	return nil
+}
+
+//1.16 省内停车场结算趋势
+func SNSettlementTrendbyDay() error {
+	qsdatas := QuerySNSettlementTrendOne()
+	for _, qsdata := range *qsdatas {
+		//1、新增省内结算趋势
+		inerr := InsertSNSettlementTrendTable()
+		if inerr != nil {
+			return inerr
+		}
+		//2、查询最新一条
+		qerr, qsOnedata := QuerySNSettlementTrendTable()
+		if qerr != nil {
+			return qerr
+		}
+		//3、赋值
+		qushijl := new(types.BJsjkShengntccjsqs)
+
+		qushijl.FVcTingccid = qsdata.Parkingid                        //   `F_VC_TINGCCID` varchar(32) DEFAULT NULL COMMENT '停车场id',
+		qushijl.FNbShengnjyje = qsdata.JiesuanMoney                   //   `F_NB_JIAOYJE` bigint DEFAULT NULL COMMENT '交易金额',
+		qushijl.FNbShengnqkje = qsdata.ClearlingMoney                 //   `F_NB_QINGFJE` bigint DEFAULT NULL COMMENT '清分金额',
+		qushijl.FNbChae = qsdata.JiesuanMoney - qsdata.ClearlingMoney //   `F_NB_CHAE` bigint DEFAULT NULL COMMENT '差额',
+		qushijl.FNbJiaoyts = qsdata.JiesuanCount                      //   `F_NB_JIAOYTS` int DEFAULT NULL COMMENT '交易条数',
+		qushijl.FNbQingkts = qsdata.ClearlingCount                    //   `F_NB_QINGFTS` int DEFAULT NULL COMMENT '清分条数',
+		qushijl.FDtTongjwcsj = utils.StrTimeToNowtime()               //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
+		qushijl.FVcKuaizsj = utils.DateNowFormat()                    //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
+
+		//4、更新数据
+		uperr := UpdateSNSettlementTrendTable(qushijl, qsOnedata.FNbId)
+		if uperr != nil {
+			return uperr
+		}
+	}
+	return nil
+}
+
+//

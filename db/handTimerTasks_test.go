@@ -92,3 +92,27 @@ func TestQueryShengNSettlementTrenddata(t *testing.T) {
 	Newdb()
 	QueryShengNSettlementTrenddata()
 }
+
+//QueryDataSyncdata()
+func TestQueryDataSyncdata(t *testing.T) {
+	Newdb()
+	QueryDataSyncdata()
+}
+
+//QueryAbnormalDataOfParkingdata()
+func TestQueryAbnormalDataOfParkingdata(t *testing.T) {
+	Newdb()
+	QueryAbnormalDataOfParkingdata()
+}
+
+//Overduedata
+func TestOverduedata(t *testing.T) {
+	Newdb()
+	Overduedata()
+}
+
+//SWSettlementTrendbyDay()
+func TestSWSettlementTrendbyDay(t *testing.T) {
+	Newdb()
+	SWSettlementTrendbyDay()
+}

@@ -218,7 +218,7 @@ type BJsjkShujbjk struct {
 type BJsjkShujtbjk struct {
 	FNbId int `gorm:"AUTO_INCREMENT ;primary_key ;column:F_NB_ID"` //  `F_NB_ID` int NOT NULL AUTO_INCREMENT COMMENT '唯一自增id',
 
-	FNbJiessjzl  int       `gorm:"column:F_NB_JIESJZL"`   //   `F_NB_JIESJZL` int DEFAULT NULL COMMENT '结算数据总量',F_NB_JIESSJZL
+	FNbJiessjzl  int       `gorm:"column:F_NB_JIESSJZL"`  //   `F_NB_JIESJZL` int DEFAULT NULL COMMENT '结算数据总量',F_NB_JIESSJZL
 	FNbYitbsjl   int       `gorm:"column:F_NB_YITBSJL"`   //   `F_NB_YITBSJL` int DEFAULT NULL COMMENT '已同步数据量',
 	FDtKaistjsj  time.Time `gorm:"column:F_DT_KAISTJSJ"`  //   `F_DT_KAISTJSJ` datetime DEFAULT NULL COMMENT '开始统计时间',
 	FDtTongjwcsj time.Time `gorm:"column:F_DT_TONGJWCSJ"` //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
@@ -276,7 +276,7 @@ type BJsjkYuqsjtj struct {
 	FVcTingccid  string    `gorm:"column:F_VC_TINGCCID"`  //   `F_VC_TINGCCID` varchar(32) DEFAULT NULL COMMENT '停车场id',
 	FDtKaistjsj  time.Time `gorm:"column:F_DT_KAISTJSJ"`  //   `F_DT_KAISTJSJ` datetime DEFAULT NULL COMMENT '开始统计时间',
 	FDtTongjwcsj time.Time `gorm:"column:F_DT_TONGJWCSJ"` //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
-	FVcTongjrq   string    `gorm:"column:F_ VC_TONGJRQ"`  //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
+	FVcTongjrq   string    `gorm:"column:F_VC_TONGJRQ"`   //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
 
 }
 
@@ -478,6 +478,14 @@ type ClearandJiesuan struct {
 	JiesuanMoney   int64 //交易总金额
 }
 
+type ClearandJiesuanParkingdata struct {
+	ClearlingCount int    //清分总笔数
+	ClearlingMoney int64  //清分总金额
+	JiesuanCount   int    //交易结算金额
+	JiesuanMoney   int64  //交易总金额
+	Parkingid      string //停车场id
+}
+
 type PacketMonitoringdata struct {
 	Dabaosl   int   //今日打包数量
 	Dabaojine int64 //打包金额
@@ -503,3 +511,12 @@ type SNClearandJiesuan struct {
 	JiesuanCount   int   //交易结算金额
 	JiesuanMoney   int64 //交易总金额
 }
+
+//hl:
+//  park:
+//    id: 3208260001,3201000001,3202110001,3212830001,3203110001,3201000009,3201000002,3205830001,3201000003,3201000004,3201000005,3201000007,3201000006,3201000008,3206120001,3101130001,3205820001
+//  company:
+//    id: 3207000002,3207000003,3207000004,3207000005,3207000006,3207000007,3207000008,3207000009,3207000010,3207000018,3207000012,3207000013,3207000014,3207000015,3207000016,3107000001,3207000017
+
+//company:
+//id: 3201060010,3201020001

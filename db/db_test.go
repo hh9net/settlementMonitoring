@@ -380,3 +380,45 @@ func TestQueryShengNSettlementTrend(t *testing.T) {
 	Newdb()
 	QueryShengNSettlementTrendData("2020-08-05")
 }
+
+//AbnormalDataOfParking
+func TestAbnormalDataOfParking(t *testing.T) {
+	Newdb()
+	QueryAbnormalDataOfParking()
+}
+
+//QueryOverdueData()
+func TestQueryOverdueData(t *testing.T) {
+	Newdb()
+	QueryOverdueData()
+}
+
+//QuerySWSettlementTrendOne
+func TestQuerySWSettlementTrendOne(t *testing.T) {
+	Newdb()
+	QuerySWSettlementTrendOne()
+}
+
+//QuerySWSettlementTrendbyDay()
+func TestQuerySWSettlementTrendbyDay(t *testing.T) {
+	Newdb()
+	QuerySWSettlementTrendbyDay()
+}
+
+//QuerySWSettlementTrendbyOneDay()
+func TestQuerySWSettlementTrendbyOneDay(t *testing.T) {
+	Newdb()
+	QuerySWSettlementTrendbyOneDay()
+}
+
+//QuerySNSettlementTrendOne
+func TestQuerySNSettlementTrendOne(t *testing.T) {
+	Newdb()
+	QuerySNSettlementTrendOne()
+}
+
+//SNSettlementTrendbyDay
+func TestSNSettlementTrendbyDay(t *testing.T) {
+	Newdb()
+	SNSettlementTrendbyDay()
+}

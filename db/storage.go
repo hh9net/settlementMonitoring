@@ -860,16 +860,16 @@ func QueryDataTurnMonitortable(ts, lx int) (error, *[]types.BJsjkZhuanjssjjk) {
 //查询昨日交易金额、清分金额；
 func QuerySettlementTrend(datetime string) *types.ClearandJiesuan {
 	db := utils.GormClient.Client
-
+	//时间范围
+	begin := datetime + " 00:00:00"
+	end := datetime + " 23:59:59"
 	jszcount := 0
 	//昨日的交易条数
 	db.Table("b_js_jiessj").Where("F_DT_JIAOYSJ >= ?", datetime+" 00:00:00").Where("F_DT_JIAOYSJ <= ?", datetime+" 23:59:59").Not("F_VC_KAWLH = ?", 3201).Count(&jszcount)
 	log.Println("昨日的交易条数jszcount :", jszcount)
 	//昨日的交易金额
 	total_money := make([]int64, 1)
-	//时间范围
-	begin := datetime + " 00:00:00"
-	end := datetime + " 23:59:59"
+
 	sqlstr := `select SUM(F_NB_JINE) as total_money from b_js_jiessj  where F_DT_JIAOYSJ >= ? and F_DT_JIAOYSJ <= ? and not F_VC_KAWLH =? `
 	db.Raw(sqlstr, begin, end, 3201).Pluck("SUM(F_NB_JINE) as total_money", &total_money)
 	log.Println("昨日的交易金额total_money :", total_money[0])
@@ -877,16 +877,14 @@ func QuerySettlementTrend(datetime string) *types.ClearandJiesuan {
 	//昨日清分条数  F_NB_QINGFJG=1  F_NB_ZHENGYCLJG ！=2坏账
 	qfzcount := 0
 	//昨日的交易条数
-	db.Table("b_js_jiessj").Where("F_NB_QINGFJG = ?", 1).Where("F_DT_JIAOYSJ >= ?", datetime+" 00:00:00").Where("F_DT_JIAOYSJ <= ?", datetime+" 23:59:59").Not("F_VC_KAWLH = ?", 3201).Not("F_NB_ZHENGYCLJG = ?", 2).Count(&qfzcount)
+	db.Table("b_js_jiessj").Where("F_NB_QINGFJG = ?", 1).Where("F_DT_JIAOYSJ >= ?", begin).Where("F_DT_JIAOYSJ <= ?", end).Not("F_VC_KAWLH = ?", 3201).Not("F_NB_ZHENGYCLJG = ?", 2).Count(&qfzcount)
 	log.Println("昨日的清分条数qfzcount :", qfzcount)
 
 	//昨日清分金额  F_NB_QINGFJG=1  F_NB_ZHENGYCLJG ！=2坏账
 	qftotal_money := make([]int64, 1)
-	//时间范围
-	qfbegin := datetime + " 00:00:00"
-	qfend := datetime + " 23:59:59"
+
 	qfsqlstr := `select SUM(F_NB_JINE) as qftotal_money from b_js_jiessj  where F_DT_JIAOYSJ >= ? and F_DT_JIAOYSJ <= ? and F_NB_QINGFJG = ? and not F_NB_ZHENGYCLJG  =? and not F_VC_KAWLH =?`
-	db.Raw(qfsqlstr, qfbegin, qfend, 1, 2, 3201).Pluck("SUM(F_NB_JINE) as qftotal_money", &qftotal_money)
+	db.Raw(qfsqlstr, begin, end, 1, 2, 3201).Pluck("SUM(F_NB_JINE) as qftotal_money", &qftotal_money)
 	log.Println("昨日清分金额qftotal_money :", qftotal_money[0])
 	log.Println("查询日期 datetime:", datetime)
 	return &types.ClearandJiesuan{ClearlingCount: qfzcount,
@@ -1537,8 +1535,375 @@ func UpdateShengNSettlementTrendTable(data *types.BJsjkShengnjsqs, id int) error
 }
 
 //4.2.7	海岭数据同步监控
-func QueryDataSync() {
+func QueryDataSync() (int, int) {
 
-	//查询
+	//查询海玲oracle数据库 B_TXF_CHEDXFYSSJ
+	num := OrclQuerydata()
+	log.Println("oracle num:", num)
 
+	db := utils.GormClient.Client
+	//查询结算数据 停车场id
+	count := 0
+	db.Table("b_js_jiessj").Where("F_VC_KAWLH = ?", 3201).Count(&count)
+	log.Printf("查询海玲数据库数据量:%d，结算表数据同步数据量：=%d", num, count)
+	return num, count
+}
+
+//新增数据同步监控表
+func InsertDataSyncTable() error {
+	db := utils.GormClient.Client
+	data := new(types.BJsjkShujtbjk)
+
+	data.FDtKaistjsj = utils.StrTimeToNowtime()      //开始
+	data.FDtTongjwcsj = utils.StrTimeTodefaultdate() //
+	if err := db.Table("b_jsjk_shujtbjk").Create(&data).Error; err != nil {
+		// 错误处理...
+		log.Println("新增数据同步监控表 error", err)
+		return err
+	}
+	log.Println("新增数据同步监控表 成功！")
+	return nil
+}
+
+//3、查询数据同步监控表最新一条数据
+func QueryDataSyncTable() (error, *types.BJsjkShujtbjk) {
+	db := utils.GormClient.Client
+	shuju := new(types.BJsjkShujtbjk)
+	if err := db.Table("b_jsjk_shujtbjk").Last(&shuju).Error; err != nil {
+		log.Println("查询最新一条数据同步监控表 error :", err)
+		return err, nil
+	}
+	log.Println("查询数据同步监控表:", shuju)
+	return nil, shuju
+}
+
+//4、更新数据同步监控表最新一条
+func UpdateDataSyncTable(data *types.BJsjkShujtbjk, id int) error {
+	db := utils.GormClient.Client
+	if err := db.Table("b_jsjk_shujtbjk").Where("F_NB_ID=?", id).Updates(&data).Error; err != nil {
+		log.Println("更新数据同步监控表时 error", err)
+		return err
+	}
+	log.Println("更新数据同步监控表 完成")
+	return nil
+}
+
+//4.2.9	异常数据停车场top10
+func QueryAbnormalDataOfParking() (*[]types.Result, *[]types.Result) {
+	db := utils.GormClient.Client
+	var ddresult []types.Result
+	//b_dd_chedckyssjlycb 、 b_zdz_chedckyssjlycb
+	sqlstr := `select SUM(F_NB_JINE) as total,count(F_NB_JINE) as count ,F_VC_TINGCCBH  as  parkingid from b_dd_chedckyssjlycb where F_VC_SHANCBJ = ? GROUP BY F_VC_TINGCCBH `
+	db.Raw(sqlstr, 0).Scan(&ddresult)
+	log.Println("ddresult:", ddresult)
+
+	var zdzresult []types.Result
+	//b_dd_chedckyssjlycb 、 b_zdz_chedckyssjlycb
+	sqlstr1 := `select SUM(F_NB_JINE) as total,count(F_NB_JINE) as count ,F_VC_TINGCCBH  as  parkingid from b_zdz_chedckyssjlycb where F_VC_SHANCBJ = ? GROUP BY F_VC_TINGCCBH `
+	db.Raw(sqlstr1, 0).Scan(&zdzresult)
+	log.Println("zdzresult:", zdzresult)
+	return &ddresult, &zdzresult
+}
+
+//新增异常数据停车场
+func InsertAbnormalDataOfParkingTable(lx int) error {
+	db := utils.GormClient.Client
+	data := new(types.BJsjkYicsjtcctj)
+
+	data.FNbTongjlx = lx
+	data.FDtKaistjsj = utils.StrTimeToNowtime()      //开始
+	data.FDtTongjwcsj = utils.StrTimeTodefaultdate() //
+	if err := db.Table("b_jsjk_yicsjtcctj").Create(&data).Error; err != nil {
+		// 错误处理...
+		log.Println("新增异常数据停车场表 error", err)
+		return err
+	}
+	log.Println("新增异常数据停车场表 成功！")
+	return nil
+}
+
+//3、查询异常数据停车场最新一条数据
+func QueryAbnormalDataOfParkingTable() (error, *types.BJsjkYicsjtcctj) {
+	db := utils.GormClient.Client
+	shuju := new(types.BJsjkYicsjtcctj)
+	if err := db.Table("b_jsjk_yicsjtcctj").Last(&shuju).Error; err != nil {
+		log.Println("查询最新一条异常数据停车场表 error :", err)
+		return err, nil
+	}
+	log.Println("查询异常数据停车场表:", shuju)
+	return nil, shuju
+}
+
+//4、更新异常数据停车场最新一条
+func UpdateAbnormalDataOfParkingTable(data *types.BJsjkYicsjtcctj, id int) error {
+	db := utils.GormClient.Client
+	if err := db.Table("b_jsjk_yicsjtcctj").Where("F_NB_ID=?", id).Updates(&data).Error; err != nil {
+		log.Println("更新异常数据停车场表时 error", err)
+		return err
+	}
+	log.Println("更新异常数据停车场表 完成")
+	return nil
+}
+
+//4.2.10	逾期数据停车场top10  b_zdz_chedckyssjlycb】表中逾期数据【F_VC_YICLX =21
+func QueryOverdueData() *[]types.Result {
+	db := utils.GormClient.Client
+	datetimes := utils.OldData(30)
+	log.Println(datetimes)
+	begin := datetimes[0] + " 00:00:00"
+	end := datetimes[29] + " 23:59:59"
+	var yuqiresult []types.Result
+	sqlstr := `select SUM(F_NB_JINE) as total,count(F_NB_JINE) as count ,F_VC_TINGCCBH  as  parkingid from b_zdz_chedckyssjlycb where F_VC_SHANCBJ = ? and F_VC_YICLX = ? and F_DT_CAIJSJ >= ? and F_DT_CAIJSJ <= ?  GROUP BY F_VC_TINGCCBH `
+	db.Raw(sqlstr, 0, 21, begin, end).Scan(&yuqiresult)
+	log.Println("yuqiresult:", yuqiresult)
+	return &yuqiresult
+}
+
+//新增逾期数据停车场
+func InsertOverdueDataTable() error {
+	db := utils.GormClient.Client
+	data := new(types.BJsjkYuqsjtj)
+	data.FDtKaistjsj = utils.StrTimeToNowtime()      //开始
+	data.FDtTongjwcsj = utils.StrTimeTodefaultdate() //
+	if err := db.Table("b_jsjk_yuqsjtj").Create(&data).Error; err != nil {
+		// 错误处理...
+		log.Println("新增逾期数据停车场表 error", err)
+		return err
+	}
+	log.Println("新增逾期数据停车场表 成功！")
+	return nil
+}
+
+//3、查询逾期数据停车场最新一条数据
+func QueryOverdueDataTable() (error, *types.BJsjkYuqsjtj) {
+	db := utils.GormClient.Client
+	shuju := new(types.BJsjkYuqsjtj)
+	if err := db.Table("b_jsjk_yuqsjtj").Last(&shuju).Error; err != nil {
+		log.Println("查询最新一条逾期数据停车场表 error :", err)
+		return err, nil
+	}
+	log.Println("查询逾期数据停车场表:", shuju)
+	return nil, shuju
+}
+
+//4、更新逾期数据停车场最新一条
+func UpdateOverdueDataTable(data *types.BJsjkYuqsjtj, id int) error {
+	db := utils.GormClient.Client
+	if err := db.Table("b_jsjk_yuqsjtj").Where("F_NB_ID=?", id).Updates(&data).Error; err != nil {
+		log.Println("更新逾期数据停车场表时 error", err)
+		return err
+	}
+	log.Println("更新逾期数据停车场表 完成")
+	return nil
+}
+
+//省外停车场结算趋势表
+//b_jsjk_shengwtccjsqs
+//获取30天的交易金额、条数、清分金额、条数   从小到大
+func QuerySWSettlementTrendbyDay() *[][]types.ClearandJiesuanParkingdata {
+	//获取时间 之前30天
+	datetimes := utils.OldData(30)
+	Data := make([][]types.ClearandJiesuanParkingdata, 0)
+	//获取数据
+	for _, d := range datetimes {
+		//1天的数据
+		data := QuerySWSettlementTrendOneday(d)
+		Data = append(Data, *data)
+	}
+	log.Println("查询30天的数据Data:", Data)
+	//返回数据
+	return &Data
+}
+func QuerySWSettlementTrendbyOneDay() *[][]types.ClearandJiesuanParkingdata {
+	//获取时间 之前30天
+	datetimes := utils.OldData(1)
+	Data := make([][]types.ClearandJiesuanParkingdata, 0)
+	//获取数据
+	for _, d := range datetimes {
+		//1天的数据
+		data := QuerySWSettlementTrendOneday(d)
+		Data = append(Data, *data)
+	}
+	log.Println("查询30天的数据Data:", Data)
+	//返回数据
+	return &Data
+}
+
+func QuerySWSettlementTrendOneday(datetime string) *[]types.ClearandJiesuanParkingdata {
+	db := utils.GormClient.Client
+	//时间范围
+	begin := datetime + " 00:00:00"
+	end := datetime + " 23:59:59"
+	var result []types.Result
+	sqlstr4 := `select SUM(F_NB_JINE) as total,count(F_NB_JINE) as count ,F_VC_TINGCCBH  as  parkingid from b_js_jiessj where F_DT_JIAOYSJ >= ? and F_DT_JIAOYSJ <= ? and not F_VC_KAWLH =? GROUP BY F_VC_TINGCCBH `
+	db.Raw(sqlstr4, begin, end, 3201).Scan(&result)
+	log.Println("省外停车场结算 产生交易 result:", result)
+
+	var qfresult []types.Result // where F_DT_JIAOYSJ >= ? and F_DT_JIAOYSJ <= ? and F_NB_QINGFJG = ? and not F_NB_ZHENGYCLJG  =? and not F_VC_KAWLH =?
+	qfsqlstr := `select SUM(F_NB_JINE) as total,count(F_NB_JINE) as count ,F_VC_TINGCCBH  as  parkingid from b_js_jiessj where F_DT_JIAOYSJ >= ? and F_DT_JIAOYSJ <= ? and F_NB_QINGFJG = ? and not F_NB_ZHENGYCLJG  =? and not F_VC_KAWLH =? GROUP BY F_VC_TINGCCBH `
+	db.Raw(qfsqlstr, begin, end, 1, 2, 3201).Scan(&qfresult)
+	log.Println("省外停车场结算 已清分 result:", qfresult)
+	log.Println("查询日期 datetime:", datetime)
+
+	datas := make([]types.ClearandJiesuanParkingdata, 0)
+	var d types.ClearandJiesuanParkingdata
+	for _, r := range result {
+		d.Parkingid = r.Parkingid
+		d.JiesuanMoney = r.Total
+		d.JiesuanCount = r.Count
+		datas = append(datas, d)
+	}
+	for i, qfr := range qfresult {
+		if qfr.Parkingid == datas[i].Parkingid {
+			datas[i].ClearlingMoney = qfr.Total
+			datas[i].ClearlingCount = qfr.Count
+		}
+	}
+	return &datas
+}
+
+func QuerySWSettlementTrendOne() *[]types.ClearandJiesuanParkingdata {
+	db := utils.GormClient.Client
+	//时间范围
+	datetime := utils.Yesterdaydate()
+	begin := datetime + " 00:00:00"
+	end := datetime + " 23:59:59"
+	var result []types.Result
+	sqlstr4 := `select SUM(F_NB_JINE) as total,count(F_NB_JINE) as count ,F_VC_TINGCCBH  as  parkingid from b_js_jiessj where F_DT_JIAOYSJ >= ? and F_DT_JIAOYSJ <= ? and not F_VC_KAWLH =? GROUP BY F_VC_TINGCCBH `
+	db.Raw(sqlstr4, begin, end, 3201).Scan(&result)
+	log.Println("省外停车场结算 产生交易 result:", result)
+
+	var qfresult []types.Result // where F_DT_JIAOYSJ >= ? and F_DT_JIAOYSJ <= ? and F_NB_QINGFJG = ? and not F_NB_ZHENGYCLJG  =? and not F_VC_KAWLH =?
+	qfsqlstr := `select SUM(F_NB_JINE) as total,count(F_NB_JINE) as count ,F_VC_TINGCCBH  as  parkingid from b_js_jiessj where F_DT_JIAOYSJ >= ? and F_DT_JIAOYSJ <= ? and F_NB_QINGFJG = ? and not F_NB_ZHENGYCLJG  =? and not F_VC_KAWLH =? GROUP BY F_VC_TINGCCBH `
+	db.Raw(qfsqlstr, begin, end, 1, 2, 3201).Scan(&qfresult)
+	log.Println("省外停车场结算 已清分 result:", qfresult)
+	log.Println("查询日期 datetime:", datetime)
+
+	datas := make([]types.ClearandJiesuanParkingdata, 0)
+	var d types.ClearandJiesuanParkingdata
+	for _, r := range result {
+		d.Parkingid = r.Parkingid
+		d.JiesuanMoney = r.Total
+		d.JiesuanCount = r.Count
+		datas = append(datas, d)
+	}
+	for i, qfr := range qfresult {
+		if qfr.Parkingid == datas[i].Parkingid {
+			datas[i].ClearlingMoney = qfr.Total
+			datas[i].ClearlingCount = qfr.Count
+		}
+	}
+	return &datas
+}
+
+//新增省外停车场结算
+func InsertSWSettlementTrendTable() error {
+	db := utils.GormClient.Client
+	data := new(types.BJsjkShengwtccjsqs)
+	data.FDtKaistjsj = utils.StrTimeToNowtime()      //开始
+	data.FDtTongjwcsj = utils.StrTimeTodefaultdate() //
+	if err := db.Table("b_jsjk_shengwtccjsqs").Create(&data).Error; err != nil {
+		// 错误处理...
+		log.Println("新增省外停车场结算表 error", err)
+		return err
+	}
+	log.Println("新增省外停车场结算表 成功！")
+	return nil
+}
+
+//3、查询省外停车场结算最新一条数据
+func QuerySWSettlementTrendTable() (error, *types.BJsjkShengwtccjsqs) {
+	db := utils.GormClient.Client
+	shuju := new(types.BJsjkShengwtccjsqs)
+	if err := db.Table("b_jsjk_shengwtccjsqs").Last(&shuju).Error; err != nil {
+		log.Println("查询最新一条省外停车场结算表 error :", err)
+		return err, nil
+	}
+	log.Println("查询省外停车场结算表:", shuju)
+	return nil, shuju
+}
+
+//4、更新省外停车场结算最新一条
+func UpdateSWSettlementTrendTable(data *types.BJsjkShengwtccjsqs, id int) error {
+	db := utils.GormClient.Client
+	if err := db.Table("b_jsjk_shengwtccjsqs").Where("F_NB_ID=?", id).Updates(&data).Error; err != nil {
+		log.Println("更新省外停车场结算表时 error", err)
+		return err
+	}
+	log.Println("更新省外停车场结算表 完成")
+	return nil
+}
+
+//省内停车场结算趋势表
+//b_jsjk_shengntccjsqs
+func QuerySNSettlementTrendOne() *[]types.ClearandJiesuanParkingdata {
+	db := utils.GormClient.Client
+	//时间范围
+	datetime := utils.Yesterdaydate()
+	begin := datetime + " 00:00:00"
+	end := datetime + " 23:59:59"
+	var result []types.Result
+	sqlstr4 := `select SUM(F_NB_JINE) as total,count(F_NB_JINE) as count ,F_VC_TINGCCBH  as  parkingid from b_js_jiessj where F_DT_JIAOYSJ >= ? and F_DT_JIAOYSJ <= ? and   F_VC_KAWLH =? GROUP BY F_VC_TINGCCBH `
+	db.Raw(sqlstr4, begin, end, 3201).Scan(&result)
+	log.Println("省内停车场结算趋势表 产生交易 result:", result)
+
+	var qfresult []types.Result
+	qfsqlstr := `select SUM(F_NB_JINE) as total,count(F_NB_JINE) as count ,F_VC_TINGCCBH  as  parkingid from b_js_jiessj where F_DT_JIAOYSJ >= ? and F_DT_JIAOYSJ <= ? and F_NB_QINGFJG = ? and not F_NB_ZHENGYCLJG  =? and  F_VC_KAWLH =? GROUP BY F_VC_TINGCCBH `
+	db.Raw(qfsqlstr, begin, end, 1, 2, 3201).Scan(&qfresult)
+	log.Println("省内停车场结算趋势表 已清分 result:", qfresult)
+	log.Println("查询日期 datetime:", datetime)
+
+	datas := make([]types.ClearandJiesuanParkingdata, 0)
+	var d types.ClearandJiesuanParkingdata
+	for _, r := range result {
+		d.Parkingid = r.Parkingid
+		d.JiesuanMoney = r.Total
+		d.JiesuanCount = r.Count
+		datas = append(datas, d)
+	}
+	for i, qfr := range qfresult {
+		if qfr.Parkingid == datas[i].Parkingid {
+			datas[i].ClearlingMoney = qfr.Total
+			datas[i].ClearlingCount = qfr.Count
+		}
+	}
+	return &datas
+}
+
+//新增省内停车场结算趋势表
+func InsertSNSettlementTrendTable() error {
+	db := utils.GormClient.Client
+	data := new(types.BJsjkShengntccjsqs)
+	data.FDtKaistjsj = utils.StrTimeToNowtime()      //开始
+	data.FDtTongjwcsj = utils.StrTimeTodefaultdate() //
+	if err := db.Table("b_jsjk_shengntccjsqs").Create(&data).Error; err != nil {
+		// 错误处理...
+		log.Println("新增省内停车场结算趋势表 error", err)
+		return err
+	}
+	log.Println("新增省内停车场结算趋势表 成功！")
+	return nil
+}
+
+//3、查询省内停车场结算趋势表最新一条数据
+func QuerySNSettlementTrendTable() (error, *types.BJsjkShengntccjsqs) {
+	db := utils.GormClient.Client
+	shuju := new(types.BJsjkShengntccjsqs)
+	if err := db.Table("b_jsjk_shengntccjsqs").Last(&shuju).Error; err != nil {
+		log.Println("查询最新一条省内停车场结算趋势表 error :", err)
+		return err, nil
+	}
+	log.Println("查询省内停车场结算趋势表:", shuju)
+	return nil, shuju
+}
+
+//4、更新省内停车场结算趋势表最新一条
+func UpdateSNSettlementTrendTable(data *types.BJsjkShengntccjsqs, id int) error {
+	db := utils.GormClient.Client
+	if err := db.Table("b_jsjk_shengntccjsqs").Where("F_NB_ID=?", id).Updates(&data).Error; err != nil {
+		log.Println("更新省内停车场结算趋势表时 error", err)
+		return err
+	}
+	log.Println("更新省内停车场结算趋势表 完成")
+	return nil
 }
