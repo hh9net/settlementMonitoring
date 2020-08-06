@@ -422,3 +422,9 @@ func TestSNSettlementTrendbyDay(t *testing.T) {
 	Newdb()
 	SNSettlementTrendbyDay()
 }
+
+//QueryDataSync
+func TestQueryDataSync(t *testing.T) {
+	Newdb()
+	QueryDataSync()
+}

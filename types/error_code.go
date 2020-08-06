@@ -21,9 +21,13 @@ const (
 	StatusQuerySettlementTrendSuccess            = 213 //查询省外结算趋势 成功
 	StatusQueryPacketMonitoringSuccess           = 214 //查询省外数据包监控 成功
 
-	StatusRepeatedRegistration             = 401 //注册重复
-	StatusPleaseRegister                   = 402 //请先注册
-	StatusPasswordError                    = 403 //密码错误,请重新输入
+	StatusQuerySNTotalSettlementDataSuccess = 301 //查询省内结算数据表的总条数、总金额 成功
+	StatusQuerySNSendTotalSettlemenSuccess  = 302 //查询省内的已发送 总条数、总金额 成功
+
+	StatusRepeatedRegistration = 401 //注册重复
+	StatusPleaseRegister       = 402 //请先注册
+	StatusPasswordError        = 403 //密码错误,请重新输入
+
 	StatusQueryTotalSettlementDataError    = 404 //查询结算总金额、总笔数 失败
 	StatusQueryTotalClarifyError           = 405 //查询已清分总金额、总笔数 失败
 	StatusQueryTotalBaddebtsError          = 406 //查询坏账总金额、总笔数 失败
@@ -36,6 +40,9 @@ const (
 	StatusQueryDataTurnMonitorError        = 413 //查询省外转结算 失败
 	StatusQuerySettlementTrendError        = 414 //查询省外结算趋势 失败
 	StatusQueryPacketMonitoringError       = 415 //查询省外数据包监控 失败
+
+	StatusQuerySNTotalSettlementDataError = 501 //查询省内结算数据表的总条数、总金额 失败
+	StatusQuerySNSendTotalSettlemenError  = 502 //查询省内的已发送 总条数、总金额 失败
 
 )
 
@@ -73,6 +80,10 @@ var statusText = map[int]string{
 	StatusQuerySettlementTrendError:              "Query Settlement Trend Error",
 	StatusQueryPacketMonitoringSuccess:           "Query Packet Monitoring Success",
 	StatusQueryPacketMonitoringError:             "Query Packet Monitoring Error",
+	StatusQuerySNTotalSettlementDataSuccess:      "Query SN TotalSettlement Data Success",
+	StatusQuerySNTotalSettlementDataError:        "Query SN TotalSettlement Data Error",
+	StatusQuerySNSendTotalSettlemenSuccess:       "Query SN Send Total Settlemen Success",
+	StatusQuerySNSendTotalSettlemenError:         "Query SN Send Total Settlemen Error",
 }
 
 // StatusText returns a text for the HTTP status code. It returns the empty

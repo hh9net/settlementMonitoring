@@ -23,6 +23,7 @@ type BJsjkQingfhd struct {
 	FNbTongjqfje int64  `gorm:"column:F_NB_TONGJQFJE"` //   `F_NB_TONGJQFJE` bigint DEFAULT NULL COMMENT '统计清分金额',
 	FNbHedjg     int    `gorm:"column:F_NB_HEDJG"`     //   `F_NB_HEDJG` int DEFAULT NULL COMMENT '核对结果 是否一致,1:一致，2:不一致',
 	FVcTongjrq   string `gorm:"column:F_VC_TONGJRQ"`   //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
+	FNb_Querzt   int    `gorm:"column:F_NB_QUERZT"`    //`F_NB_QUERZT` int DEFAULT NULL COMMENT '确认状态',
 }
 
 //3 省内拒付数据统计表 `b_jsjk_shengnjfsjtj`

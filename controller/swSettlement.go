@@ -66,7 +66,6 @@ func QueryTotalClarify(c *gin.Context) {
 	}
 }
 
-//totalBaddebts 坏账
 /*  接口3方法注释   */
 //@Summary 查询省外坏账总金额、总笔数api
 //@Tags 查询省外坏账总金额、总笔数
@@ -95,7 +94,6 @@ func QueryTotalBaddebts(c *gin.Context) {
 	}
 }
 
-//totaldisputedata 存在争议
 /*  接口4方法注释   */
 //@Summary 查询省外存在争议总金额、总笔数api
 //@Tags 查询省外存在争议总金额、总笔数
@@ -124,7 +122,6 @@ func QueryShengwDisputedata(c *gin.Context) {
 	}
 }
 
-//QueryAbnormaldata 异常数据统计
 /*  接口5方法注释   */
 //@Summary 查询异常数据总金额、总笔数api
 //@Tags 查询异常数据总金额、总笔数
@@ -153,7 +150,6 @@ func QueryAbnormaldata(c *gin.Context) {
 	}
 }
 
-//Queryblacklistdata
 /*  接口6方法注释   */
 //@Summary 查询黑名单总数、较2小时前变化值 api
 //@Tags 查询黑名单总数、较2小时前变化值
@@ -182,8 +178,7 @@ func Queryblacklistdata(c *gin.Context) {
 	}
 }
 
-//clearlingAndDisputePackageSettlement
-/*  接口6方法注释   */
+/*  接口7方法注释   */
 //@Summary 查询清分包、争议包的接收时间、包号 api
 //@Tags 查询清分包、争议包的接收时间、包号
 //@version 1.0
@@ -211,8 +206,7 @@ func QueryClearlingAndDisputePackage(c *gin.Context) {
 	}
 }
 
-//StatisticalClearlingcheck
-/*  接口6方法注释   */
+/*  接口8方法注释   */
 //@Summary 清分核对 api
 //@Tags 清分核对
 //@version 1.0
@@ -223,7 +217,7 @@ func QueryClearlingAndDisputePackage(c *gin.Context) {
 //@Router /sw/clearlingcheck [get]
 func Clearlingcheck(c *gin.Context) {
 	respFailure := dto.ResponseFailure{}
-	// 查询清分包、争议包的接收时间、包号
+	// 查询清分核对
 	code, err, totaldata := service.StatisticalClearlingcheck()
 	if err != nil {
 		logrus.Errorf("StatisticalClearlingcheck  err: %v", err.Error())
@@ -240,8 +234,7 @@ func Clearlingcheck(c *gin.Context) {
 	}
 }
 
-//Dataclassification
-/*  接口6方法注释   */
+/*  接口9方法注释   */
 //@Summary 省外数据分类 api
 //@Tags 省外数据分类
 //@version 1.0
@@ -269,8 +262,7 @@ func Dataclassification(c *gin.Context) {
 	}
 }
 
-//QueryDataTurnMonitor
-/*  接口6方法注释   */
+/*  接口10方法注释   */
 //@Summary 省外转结算 api
 //@Tags 省外转结算
 //@version 1.0
@@ -298,8 +290,7 @@ func QueryDataTurnMonitor(c *gin.Context) {
 	}
 }
 
-//QuerySettlementTrendbyDay
-/*  接口6方法注释   */
+/*  接口11方法注释   */
 //@Summary 省外结算趋势 api
 //@Tags 省外结算趋势
 //@version 1.0
@@ -327,8 +318,7 @@ func QuerySettlementTrendbyDay(c *gin.Context) {
 	}
 }
 
-//
-/*  接口6方法注释   */
+/*  接口12方法注释   */
 //@Summary 省外数据包监控 api
 //@Tags 省外数据包监控
 //@version 1.0
@@ -338,6 +328,34 @@ func QuerySettlementTrendbyDay(c *gin.Context) {
 //@Failure 404 object dto.ResponseFailure 查询失败
 //@Router /sw/packetmonitoring [get]
 func PacketMonitoring(c *gin.Context) {
+	respFailure := dto.ResponseFailure{}
+	// 查询省外数据包监控
+	code, err, totaldata := service.QueryPacketMonitoring()
+	if err != nil {
+		logrus.Errorf("QueryPacketMonitoring err: %v", err.Error())
+		respFailure.Code = code
+		respFailure.Message = fmt.Sprintf("QueryPacketMonitoring err: %v", err.Error())
+		c.JSON(http.StatusOK, respFailure)
+		return
+	}
+	if code == 214 {
+		c.JSON(http.StatusOK, dto.QueryClearlingAndDisputeResponse{Code: code, CodeMsg: types.StatusText(214), Data: *totaldata, Message: "查询省外数据包监控 成功"})
+	}
+	if code == 0 {
+		c.JSON(http.StatusOK, dto.Response{Code: code, Data: types.StatusText(types.StatusQueryPacketMonitoringError), Message: "查询省外数据包监控 失败"})
+	}
+}
+
+/*  接口13方法注释  【待实现】 */
+//@Summary 省外数据包监控 api
+//@Tags 省外数据包监控
+//@version 1.0
+//@Accept application/json
+//@Param req body dto.Reqlogin true "请求参数"
+//@Success 200 object dto.Response 成功后返回值
+//@Failure 404 object dto.ResponseFailure 查询失败
+//@Router /sw/packetmonitoring [get]
+func Clarifyconfirm(c *gin.Context) {
 	respFailure := dto.ResponseFailure{}
 	// 查询省外数据包监控
 	code, err, totaldata := service.QueryPacketMonitoring()

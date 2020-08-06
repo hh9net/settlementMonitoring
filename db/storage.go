@@ -1122,6 +1122,7 @@ func UpdateShengnJieSuanTable(data *types.BJsjkJiestj, id int) error {
 	return nil
 }
 
+//4.2.2	查询省内的已发送 总条数、总金额
 //省内发送数据
 func QueryShengnSendjiessj() (int, int64) {
 	db := utils.GormClient.Client
@@ -1175,6 +1176,19 @@ func UpdateShengnSendTable(data *types.BJsjkShengnyfssjtj, id int) error {
 	return nil
 }
 
+//查询省内已发送记录ByID
+func QueryShengnSendTableByID(id int) (error, *types.BJsjkShengnyfssjtj) {
+	db := utils.GormClient.Client
+	shuju := new(types.BJsjkShengnyfssjtj)
+	if err := db.Table("b_jsjk_shengnyfssjtj").Where("F_NB_ID=?", id).Last(&shuju).Error; err != nil {
+		log.Println("查询最新一条省内已发送记录 error :", err)
+		return err, nil
+	}
+	log.Println("查询省内已发送记录最新结果:", shuju)
+	return nil, shuju
+}
+
+//4.2.4	查询坏账（拒付）数据 总条数、总金额
 //1、省内拒付金额、条数
 func QueryShengnRefusePay() (int, int64) {
 	db := utils.GormClient.Client
@@ -1543,10 +1557,13 @@ func QueryDataSync() (int, int) {
 
 	db := utils.GormClient.Client
 	//查询结算数据 停车场id
-	count := 0
-	db.Table("b_js_jiessj").Where("F_VC_KAWLH = ?", 3201).Count(&count)
-	log.Printf("查询海玲数据库数据量:%d，结算表数据同步数据量：=%d", num, count)
-	return num, count
+	//	Parkingid:= []int{3208260001,3201000001,3202110001,3212830001,3203110001,3201000009,3201000002,3205830001,3201000003,3201000004,3201000005,3201000007,3201000006,3201000008,3206120001,3101130001,3205820001}
+	var result types.Result
+
+	sqlstr := `select  count(F_NB_JINE) as count from b_js_jiessj where F_VC_TINGCCBH in ( 3208260001,3201000001,3202110001,3212830001,3203110001,3201000009,3201000002,3205830001,3201000003,3201000004,3201000005,3201000007,3201000006,3201000008,3206120001,3101130001,3205820001) and F_VC_KAWLH = ?   `
+	db.Raw(sqlstr, 3201).Scan(&result)
+	log.Printf("查询海玲数据库数据量:%d，结算表数据同步数据量:=%v", num, result.Count)
+	return num, result.Count
 }
 
 //新增数据同步监控表

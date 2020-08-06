@@ -55,7 +55,7 @@ func AuthAPIInit(route *gin.RouterGroup) {
 	route.GET("/sw/totalblacklistdata", controller.Queryblacklistdata)
 	//清分、争议包监控:查询清分包、争议包的接收时间、包号【每天统计一次】
 	route.GET("/sw/clearlingAndDisputePackageSettlement", controller.QueryClearlingAndDisputePackage)
-	//清分核对StatisticalClearlingcheck()
+	//清分核对
 	route.GET("/sw/clearlingcheck", controller.Clearlingcheck)
 	//省外数据分类
 	route.GET("/sw/dataclassification", controller.Dataclassification)
@@ -65,6 +65,22 @@ func AuthAPIInit(route *gin.RouterGroup) {
 	route.GET("/sw/settlementtrend", controller.QuerySettlementTrendbyDay)
 	//省外结算数据包监控
 	route.GET("/sw/packetmonitoring", controller.PacketMonitoring)
+	//省外清分核对确认【待处理Clarify confirm】
+	route.GET("/sw/clarifyconfirm", controller.Clarifyconfirm)
+
+	//省内结算监控模块
+	//省内结算数据表的总条数、总金额
+	route.GET("/sn/totalsettlementdata", controller.QuerySNTotalSettlementData)
+	//4.2.2	查询省内的已发送 总条数、总金额
+	route.GET("/sn/sendtotalsettlementdata", controller.QuerySNSendTotalSettlementData)
+	//4.2.3	查询省内已请款的数据总条数、总金额
+	//4.2.4	查询坏账（拒付）数据 总条数、总金额
+	//4.2.5	省内结算实时数据监控
+	//4.2.6	前30日省内结算趋势概览
+	//4.2.7	海岭数据同步监控
+	//4.2.8	省内结算数据分类
+	//4.2.9	异常数据停车场top10
+	//4.2.10 逾期数据停车场top10
 }
 
 //以下为cors实现
