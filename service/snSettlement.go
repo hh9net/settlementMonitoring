@@ -54,8 +54,8 @@ func QuerySNSendTotalSettlemen() (int, error, *dto.TotalSettlementData) {
 			return 0, err, nil
 		}
 		log.Println("查询成功", "省内已发送结算总金额: ", Data.FNbZongje, "省内已发送结算总条数", Data.FNbZongts)
-		return 301, nil, &dto.TotalSettlementData{Amount: utils.Fen2Yuan(Data.FNbZongje), Count: Data.FNbZongts}
+		return 302, nil, &dto.TotalSettlementData{Amount: utils.Fen2Yuan(Data.FNbZongje), Count: Data.FNbZongts}
 	}
 	//返回数据赋值
-	return 301, nil, &dto.TotalSettlementData{Amount: utils.Fen2Yuan(data.FNbZongje), Count: data.FNbZongts}
+	return 302, nil, &dto.TotalSettlementData{Amount: utils.Fen2Yuan(data.FNbZongje), Count: data.FNbZongts}
 }

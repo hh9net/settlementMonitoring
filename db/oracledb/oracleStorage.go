@@ -1,4 +1,4 @@
-package db
+package oracledb
 
 import (
 	"database/sql"
@@ -49,7 +49,7 @@ func OrclQuerydata() int {
 	log.Println("Oracle Driver example")
 	os.Setenv("NLS_LANG", "AMERICAN_AMERICA.AL32UTF8")
 	log.SetFlags(log.Lshortfile | log.LstdFlags)
-
+	//连接oracle数据库
 	db, err := sql.Open("oci8", fmt.Sprintf("%s/%s@%s", "admin", "123", "192.168.0.160:1521/orcl"))
 	if err != nil {
 		log.Fatal(err)
@@ -60,7 +60,7 @@ func OrclQuerydata() int {
 	}
 
 	var num int ///*  where   F_VC_JIAOYZT   = 99*/ CHEDXFYSSJ
-	if err, num = sqlQuery(db, "  SELECT  F_VC_JIAOYZT  FROM  B_TXF_CHEDXFYSSJ    "); err != nil {
+	if err, num = sqlQuery(db, "  SELECT  F_VC_JIAOYZT  FROM  B_TXF_CHEDXFYSSJ  where   F_VC_JIAOYZT   = 99  "); err != nil {
 		log.Fatal(err)
 	}
 	return num

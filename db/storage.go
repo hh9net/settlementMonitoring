@@ -5,6 +5,7 @@ import (
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 	"settlementMonitoring/config"
+	"settlementMonitoring/db/oracledb"
 	"settlementMonitoring/types"
 	"settlementMonitoring/utils"
 	"time"
@@ -1552,7 +1553,7 @@ func UpdateShengNSettlementTrendTable(data *types.BJsjkShengnjsqs, id int) error
 func QueryDataSync() (int, int) {
 
 	//查询海玲oracle数据库 B_TXF_CHEDXFYSSJ
-	num := OrclQuerydata()
+	num := oracledb.OrclQuerydata()
 	log.Println("oracle num:", num)
 
 	db := utils.GormClient.Client
