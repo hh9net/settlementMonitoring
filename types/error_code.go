@@ -20,6 +20,7 @@ const (
 	StatusQueryDataTurnMonitorSuccess            = 212 //查询省外转结算 成功
 	StatusQuerySettlementTrendSuccess            = 213 //查询省外结算趋势 成功
 	StatusQueryPacketMonitoringSuccess           = 214 //查询省外数据包监控 成功
+	StatusQueryClarifydifferenceSuccess          = 215 //查询最近15天清分包数据差额 成功
 
 	StatusQuerySNTotalSettlementDataSuccess = 301 //查询省内结算数据表的总条数、总金额 成功
 	StatusQuerySNSendTotalSettlemenSuccess  = 302 //查询省内的已发送 总条数、总金额 成功
@@ -48,6 +49,7 @@ const (
 	StatusQueryDataTurnMonitorError        = 413 //查询省外转结算 失败
 	StatusQuerySettlementTrendError        = 414 //查询省外结算趋势 失败
 	StatusQueryPacketMonitoringError       = 415 //查询省外数据包监控 失败
+	StatusQueryClarifydifferenceError      = 416 //查询最近15天清分包数据差额 失败
 
 	StatusQuerySNTotalSettlementDataError = 501 //查询省内结算数据表的总条数、总金额 失败
 	StatusQuerySNSendTotalSettlemenError  = 502 //查询省内的已发送 总条数、总金额 失败
@@ -116,6 +118,8 @@ var statusText = map[int]string{
 	StatusQueryAbnormalDataParkingError:          "Query Abnormal Data Parking Error",
 	StatusQueryOverdueDataSuccess:                "Query Overdue Data Success",
 	StatusQueryOverdueDataError:                  "Query Overdue Data Error",
+	StatusQueryClarifydifferenceSuccess:          "Query Clarify difference Success",
+	StatusQueryClarifydifferenceError:            "Query Clarify difference Error",
 }
 
 // StatusText returns a text for the HTTP status code. It returns the empty

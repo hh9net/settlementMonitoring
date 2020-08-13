@@ -36,3 +36,16 @@ type ShengNDataClassification struct {
 	Yifscount    int `json:"yifscount"  example:"123"`    //已发送
 	Jufuzcount   int `json:"jufuzcount"  example:"123"`   //坏账
 }
+
+type Overduedata struct {
+	Overduecount  int    `json:"overduecount"  example:"123"`  //逾期数量
+	Parkingname   string `json:"parkingname"  example:"南京南站"`  //停车场名称
+	OverdueAmount int64  `json:"overdueamount"  example:"123"` //逾期金额
+}
+
+//AbnormalDataOfParking
+type AbnormalDataOfParking struct {
+	AbnormalDatacount  int    `json:"abnormaldatacount"  example:"123"`  //逾期数量
+	Parkingname        string `json:"parkingname"  example:"南京南站"`       //停车场名称
+	AbnormalDataAmount int64  `json:"abnormaldataamount"  example:"123"` //逾期金额
+}

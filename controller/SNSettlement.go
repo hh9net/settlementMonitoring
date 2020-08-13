@@ -256,7 +256,8 @@ func QuerySNDataClassification(c *gin.Context) {
 func QueryAbnormalDataParking(c *gin.Context) {
 	respFailure := dto.ResponseFailure{}
 	//  查询异常数据停车场top10
-	code, err, totaldata := service.QuerySNRealTimeData()
+	logrus.Print("查询异常数据停车场top10")
+	code, err, totaldata := service.QueryAbnormalDataParking()
 	if err != nil {
 		logrus.Errorf("QueryAbnormalDataParking err: %v", err.Error())
 		respFailure.Code = code
@@ -284,7 +285,7 @@ func QueryAbnormalDataParking(c *gin.Context) {
 func QueryOverdueData(c *gin.Context) {
 	respFailure := dto.ResponseFailure{}
 	//查询逾期数据停车场top10
-	code, err, totaldata := service.QuerySNRealTimeData()
+	code, err, totaldata := service.QueryOverdueData()
 	if err != nil {
 		logrus.Errorf("QueryOverdueData err: %v", err.Error())
 		respFailure.Code = code

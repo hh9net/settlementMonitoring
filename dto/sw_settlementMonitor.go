@@ -104,3 +104,7 @@ type PacketMonitoringdata struct {
 	Jizbjine  int64 `json:"jizbjine" example:"1244547"`  //记账包金额
 	Yuansbsl  int   `json:"yuansbsl" example:"1244547"`  //原始交易消息应答包数量
 }
+
+type DifferAmount struct {
+	Differamount int64 `json:"differamount" example:"1244547"` //差额
+}

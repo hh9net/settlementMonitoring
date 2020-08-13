@@ -434,3 +434,10 @@ func TestQuerySNRealTimeSettlementData(t *testing.T) {
 	Newdb()
 	QuerySNRealTimeSettlementData(5)
 }
+
+//QueryOverdueDatatable
+func TestQueryOverdueDatatable(t *testing.T) {
+	Newdb()
+	log.Println(QueryOverdueDatatable("2020-08-12", 10))
+
+}

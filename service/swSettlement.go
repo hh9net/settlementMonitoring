@@ -296,7 +296,6 @@ func QuerySettlementTrend() (int, error, *[]dto.SettlementTrend) {
 	return 213, nil, &Datas
 }
 
-//
 func QueryPacketMonitoring() (int, error, *[]dto.PacketMonitoringdata) {
 	ts := 30
 	//响应数据 list TurnDataResponse
@@ -321,4 +320,52 @@ func QueryPacketMonitoring() (int, error, *[]dto.PacketMonitoringdata) {
 	log.Println("响应数据：", Datas)
 	//返回数据
 	return 214, nil, &Datas
+}
+
+func Clarifyconfirm() (int, error, *[]dto.PacketMonitoringdata) {
+	ts := 30
+	//响应数据 list TurnDataResponse
+	Datas := make([]dto.PacketMonitoringdata, ts)
+
+	//查询数据
+	qerr, ds := db.QueryPacketMonitoringtable(ts)
+	if qerr != nil {
+		return 0, qerr, nil
+	}
+
+	for i, d := range *ds {
+		Datas[i].Yuansbsl = d.FNbYuansjyydbsl
+		Datas[i].Dabaojine = d.FNbDabje
+		Datas[i].Dabaosl = d.FNbDabsl
+		Datas[i].Fasbjine = d.FNbFasysjybje
+		Datas[i].Fasbsl = d.FNbFasysjybsl
+		Datas[i].Jizbjine = d.FNbJizbje
+		Datas[i].Jizbsl = d.FNbJizbsl
+	}
+
+	log.Println("响应数据：", Datas)
+	//返回数据
+	return 214, nil, &Datas
+}
+
+//Clarifyconfirm
+
+//查询最近15天清分包数据差额
+func Clarifydifference() (int, error, *[]dto.DifferAmount) {
+	ts := 15
+	//响应数据 list TurnDataResponse
+	Datas := make([]dto.DifferAmount, ts)
+
+	//查询数据
+	qerr, ds := db.QuerySettlementclearlingcheck(ts)
+	if qerr != nil {
+		return 0, qerr, nil
+	}
+
+	for i, d := range *ds {
+		Datas[i].Differamount = d.FNbQingfje - d.FNbQingfje
+	}
+	log.Println("响应数据：", Datas)
+	//返回数据
+	return 215, nil, &Datas
 }

@@ -347,8 +347,8 @@ func PacketMonitoring(c *gin.Context) {
 }
 
 /*  接口13方法注释  */
-//@Summary 省外数据包监控 api
-//@Tags 省外数据包监控
+//@Summary 省外清分核对确认 api
+//@Tags 省外清分核对确认
 //@version 1.0
 //@Accept application/json
 //@Param req body dto.Reqlogin true "请求参数"
@@ -357,19 +357,49 @@ func PacketMonitoring(c *gin.Context) {
 //@Router /sw/clarifyconfirm [get]
 func Clarifyconfirm(c *gin.Context) {
 	respFailure := dto.ResponseFailure{}
-	// 查询省外数据包监控
-	code, err, totaldata := service.QueryPacketMonitoring()
+	// 省外清分核对确认
+	code, err, totaldata := service.Clarifyconfirm()
 	if err != nil {
-		logrus.Errorf("QueryPacketMonitoring err: %v", err.Error())
+		logrus.Errorf("Clarifyconfirmerr: %v", err.Error())
 		respFailure.Code = code
-		respFailure.Message = fmt.Sprintf("QueryPacketMonitoring err: %v", err.Error())
+		respFailure.Message = fmt.Sprintf("Clarifyconfirm err: %v", err.Error())
 		c.JSON(http.StatusOK, respFailure)
 		return
 	}
 	if code == 214 {
-		c.JSON(http.StatusOK, dto.QueryClearlingAndDisputeResponse{Code: code, CodeMsg: types.StatusText(214), Data: *totaldata, Message: "清分确认成功成功【待实现】"})
+		c.JSON(http.StatusOK, dto.QueryClearlingAndDisputeResponse{Code: code, CodeMsg: types.StatusText(214), Data: *totaldata, Message: "清分确认成功 【待实现】"})
 	}
 	if code == 0 {
-		c.JSON(http.StatusOK, dto.Response{Code: code, Data: types.StatusText(types.StatusQueryPacketMonitoringError), Message: "查询省外数据包监控 失败"})
+		c.JSON(http.StatusOK, dto.Response{Code: code, Data: types.StatusText(types.StatusQueryPacketMonitoringError), Message: "清分确认 失败 【待实现】"})
+	}
+}
+
+//Clarifydifference
+
+/*  接口14方法注释  */
+//@Summary 查询最近15天清分包数据差额 api
+//@Tags 查询最近15天清分包数据差额
+//@version 1.0
+//@Accept application/json
+//@Param req body dto.Reqlogin true "请求参数"
+//@Success 200 object dto.Response 成功后返回值
+//@Failure 404 object dto.ResponseFailure 查询失败
+//@Router /sw/clarifydifference [get]
+func Clarifydifference(c *gin.Context) {
+	respFailure := dto.ResponseFailure{}
+	//查询最近15天清分包数据差额
+	code, err, totaldata := service.Clarifydifference()
+	if err != nil {
+		logrus.Errorf("Clarifydifference err: %v", err.Error())
+		respFailure.Code = code
+		respFailure.Message = fmt.Sprintf("QueryClarifydifference err: %v", err.Error())
+		c.JSON(http.StatusOK, respFailure)
+		return
+	}
+	if code == 215 {
+		c.JSON(http.StatusOK, dto.QueryClearlingAndDisputeResponse{Code: code, CodeMsg: types.StatusText(215), Data: *totaldata, Message: "查询最近15天清分包数据差额"})
+	}
+	if code == 0 {
+		c.JSON(http.StatusOK, dto.Response{Code: code, Data: types.StatusText(types.StatusQueryClarifydifferenceError), Message: "查询最近15天清分包数据差额 失败"})
 	}
 }

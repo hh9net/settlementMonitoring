@@ -28,5 +28,16 @@ func TestQuerySettlementTrend(t *testing.T) {
 func TestQuerySNRealTimeData(t *testing.T) {
 	db.Newdb()
 	log.Println(QuerySNRealTimeData())
+}
 
+//QueryOverdueData
+func TestQueryOverdueData(t *testing.T) {
+	db.Newdb()
+	log.Println(QueryOverdueData())
+}
+
+// Clarifydifference()
+func TestClarifydifference(t *testing.T) {
+	db.Newdb()
+	log.Println(Clarifydifference())
 }

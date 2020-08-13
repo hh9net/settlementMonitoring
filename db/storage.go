@@ -958,7 +958,7 @@ func UpdateSettlementTrendbyDayTable(data *types.BJsjkShengwjsqs, id int) error 
 	return nil
 }
 
-//查询最新记录
+//查询省外结算趋势表记录
 func QuerySettlementTrendbyday(ts int) (error, *[]types.BJsjkShengwjsqs) {
 	db := utils.GormClient.Client
 	hmdtjs := make([]types.BJsjkShengwjsqs, 0)
@@ -1729,6 +1729,34 @@ func QueryAbnormalDataOfParkingTable() (error, *types.BJsjkYicsjtcctj) {
 	return nil, shuju
 }
 
+//异常数据
+func QueryAbnormalDataOfParkingtable(data string, ts int) (error, *[]types.BJsjkYicsjtcctj) {
+	db := utils.GormClient.Client
+	shuju := make([]types.BJsjkYicsjtcctj, ts)
+	if err := db.Table("b_jsjk_yicsjtcctj").Where("F_VC_KUAIZSJ=?", data).Order("F_NB_ZONGTS desc").Limit(ts).Find(&shuju).Error; err != nil {
+		log.Println("查询异常数据停车场表 error :", err)
+		return err, nil
+	}
+	log.Println("查询异常数据停车场表:", shuju)
+
+	shujus := make([]types.BJsjkYicsjtcctj, ts)
+	for i, yqsj := range shuju {
+		s := "没有找到该停车场名称"
+		if GetTingcc(yqsj.FVcTingccid) != "" {
+			s = GetTingcc(yqsj.FVcTingccid)
+		}
+		shujus[i].FVcTingccid = s
+		shujus[i].FVcKuaizsj = yqsj.FVcKuaizsj
+		shujus[i].FDtKaistjsj = yqsj.FDtKaistjsj
+		shujus[i].FNbZongts = yqsj.FNbZongts
+		shujus[i].FNbId = yqsj.FNbId
+		shujus[i].FDtTongjwcsj = yqsj.FDtTongjwcsj
+		shujus[i].FDtKaistjsj = yqsj.FDtKaistjsj
+		shujus[i].FNbZongje = yqsj.FNbZongje
+	}
+	return nil, &shujus
+}
+
 //4、更新异常数据停车场最新一条
 func UpdateAbnormalDataOfParkingTable(data *types.BJsjkYicsjtcctj, id int) error {
 	db := utils.GormClient.Client
@@ -1790,6 +1818,44 @@ func UpdateOverdueDataTable(data *types.BJsjkYuqsjtj, id int) error {
 	}
 	log.Println("更新逾期数据停车场表 完成")
 	return nil
+}
+
+func QueryOverdueDatatable(data string, ts int) (error, *[]types.BJsjkYuqsjtj) {
+	db := utils.GormClient.Client
+	shuju := make([]types.BJsjkYuqsjtj, ts)
+	if err := db.Table("b_jsjk_yuqsjtj").Where("F_VC_TONGJRQ=?", data).Order("F_NB_YUQZTS desc").Limit(ts).Find(&shuju).Error; err != nil {
+		log.Println("查询逾期数据停车场表 error :", err)
+		return err, nil
+	}
+	log.Println("查询逾期数据停车场表:", shuju)
+	shujus := make([]types.BJsjkYuqsjtj, ts)
+	for i, yqsj := range shuju {
+		s := "没有找到该停车场名称"
+		if GetTingcc(yqsj.FVcTingccid) != "" {
+			s = GetTingcc(yqsj.FVcTingccid)
+		}
+		shujus[i].FVcTingccid = s
+		shujus[i].FNbYuqzts = yqsj.FNbYuqzts
+		shujus[i].FNbYuqzje = yqsj.FNbYuqzje
+		shujus[i].FVcTongjrq = yqsj.FVcTongjrq
+		shujus[i].FNbId = yqsj.FNbId
+		shujus[i].FDtTongjwcsj = yqsj.FDtTongjwcsj
+		shujus[i].FDtKaistjsj = yqsj.FDtKaistjsj
+	}
+	return nil, &shujus
+}
+
+//根据停车场编号 查询 停车场名称
+func GetTingcc(tingccbh string) string {
+	db := utils.GormClient.Client
+	//停车场信息
+	shuju := new(types.BTccTingcc)
+	if err := db.Table("b_tcc_tingcc").Where("F_VC_TINGCCBH=?", tingccbh).Last(&shuju).Error; err != nil {
+		log.Println("查询 逾期数据停车场名称 error :", err)
+		return ""
+	}
+	log.Println("查询逾期数据停车场名称:", shuju.FVcMingc)
+	return shuju.FVcMingc
 }
 
 //省外停车场结算趋势表
@@ -2001,4 +2067,17 @@ func UpdateSNSettlementTrendTable(data *types.BJsjkShengntccjsqs, id int) error 
 	}
 	log.Println("更新省内停车场结算趋势表 完成")
 	return nil
+}
+
+//查询省外清分核对记录
+func QuerySettlementclearlingcheck(ts int) (error, *[]types.BJsjkQingfhd) {
+	db := utils.GormClient.Client
+	hmdtjs := make([]types.BJsjkQingfhd, 0)
+	//赋值Order("created_at desc")
+	if err := db.Table("b_jsjk_qingfhd").Order("F_NB_ID desc").Limit(ts).Find(&hmdtjs).Error; err != nil {
+		log.Println("查询最新的ts条省外清分核对数据时，QuerySettlementclearlingcheck error :", err)
+		return err, nil
+	}
+	log.Println("查询最新的ts条省外清分核对结果:", hmdtjs)
+	return nil, &hmdtjs
 }

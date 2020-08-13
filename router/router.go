@@ -14,10 +14,11 @@ import (
 )
 
 func RouteInit(IpAddress string) {
+	logrus.Print("服务端 IpAddress：", IpAddress)
 	router := gin.New()
 	router.Use(Cors()) //跨域资源共享
 
-	url := ginSwagger.URL("http://127.0.0.1:8088/swagger/doc.json")
+	url := ginSwagger.URL("http://127.0.0.1:8089/swagger/doc.json")
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
 
 	apiV1 := router.Group("/settlementMonitoring/api/v1")
@@ -25,10 +26,10 @@ func RouteInit(IpAddress string) {
 
 	http.Handle("/", router)
 	gin.SetMode(gin.ReleaseMode)
-	logrus.Print("服务端 IpAddress：", IpAddress)
+
 	runerr := router.Run(IpAddress)
 	if runerr != nil {
-		logrus.Print("Run error")
+		logrus.Print("Run error", runerr)
 		return
 	}
 }
@@ -55,8 +56,6 @@ func AuthAPIInit(route *gin.RouterGroup) {
 	route.GET("/sw/totalblacklistdata", controller.Queryblacklistdata)
 	//清分、争议包监控:查询清分包、争议包的接收时间、包号【每天统计一次】
 	route.GET("/sw/clearlingAndDisputePackageSettlement", controller.QueryClearlingAndDisputePackage)
-	//清分核对
-	route.GET("/sw/clearlingcheck", controller.Clearlingcheck)
 	//省外数据分类
 	route.GET("/sw/dataclassification", controller.Dataclassification)
 	//省外转结算监控
@@ -65,8 +64,6 @@ func AuthAPIInit(route *gin.RouterGroup) {
 	route.GET("/sw/settlementtrend", controller.QuerySettlementTrendbyDay)
 	//省外结算数据包监控
 	route.GET("/sw/packetmonitoring", controller.PacketMonitoring)
-	//省外清分核对确认【待处理Clarify confirm】
-	route.GET("/sw/clarifyconfirm", controller.Clarifyconfirm)
 
 	//省内结算监控模块
 	//4.2.1省内结算数据表的总条数、总金额【1】
@@ -83,12 +80,20 @@ func AuthAPIInit(route *gin.RouterGroup) {
 	route.GET("/sn/settlementtrend", controller.QuerySNSettlementTrend)
 	//4.2.7	海岭数据同步监控Data synchronization[1]
 	route.GET("/sn/datasync", controller.QueryDataSync)
-	//4.2.8	省内结算数据分类Data classification
+	//4.2.8	省内结算数据分类Data classification[1]
 	route.GET("/sn/dataclassification", controller.QuerySNDataClassification)
-	//4.2.9	异常数据停车场top10Abnormal data parking
+	//4.2.9	异常数据停车场top10Abnormal data parking[1]
 	route.GET("/sn/abnormaldataparking", controller.QueryAbnormalDataParking)
-	//4.2.10 逾期数据停车场top10
+	//4.2.10 逾期数据停车场top10[1]
 	route.GET("/sn/overduedata", controller.QueryOverdueData)
+
+	//省外清分核对确认【待处理Clarify confirm】
+	route.GET("/sw/clarifyconfirm", controller.Clarifyconfirm)
+	//清分核对
+	route.GET("/sw/clearlingcheck", controller.Clearlingcheck)
+	//最近15天清分包数据差额Clarify the difference
+	route.GET("/sw/clarifydifference", controller.Clarifydifference)
+
 }
 
 //以下为cors实现

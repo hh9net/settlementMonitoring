@@ -159,7 +159,7 @@ func QueryDataSync() (int, error, *[]dto.DataSync) {
 
 //QuerySNDataClassification
 func QuerySNDataClassification() (int, error, *dto.ShengNDataClassification) {
-	//查询省内结算实时数据监控
+	//查询省内结算数据分类
 	err, data := db.QuerySNDataClassificationTable()
 	if err != nil {
 		return 0, err, nil
@@ -185,4 +185,48 @@ func QuerySNDataClassification() (int, error, *dto.ShengNDataClassification) {
 		data.FNbFassjl,
 		data.FNbjufsjl,
 	}
+}
+
+//QueryAbnormalDataParking
+func QueryAbnormalDataParking() (int, error, *[]dto.AbnormalDataOfParking) {
+	//查询异常数据停车场top10
+	ts := 10
+	Data := make([]dto.AbnormalDataOfParking, ts)
+	err, data := db.QueryAbnormalDataOfParkingTable()
+	if err != nil {
+		return 0, err, nil
+	}
+	err1, yqdatas := db.QueryAbnormalDataOfParkingtable(data.FVcKuaizsj, ts)
+	if err1 != nil {
+		return 0, err1, nil
+	}
+	for i, yqd := range *yqdatas {
+		Data[i].AbnormalDatacount = yqd.FNbZongts
+		Data[i].Parkingname = yqd.FVcTingccid
+		Data[i].AbnormalDataAmount = yqd.FNbZongje
+	}
+	//返回数据赋值
+	return 309, nil, &Data
+}
+
+//QueryOverdueData
+func QueryOverdueData() (int, error, *[]dto.Overduedata) {
+	//查询海岭数据同步监控
+	ts := 10
+	Data := make([]dto.Overduedata, ts)
+	err, data := db.QueryOverdueDataTable()
+	if err != nil {
+		return 0, err, nil
+	}
+	err1, yqdatas := db.QueryOverdueDatatable(data.FVcTongjrq, ts)
+	if err1 != nil {
+		return 0, err1, nil
+	}
+	for i, yqd := range *yqdatas {
+		Data[i].Overduecount = yqd.FNbYuqzts
+		Data[i].Parkingname = yqd.FVcTingccid
+		Data[i].OverdueAmount = yqd.FNbYuqzje
+	}
+	//返回数据赋值
+	return 310, nil, &Data
 }
