@@ -23,6 +23,14 @@ const (
 
 	StatusQuerySNTotalSettlementDataSuccess = 301 //查询省内结算数据表的总条数、总金额 成功
 	StatusQuerySNSendTotalSettlemenSuccess  = 302 //查询省内的已发送 总条数、总金额 成功
+	StatusQuerySNAlreadyPleaseDataSuccess   = 303 //查询省内已请款的数据总条数、总金额 成功
+	StatusQuerySNRefusePayDataSuccess       = 304 //查询坏账（拒付）数据 总条数、总金额 成功
+	StatusQuerySNRealTimeDataSuccess        = 305 //查询省内结算实时数据监控 成功
+	StatusQuerySNSettlementTrendSuccess     = 306 //查询省内前30日省内结算趋势概览 成功
+	StatusQueryDataSyncSuccess              = 307 //查询海岭数据同步监控 成功
+	StatusQuerySNDataClassificationSuccess  = 308 //查询省内结算数据分类 成功
+	StatusQueryAbnormalDataParkingSuccess   = 309 //查询异常数据停车场top10 成功
+	StatusQueryOverdueDataSuccess           = 310 //查询逾期数据停车场top10 失败
 
 	StatusRepeatedRegistration = 401 //注册重复
 	StatusPleaseRegister       = 402 //请先注册
@@ -43,6 +51,14 @@ const (
 
 	StatusQuerySNTotalSettlementDataError = 501 //查询省内结算数据表的总条数、总金额 失败
 	StatusQuerySNSendTotalSettlemenError  = 502 //查询省内的已发送 总条数、总金额 失败
+	StatusQuerySNAlreadyPleaseDataError   = 503 //查询省内已请款的数据总条数、总金额 失败
+	StatusQuerySNRefusePayDataError       = 504 //查询坏账（拒付）数据 总条数、总金额 失败
+	StatusQuerySNRealTimeDataError        = 505 //查询省内结算实时数据监控 失败
+	StatusQuerySNSettlementTrendError     = 506 //查询省内前30日省内结算趋势概览 失败
+	StatusQueryDataSyncError              = 507 //查询海岭数据同步监控 失败
+	StatusQuerySNDataClassificationError  = 508 //查询省内结算数据分类 失败
+	StatusQueryAbnormalDataParkingError   = 509 //查询异常数据停车场top10 失败
+	StatusQueryOverdueDataError           = 510 //查询逾期数据停车场top10 失败
 
 )
 
@@ -84,6 +100,22 @@ var statusText = map[int]string{
 	StatusQuerySNTotalSettlementDataError:        "Query SN TotalSettlement Data Error",
 	StatusQuerySNSendTotalSettlemenSuccess:       "Query SN Send Total Settlemen Success",
 	StatusQuerySNSendTotalSettlemenError:         "Query SN Send Total Settlemen Error",
+	StatusQuerySNAlreadyPleaseDataSuccess:        "Query SN Already Please Data Success",
+	StatusQuerySNAlreadyPleaseDataError:          "Query SN Already Please Data Error",
+	StatusQuerySNRefusePayDataSuccess:            "Query SN Refuse Pay Data Success",
+	StatusQuerySNRefusePayDataError:              "Query SN Refuse Pay Data Error",
+	StatusQuerySNRealTimeDataSuccess:             "Query SN Real Time Data Success",
+	StatusQuerySNRealTimeDataError:               "Query SN Real Time Data Error",
+	StatusQuerySNSettlementTrendSuccess:          "Query SN Settlement Trend Success",
+	StatusQuerySNSettlementTrendError:            "Query SN Settlement Trend Error",
+	StatusQueryDataSyncSuccess:                   "Query Data Sync Success",
+	StatusQueryDataSyncError:                     "Query Data Sync Error",
+	StatusQuerySNDataClassificationSuccess:       "Query SN Data Classification Success",
+	StatusQuerySNDataClassificationError:         "Query SN Data Classification Error",
+	StatusQueryAbnormalDataParkingSuccess:        "Query Abnormal Data Parking Success",
+	StatusQueryAbnormalDataParkingError:          "Query Abnormal Data Parking Error",
+	StatusQueryOverdueDataSuccess:                "Query Overdue Data Success",
+	StatusQueryOverdueDataError:                  "Query Overdue Data Error",
 }
 
 // StatusText returns a text for the HTTP status code. It returns the empty

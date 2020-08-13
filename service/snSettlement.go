@@ -59,3 +59,130 @@ func QuerySNSendTotalSettlemen() (int, error, *dto.TotalSettlementData) {
 	//返回数据赋值
 	return 302, nil, &dto.TotalSettlementData{Amount: utils.Fen2Yuan(data.FNbZongje), Count: data.FNbZongts}
 }
+
+//QuerySNAlreadyPleaseData
+func QuerySNAlreadyPleaseData() (int, error, *dto.TotalSettlementData) {
+	//查询省内已请款的数据总条数、总金额
+	err, data := db.QueryShengnAlreadyPleaseTable()
+	if err != nil {
+		return 0, err, nil
+	}
+	if data.FVcTongjrq == "" {
+		err2, Data := db.QueryShengnAlreadyPleaseTableByID(data.FNbId - 1)
+		if err2 != nil {
+			return 0, err, nil
+		}
+		log.Println("查询成功", "查询省内已请款的数据总金额: ", Data.FNbQingkzje, "省内已请款的数据总条数", Data.FNbQingkzts)
+		return 303, nil, &dto.TotalSettlementData{Amount: utils.Fen2Yuan(Data.FNbQingkzje), Count: Data.FNbQingkzts}
+	}
+	//返回数据赋值
+	return 303, nil, &dto.TotalSettlementData{Amount: utils.Fen2Yuan(data.FNbQingkzje), Count: data.FNbQingkzts}
+}
+
+//QuerySNRefusePayData
+func QuerySNRefusePayData() (int, error, *dto.TotalSettlementData) {
+	//查询坏账（拒付）数据 总条数、总金额
+	err, data := db.QueryShengnRefusePayTable()
+	if err != nil {
+		return 0, err, nil
+	}
+	if data.FVcTongjrq == "" {
+		err2, Data := db.QueryShengnRefusePayTableByID(data.FNbId - 1)
+		if err2 != nil {
+			return 0, err, nil
+		}
+		log.Println("查询成功", "查询省内已请款的数据总金额: ", Data.FNbJufzje, "省内已请款的数据总条数", Data.FNbJufzts)
+		return 304, nil, &dto.TotalSettlementData{Amount: utils.Fen2Yuan(Data.FNbJufzje), Count: Data.FNbJufzts}
+	}
+	//返回数据赋值
+	return 304, nil, &dto.TotalSettlementData{Amount: utils.Fen2Yuan(data.FNbJufzje), Count: data.FNbJufzts}
+}
+
+//QuerySNRealTimeData
+func QuerySNRealTimeData() (int, error, *[]dto.RealTimeSettlementData) {
+	//查询省内结算实时数据监控
+	ts := 30
+	Data := make([]dto.RealTimeSettlementData, ts)
+
+	err, ds := db.QuerySNRealTimeSettlementData(ts)
+	if err != nil {
+		return 0, err, nil
+	}
+	for i, d := range *ds {
+		Data[i].Jizjine = d.FNbShengncsje //省内产生金额
+		Data[i].Fasjine = d.FNbShengnyfssjje
+		Data[i].Jizjine = d.FNbShengnyjzsjje
+		Data[i].Shengnjssl = d.FNbShengncsts
+		Data[i].Fassl = d.FNbShengnyfssjts
+		Data[i].Jizsl = d.FNbShengnyjzsjts
+	}
+	//返回数据赋值
+	return 305, nil, &Data
+}
+
+//QuerySNSettlementTrend
+func QuerySNSettlementTrend() (int, error, *[]dto.SNClearandJiesuan) {
+	//查询前30日省内结算趋势概览
+	ts := 30
+	Data := make([]dto.SNClearandJiesuan, ts)
+	err, ds := db.QueryShengNSettlementTrendtable(ts)
+	if err != nil {
+		return 0, err, nil
+	}
+	for i, d := range *ds {
+		Data[i].JiesuanMoney = d.FNbShengnjyje //省内产生金额
+		Data[i].ClearlingMoney = d.FNbShengnqkje
+		Data[i].DiffMoney = d.FNbChae
+		Data[i].JiesuanCount = d.FNbJiaoyts
+		Data[i].ClearlingCount = d.FNbQingkts
+	}
+	//返回数据赋值
+	return 306, nil, &Data
+}
+
+//QueryDataSync
+func QueryDataSync() (int, error, *[]dto.DataSync) {
+	//查询海岭数据同步监控
+	ts := 12
+	Data := make([]dto.DataSync, ts)
+	err, ds := db.QueryDataSynctable(ts)
+	if err != nil {
+		return 0, err, nil
+	}
+	for i, d := range *ds {
+		Data[i].HailCount = d.FNbJiessjzl
+		Data[i].JiesuanCount = d.FNbYitbsjl
+	}
+	//返回数据赋值
+	return 307, nil, &Data
+}
+
+//QuerySNDataClassification
+func QuerySNDataClassification() (int, error, *dto.ShengNDataClassification) {
+	//查询省内结算实时数据监控
+	err, data := db.QuerySNDataClassificationTable()
+	if err != nil {
+		return 0, err, nil
+	}
+	if data.FVcTongjrq == "" {
+		err, Data := db.QuerySNDataClassificationTableByID(data.FNbId - 1)
+		if err != nil {
+			return 0, err, nil
+		}
+		return 308, nil, &dto.ShengNDataClassification{
+			Data.FNbShengnzjysl,
+			Data.FNbQingksl,
+			Data.FNbWeifssl,
+			Data.FNbFassjl,
+			Data.FNbjufsjl,
+		}
+	}
+	//返回数据赋值
+	return 308, nil, &dto.ShengNDataClassification{
+		data.FNbShengnzjysl,
+		data.FNbQingksl,
+		data.FNbWeifssl,
+		data.FNbFassjl,
+		data.FNbjufsjl,
+	}
+}

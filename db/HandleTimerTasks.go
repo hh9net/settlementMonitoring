@@ -913,7 +913,7 @@ func QueryShengNSettlementTrenddata() error {
 		//4、赋值
 		Data := new(types.BJsjkShengnjsqs)
 		Data.FNbShengnjyje = qsshuju.JiesuanMoney                    //   `F_NB_SHENGNJYJE` bigint DEFAULT NULL COMMENT '省内交易金额',
-		Data.FNbShengnqksj = qsshuju.ClearlingMoney                  //   `F_NB_SHENGNQKJE` bigint DEFAULT NULL COMMENT '省内请款金额',
+		Data.FNbShengnqkje = qsshuju.ClearlingMoney                  //   `F_NB_SHENGNQKJE` bigint DEFAULT NULL COMMENT '省内请款金额',
 		Data.FNbChae = qsshuju.JiesuanMoney - qsshuju.ClearlingMoney //   `F_NB_CHAE` bigint DEFAULT NULL COMMENT '差额',
 		Data.FNbJiaoyts = qsshuju.JiesuanCount                       //   `F_NB_JIAOYTS` int DEFAULT NULL COMMENT '交易条数',
 		Data.FNbQingkts = qsshuju.ClearlingCount                     //   `F_NB_QINGKTS` int DEFAULT NULL COMMENT '请款条数',

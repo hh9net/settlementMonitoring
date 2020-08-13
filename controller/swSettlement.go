@@ -346,7 +346,7 @@ func PacketMonitoring(c *gin.Context) {
 	}
 }
 
-/*  接口13方法注释  【待实现】 */
+/*  接口13方法注释  */
 //@Summary 省外数据包监控 api
 //@Tags 省外数据包监控
 //@version 1.0
@@ -354,7 +354,7 @@ func PacketMonitoring(c *gin.Context) {
 //@Param req body dto.Reqlogin true "请求参数"
 //@Success 200 object dto.Response 成功后返回值
 //@Failure 404 object dto.ResponseFailure 查询失败
-//@Router /sw/packetmonitoring [get]
+//@Router /sw/clarifyconfirm [get]
 func Clarifyconfirm(c *gin.Context) {
 	respFailure := dto.ResponseFailure{}
 	// 查询省外数据包监控
@@ -367,7 +367,7 @@ func Clarifyconfirm(c *gin.Context) {
 		return
 	}
 	if code == 214 {
-		c.JSON(http.StatusOK, dto.QueryClearlingAndDisputeResponse{Code: code, CodeMsg: types.StatusText(214), Data: *totaldata, Message: "查询省外数据包监控 成功"})
+		c.JSON(http.StatusOK, dto.QueryClearlingAndDisputeResponse{Code: code, CodeMsg: types.StatusText(214), Data: *totaldata, Message: "清分确认成功成功【待实现】"})
 	}
 	if code == 0 {
 		c.JSON(http.StatusOK, dto.Response{Code: code, Data: types.StatusText(types.StatusQueryPacketMonitoringError), Message: "查询省外数据包监控 失败"})

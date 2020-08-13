@@ -1232,6 +1232,17 @@ func QueryShengnRefusePayTable() (error, *types.BJsjkShengnjfsjtj) {
 	return nil, shuju
 }
 
+func QueryShengnRefusePayTableByID(id int) (error, *types.BJsjkShengnjfsjtj) {
+	db := utils.GormClient.Client
+	shuju := new(types.BJsjkShengnjfsjtj)
+	if err := db.Table("b_jsjk_shengnjfsjtj").Where("F_NB_ID=?", id).Last(&shuju).Error; err != nil {
+		log.Println("查询最新一条省内拒付记录 error :", err)
+		return err, nil
+	}
+	log.Println("查询省内拒付记录最新结果:", shuju)
+	return nil, shuju
+}
+
 //4、更新最新一条
 func UpdateShengnRefusePayTable(data *types.BJsjkShengnjfsjtj, id int) error {
 	db := utils.GormClient.Client
@@ -1278,6 +1289,17 @@ func QueryShengnAlreadyPleaseTable() (error, *types.BJsjkShengnqktj) {
 	db := utils.GormClient.Client
 	shuju := new(types.BJsjkShengnqktj)
 	if err := db.Table("b_jsjk_shengnqktj").Last(&shuju).Error; err != nil {
+		log.Println("查询最新一条已请款数据 error :", err)
+		return err, nil
+	}
+	log.Println("查询省内已请款数据:", shuju)
+	return nil, shuju
+}
+
+func QueryShengnAlreadyPleaseTableByID(id int) (error, *types.BJsjkShengnqktj) {
+	db := utils.GormClient.Client
+	shuju := new(types.BJsjkShengnqktj)
+	if err := db.Table("b_jsjk_shengnqktj").Where("F_NB_ID=?", id).Last(&shuju).Error; err != nil {
 		log.Println("查询最新一条已请款数据 error :", err)
 		return err, nil
 	}
@@ -1364,6 +1386,17 @@ func QuerySNDataClassificationTable() (error, *types.BJsjkShengnjssjfl) {
 	return nil, shuju
 }
 
+func QuerySNDataClassificationTableByID(id int) (error, *types.BJsjkShengnjssjfl) {
+	db := utils.GormClient.Client
+	shuju := new(types.BJsjkShengnjssjfl)
+	if err := db.Table("b_jsjk_shengnjssjfl").Where("F_NB_ID=?", id).Last(&shuju).Error; err != nil {
+		log.Println("查询最新一条省内结算数据分类 error :", err)
+		return err, nil
+	}
+	log.Println("查询省内结算数据分类:", shuju)
+	return nil, shuju
+}
+
 //4、更新省内已请款数据最新一条
 func UpdateSNDataClassificationTable(data *types.BJsjkShengnjssjfl, id int) error {
 	db := utils.GormClient.Client
@@ -1442,6 +1475,17 @@ func QuerySNRealTimeSettlementDataTable() (error, *types.BJsjkShengnsssjjk) {
 	}
 	log.Println("查询省内今日实时数据:", shuju)
 	return nil, shuju
+}
+
+func QuerySNRealTimeSettlementData(ts int) (error, *[]types.BJsjkShengnsssjjk) {
+	db := utils.GormClient.Client
+	shuju := make([]types.BJsjkShengnsssjjk, ts)
+	if err := db.Table("b_jsjk_shengnsssjjk").Order("F_NB_ID desc").Limit(ts).Find(&shuju).Error; err != nil {
+		log.Println("查询省内今日实时数据 error :", err)
+		return err, nil
+	}
+	log.Println("查询省内今日实时数据结果:", shuju)
+	return nil, &shuju
 }
 
 //更具id查询记录
@@ -1549,6 +1593,17 @@ func UpdateShengNSettlementTrendTable(data *types.BJsjkShengnjsqs, id int) error
 	return nil
 }
 
+func QueryShengNSettlementTrendtable(ts int) (error, *[]types.BJsjkShengnjsqs) {
+	db := utils.GormClient.Client
+	shujus := make([]types.BJsjkShengnjsqs, ts)
+	if err := db.Table("b_jsjk_shengnjsqs").Order("F_NB_ID desc").Limit(ts).Find(&shujus).Error; err != nil {
+		log.Println("查询最新一条省内结算趋势 error :", err)
+		return err, nil
+	}
+	log.Println("查询省内结算趋势:", shujus)
+	return nil, &shujus
+}
+
 //4.2.7	海岭数据同步监控
 func QueryDataSync() (int, int) {
 
@@ -1593,6 +1648,28 @@ func QueryDataSyncTable() (error, *types.BJsjkShujtbjk) {
 	}
 	log.Println("查询数据同步监控表:", shuju)
 	return nil, shuju
+}
+
+func QueryDataSyncTableByID(id int) (error, *types.BJsjkShujtbjk) {
+	db := utils.GormClient.Client
+	shuju := new(types.BJsjkShujtbjk)
+	if err := db.Table("b_jsjk_shujtbjk").Where("F_NB_ID=?", id).Last(&shuju).Error; err != nil {
+		log.Println("查询最新一条数据同步监控表 error :", err)
+		return err, nil
+	}
+	log.Println("查询数据同步监控表:", shuju)
+	return nil, shuju
+}
+
+func QueryDataSynctable(ts int) (error, *[]types.BJsjkShujtbjk) {
+	db := utils.GormClient.Client
+	shujus := make([]types.BJsjkShujtbjk, ts)
+	if err := db.Table("b_jsjk_shujtbjk").Order("F_NB_ID desc").Limit(ts).Find(&shujus).Error; err != nil {
+		log.Println("查询数据同步监控表 error :", err)
+		return err, nil
+	}
+	log.Println("查询数据同步监控表:", shujus)
+	return nil, &shujus
 }
 
 //4、更新数据同步监控表最新一条

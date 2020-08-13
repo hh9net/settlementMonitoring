@@ -69,18 +69,26 @@ func AuthAPIInit(route *gin.RouterGroup) {
 	route.GET("/sw/clarifyconfirm", controller.Clarifyconfirm)
 
 	//省内结算监控模块
-	//省内结算数据表的总条数、总金额
+	//4.2.1省内结算数据表的总条数、总金额【1】
 	route.GET("/sn/totalsettlementdata", controller.QuerySNTotalSettlementData)
-	//4.2.2	查询省内的已发送 总条数、总金额
+	//4.2.2	查询省内的已发送 总条数、总金额【1】
 	route.GET("/sn/sendtotalsettlementdata", controller.QuerySNSendTotalSettlementData)
-	//4.2.3	查询省内已请款的数据总条数、总金额
-	//4.2.4	查询坏账（拒付）数据 总条数、总金额
-	//4.2.5	省内结算实时数据监控
-	//4.2.6	前30日省内结算趋势概览
-	//4.2.7	海岭数据同步监控
-	//4.2.8	省内结算数据分类
-	//4.2.9	异常数据停车场top10
+	//4.2.3	查询省内已请款的数据总条数、总金额Already please 【1】
+	route.GET("/sn/alreadyplease", controller.QuerySNAlreadyPleaseData)
+	//4.2.4	查询坏账（拒付）数据 总条数、总金额Refuse to pay 【1】
+	route.GET("/sn/refusepay", controller.QuerySNRefusePayData)
+	//4.2.5	省内结算实时数据监控Real-time data【1】
+	route.GET("/sn/realtimedata", controller.QuerySNRealTimeData)
+	//4.2.6	前30日省内结算趋势概览 [1]
+	route.GET("/sn/settlementtrend", controller.QuerySNSettlementTrend)
+	//4.2.7	海岭数据同步监控Data synchronization[1]
+	route.GET("/sn/datasync", controller.QueryDataSync)
+	//4.2.8	省内结算数据分类Data classification
+	route.GET("/sn/dataclassification", controller.QuerySNDataClassification)
+	//4.2.9	异常数据停车场top10Abnormal data parking
+	route.GET("/sn/abnormaldataparking", controller.QueryAbnormalDataParking)
 	//4.2.10 逾期数据停车场top10
+	route.GET("/sn/overduedata", controller.QueryOverdueData)
 }
 
 //以下为cors实现

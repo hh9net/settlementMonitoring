@@ -31,7 +31,7 @@ type BJsjkShengnjfsjtj struct {
 	FNbId int `gorm:"AUTO_INCREMENT ;primary_key; column:F_NB_ID"` //  `F_NB_ID` int NOT NULL AUTO_INCREMENT COMMENT '唯一自增id',
 
 	FNbJufzje    int64     `gorm:"column:F_NB_JUFZJE"`    //`F_NB_JUFZJE` bigint DEFAULT NULL COMMENT '拒付总金额 （分）',
-	FNbJufzts    int       `gorm:"column:F_NB_JufZTS"`    //   `F_NB_JufZTS` int DEFAULT NULL COMMENT '拒付总条数',
+	FNbJufzts    int       `gorm:"column:F_NB_JUFZTS"`    //   `F_NB_JUFZTS` int DEFAULT NULL COMMENT '拒付总条数',
 	FDtKaistjsj  time.Time `gorm:"column:F_DT_KAISTJSJ"`  //   `F_DT_KAISTJSJ` datetime DEFAULT NULL COMMENT '开始统计时间',
 	FDtTongjwcsj time.Time `gorm:"column:F_DT_TONGJWCSJ"` //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
 	FVcTongjrq   string    `gorm:"column:F_VC_TONGJRQ"`   //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
@@ -52,7 +52,7 @@ type BJsjkShengnjsqs struct {
 	FNbId int `gorm:"AUTO_INCREMENT; primary_key ;column:F_NB_ID"` //  `F_NB_ID` int NOT NULL AUTO_INCREMENT COMMENT '唯一自增id',
 
 	FNbShengnjyje int64     `gorm:"column:F_NB_SHENGNJYJE"` //   `F_NB_SHENGNJYJE` bigint DEFAULT NULL COMMENT '省内交易金额',
-	FNbShengnqksj int64     `gorm:"column:F_NB_SHENGNQKJE"` //   `F_NB_SHENGNQKJE` bigint DEFAULT NULL COMMENT '省内请款金额',
+	FNbShengnqkje int64     `gorm:"column:F_NB_SHENGNQKJE"` //   `F_NB_SHENGNQKJE` bigint DEFAULT NULL COMMENT '省内请款金额',
 	FNbChae       int64     `gorm:"column:F_NB_CHAE"`       //   `F_NB_CHAE` bigint DEFAULT NULL COMMENT '差额',
 	FNbJiaoyts    int       `gorm:"column:F_NB_JIAOYTS"`    //   `F_NB_JIAOYTS` int DEFAULT NULL COMMENT '交易条数',
 	FNbQingkts    int       `gorm:"column:F_NB_QINGKTS"`    //   `F_NB_QINGKTS` int DEFAULT NULL COMMENT '请款条数',

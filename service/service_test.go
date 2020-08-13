@@ -1,6 +1,7 @@
 package service
 
 import (
+	"log"
 	"settlementMonitoring/db"
 	"testing"
 )
@@ -21,4 +22,11 @@ func TestQueryDataTurnMonitordata(t *testing.T) {
 func TestQuerySettlementTrend(t *testing.T) {
 	db.Newdb()
 	QuerySettlementTrend()
+}
+
+//QuerySNRealTimeData
+func TestQuerySNRealTimeData(t *testing.T) {
+	db.Newdb()
+	log.Println(QuerySNRealTimeData())
+
 }

@@ -428,3 +428,9 @@ func TestQueryDataSync(t *testing.T) {
 	Newdb()
 	QueryDataSync()
 }
+
+//QuerySNRealTimeSettlementData
+func TestQuerySNRealTimeSettlementData(t *testing.T) {
+	Newdb()
+	QuerySNRealTimeSettlementData(5)
+}
