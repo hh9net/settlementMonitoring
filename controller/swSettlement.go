@@ -415,8 +415,8 @@ func ClarifyQuery(c *gin.Context) {
 }
 
 /*  接口15方法注释  */
-//@Summary 省外清分核对确认 api
-//@Tags 省外清分核对确认
+//@Summary 省外清分核对确认【待处理】 api
+//@Tags 省外清分核对确认【待处理】
 //@version 1.0
 //@Accept application/json
 //@Param req body dto.Reqlogin true "请求参数"
