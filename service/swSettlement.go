@@ -178,21 +178,27 @@ func QueryClearlingAndDisputePackagedata() (int, error, *dto.ClearlAndDisputeDat
 }
 
 //省外清分核对 StatisticalClearlingcheck
-func StatisticalClearlingcheck() (int, error, *dto.ClearlingcheckOneData) {
+func StatisticalClearlingcheck() (int, error, *[]dto.ClearlingcheckData) {
 	//清分核对
-	err, checkdata := db.QueryCheckResultOne()
+	ts := 100
+	err, checkdata := db.QueryCheckResultbyTs(ts)
 	if err != nil {
 		return 0, err, nil
 	}
 	log.Println("清分核对结果:", checkdata)
 	//返回数据赋值
-
-	return 210, nil, &dto.ClearlingcheckOneData{Clearlingpakgxh: checkdata.FNbQingfbxh,
-		Clearlingpakgje: checkdata.FNbQingfje,
-		Tongjqfje:       checkdata.FNbTongjqfje,
-		Hedjg:           checkdata.FNbHedjg,
-		Tongjrq:         checkdata.FVcTongjrq,
+	Data := make([]dto.ClearlingcheckData, len(*checkdata))
+	for i, data := range *checkdata {
+		Data[i].Clearlingpakgje = data.FNbQingfje
+		Data[i].Clearlingpakgxh = data.FNbQingfbxh
+		Data[i].Clearlingpakgts = data.FNbQingfts
+		Data[i].Tongjqfje = data.FNbTongjqfje
+		Data[i].Tongjqfts = data.FNbTongjqfts
+		Data[i].Hedjg = data.FNbHedjg
+		Data[i].Tongjrq = data.FVcTongjrq
+		Data[i].Qingfbjssj = utils.DateTimeFormat(data.FDtQingfbjssj)
 	}
+	return 210, nil, &Data
 }
 
 //省外数据分类
@@ -296,6 +302,7 @@ func QuerySettlementTrend() (int, error, *[]dto.SettlementTrend) {
 	return 213, nil, &Datas
 }
 
+// 查询省外数据包监控
 func QueryPacketMonitoring() (int, error, *[]dto.PacketMonitoringdata) {
 	ts := 30
 	//响应数据 list TurnDataResponse
@@ -322,6 +329,53 @@ func QueryPacketMonitoring() (int, error, *[]dto.PacketMonitoringdata) {
 	return 214, nil, &Datas
 }
 
+//查询最近15天清分包数据差额
+func Clarifydifference() (int, error, *[]dto.DifferAmount) {
+	ts := 15
+	//响应数据 list TurnDataResponse
+	Datas := make([]dto.DifferAmount, ts)
+
+	//查询数据
+	qerr, ds := db.QuerySettlementclearlingcheck(ts)
+	if qerr != nil {
+		return 0, qerr, nil
+	}
+
+	for i, d := range *ds {
+		Datas[i].Differamount = d.FNbQingfje - d.FNbQingfje
+	}
+	log.Println("响应数据：", Datas)
+	//返回数据
+	return 215, nil, &Datas
+}
+
+//查询最近15天清分包数据差额
+func ClarifyQuery(req dto.ReqQueryClarify) (int, error, *[]dto.ClearlingcheckData) {
+	log.Print("清分核对请求参数：", req)
+	//获取请求数据
+	err, qfhdreqs := db.QueryClearlingcheck(&req)
+	if err != nil {
+		//查询用户是否被注册，查询失败
+		return 0, err, nil
+	}
+	//响应数据 list
+	Datas := make([]dto.ClearlingcheckData, len(*qfhdreqs))
+	for i, d := range *qfhdreqs {
+		Datas[i].Clearlingpakgxh = d.FNbQingfbxh
+		Datas[i].Clearlingpakgje = d.FNbQingfje
+		Datas[i].Clearlingpakgts = d.FNbQingfts
+		Datas[i].Tongjqfje = d.FNbTongjqfje
+		Datas[i].Tongjqfts = d.FNbTongjqfts
+		Datas[i].Hedjg = d.FNbHedjg
+		Datas[i].Tongjrq = d.FVcTongjrq
+		Datas[i].Qingfbjssj = utils.DateTimeFormat(d.FDtQingfbjssj)
+	}
+	log.Println("响应数据：", Datas)
+	//返回数据
+	return 216, nil, &Datas
+}
+
+//清分确认【未实现】
 func Clarifyconfirm() (int, error, *[]dto.PacketMonitoringdata) {
 	ts := 30
 	//响应数据 list TurnDataResponse
@@ -345,27 +399,5 @@ func Clarifyconfirm() (int, error, *[]dto.PacketMonitoringdata) {
 
 	log.Println("响应数据：", Datas)
 	//返回数据
-	return 214, nil, &Datas
-}
-
-//Clarifyconfirm
-
-//查询最近15天清分包数据差额
-func Clarifydifference() (int, error, *[]dto.DifferAmount) {
-	ts := 15
-	//响应数据 list TurnDataResponse
-	Datas := make([]dto.DifferAmount, ts)
-
-	//查询数据
-	qerr, ds := db.QuerySettlementclearlingcheck(ts)
-	if qerr != nil {
-		return 0, qerr, nil
-	}
-
-	for i, d := range *ds {
-		Datas[i].Differamount = d.FNbQingfje - d.FNbQingfje
-	}
-	log.Println("响应数据：", Datas)
-	//返回数据
-	return 215, nil, &Datas
+	return 217, nil, &Datas
 }

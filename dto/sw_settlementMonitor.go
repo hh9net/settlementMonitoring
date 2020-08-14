@@ -1,8 +1,17 @@
 package dto
 
-import "settlementMonitoring/types"
+import (
+	"settlementMonitoring/types"
+)
 
 type QuerTotalSettlementDataResponse struct {
+	Code    int `json:"code"  example:"200"`
+	CodeMsg string
+	Data    interface{} `json:"data"`
+	Message string      `json:"message" example:"响应成功信息"`
+}
+
+type QuerResponse struct {
 	Code    int `json:"code"  example:"200"`
 	CodeMsg string
 	Data    interface{} `json:"data"`
@@ -55,12 +64,15 @@ type ClearlAndDisputeData struct {
 }
 
 //Clearlingcheck
-type ClearlingcheckOneData struct {
+type ClearlingcheckData struct {
 	Clearlingpakgxh int64  `json:"clearlingpakgxh" example:"1244547"`
 	Clearlingpakgje int64  `json:"clearlingpakgje" example:"1244547"`
+	Clearlingpakgts int    `json:"clearlingpakgts" example:"1244547"`
 	Tongjqfje       int64  `json:"tongjqfje" example:"1244547"`
+	Tongjqfts       int    `json:"tongjqfts" example:"1244547"`
 	Hedjg           int    `json:"hedjg" example:"1244547"`
 	Tongjrq         string `json:"tongjrq" example:"1244547"`
+	Qingfbjssj      string `json:"qingfbjssj" example:"1244547"`
 }
 
 type Dataclassification struct {
@@ -107,4 +119,10 @@ type PacketMonitoringdata struct {
 
 type DifferAmount struct {
 	Differamount int64 `json:"differamount" example:"1244547"` //差额
+}
+
+type ReqQueryClarify struct {
+	BeginTime  string `json:"BeginTime" example:"2020-08-13 13:13:13"`
+	EndTime    string `json:"EndTime" example:"2020-08-13 13:13:13"`
+	CheckState string `json:"CheckState" example:"1"` //0:全部、1：校验成功 2：校验失败
 }

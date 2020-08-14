@@ -87,13 +87,15 @@ func AuthAPIInit(route *gin.RouterGroup) {
 	//4.2.10 逾期数据停车场top10[1]
 	route.GET("/sn/overduedata", controller.QueryOverdueData)
 
-	//省外清分核对确认【待处理Clarify confirm】
-	route.GET("/sw/clarifyconfirm", controller.Clarifyconfirm)
-	//清分核对
-	route.GET("/sw/clearlingcheck", controller.Clearlingcheck)
-	//最近15天清分包数据差额Clarify the difference
+	//最近15天清分包数据差额
 	route.GET("/sw/clarifydifference", controller.Clarifydifference)
+	//查询清分包数据校验 最新100条清分核对
+	route.GET("/sw/clearlingcheck", controller.Clearlingcheck)
+	//查询按条件清分核对
+	route.POST("/sw/clarifyquery", controller.ClarifyQuery)
 
+	//省外清分核对确认【待处理Clarify confirm】
+	route.POST("/sw/clarifyconfirm", controller.Clarifyconfirm)
 }
 
 //以下为cors实现

@@ -263,7 +263,7 @@ func TestStatisticalClearlingcheck(t *testing.T) {
 //QueryCheckResultOne()
 func TestQueryCheckResultOne(t *testing.T) {
 	Newdb()
-	log.Println(QueryCheckResultOne())
+	log.Println(QueryCheckResultbyTs(100))
 }
 
 //QueryCompletionKeepaccount()
