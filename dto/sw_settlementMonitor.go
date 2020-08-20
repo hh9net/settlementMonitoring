@@ -48,8 +48,16 @@ type TotalAbnormalData struct {
 }
 
 type TotalBlacklistData struct {
-	Blacklistcount int `json:"blacklistcount"  example:"1244547"`
-	ChangeCount    int `json:"changecount"  example:"42626"`
+	Blacklistcount int    `json:"blacklistcount"  example:"1244547"`
+	ChangeCount    int    `json:"changecount"  example:"42626"`
+	DateTime       string `json:"datetime"  example:"2020-08-18"` //完成时间
+	Blacklist      []BlackList
+}
+
+type BlackList struct {
+	Blacklistcount int    `json:"blacklistcount"  example:"1244547"`
+	DateTime       string `json:"datetime"  example:"2020-08-18"` //完成时间
+
 }
 
 //ClearlingAndDisputeData
@@ -78,7 +86,7 @@ type ClearlingcheckData struct {
 type Dataclassification struct {
 	Shengwzcount int `json:"shengwzcount" example:"1244547"` //省外结算总数据
 	Yiqfcount    int `json:"yiqfcount" example:"1244547"`    //已清分总条数（不含坏账）
-	Jizcount     int `json:"jizcount " example:"1244547"`    //记账
+	Jizcount     int `json:"jizcount" example:"1244547"`     //记账
 	Zhengycount  int `json:"zhengycount" example:"1244547"`  //争议
 	Weidbcount   int `json:"weidbcount" example:"1244547"`   //未打包
 	Yidbcount    int `json:"yidbcount" example:"1244547"`    //已打包
@@ -87,34 +95,41 @@ type Dataclassification struct {
 }
 
 type TurnData struct {
-	Jieszcount int //结算表总数
-	DDzcount   int //单点出口总笔数
-	ZDZcount   int //总对总总笔数
+	Jieszcount int    //结算表总数
+	DDzcount   int    //单点出口总笔数
+	ZDZcount   int    //总对总总笔数
+	DateTime   string //统计时间
 }
 
 type TurnDataResponse struct {
-	JieszCount  int `json:"jieszcount " example:"1244547"` //结算表总数
-	YuansCount  int `json:"ddcount" example:"1244547"`     //原始出口总笔数
-	DifferCount int `json:"differcount" example:"1244547"`
+	JieszCount  int    `json:"jieszcount" example:"1244547"` //结算表总数
+	YuansCount  int    `json:"yuanscount" example:"1244547"` //原始出口总笔数
+	DifferCount int    `json:"differcount" example:"1244547"`
+	DateTime    string `json:"datetime"  example:"2020-08-18"` //完成时间
+
 }
 
 //省外结算趋势
 type SettlementTrend struct {
-	JiesuanAmount int64 `json:"jiesuanamount " example:"1244547"` //今日结算金额
-	QingfAmount   int64 `json:"qingfamount" example:"1244547"`    //今日清分总笔数
-	DifferAmount  int64 `json:"differamount" example:"1244547"`   //差额
-	QingfCount    int   `json:"qingfcount" example:"1244547"`     //今日清分
-	JiesuanCount  int   `json:"jiesuancount" example:"1244547"`   //今日结算条数
+	JiesuanAmount string `json:"jiesuanamount" example:"1244547"` //今日结算金额
+	QingfAmount   string `json:"qingfamount" example:"1244547"`   //今日清分总笔数
+	DifferAmount  string `json:"differamount" example:"1244547"`  //差额
+	QingfCount    int    `json:"qingfcount" example:"1244547"`    //今日清分
+	JiesuanCount  int    `json:"jiesuancount" example:"1244547"`  //今日结算条数
+	DateTime      string `json:"datetime"  example:"2020-08-18"`  //完成时间
+
 }
 
 type PacketMonitoringdata struct {
-	Dabaosl   int   `json:"dabaosl" example:"1244547"`   //今日打包数量
-	Dabaojine int64 `json:"dabaojine" example:"1244547"` //打包金额
-	Fasbsl    int   `json:"fasbsl" example:"1244547"`    //已发送原始交易消息包数量
-	Fasbjine  int64 `json:"fasbjine" example:"1244547"`  //已发送原始交易消息包金额
-	Jizbsl    int   `json:"jizbsl" example:"1244547"`    //记账包数量
-	Jizbjine  int64 `json:"jizbjine" example:"1244547"`  //记账包金额
-	Yuansbsl  int   `json:"yuansbsl" example:"1244547"`  //原始交易消息应答包数量
+	Dabaosl       int    `json:"dabaosl" example:"1244547"`       //今日打包数量
+	Dabaojine     string `json:"dabaojine" example:"1244547"`     //打包金额
+	Fasbsl        int    `json:"fasbsl" example:"1244547"`        //已发送原始交易消息包数量
+	Fasbjine      string `json:"fasbjine" example:"1244547"`      //已发送原始交易消息包金额
+	Jizbsl        int    `json:"jizbsl" example:"1244547"`        //记账包数量
+	Jizbjine      string `json:"jizbjine" example:"1244547"`      //记账包金额
+	Yuansyingdbsl int    `json:"yuansyingdbsl" example:"1244547"` //原始交易消息应答包数量
+	DateTime      string `json:"datetime"  example:"2020-08-18"`  //完成时间
+
 }
 
 type DifferAmount struct {

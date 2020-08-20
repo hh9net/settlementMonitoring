@@ -5,6 +5,7 @@ const (
 	StatusSwitchingProtocols = 101 // RFC 7231, 6.2.2
 	StatusProcessing         = 102 // RFC 2518, 10.1
 	StatusEarlyHints         = 103 // RFC 8297
+	StatusSuccessfully       = 0
 
 	StatusRegisteredSuccessfully                 = 200 //注册成功
 	StatusLoginSuccessfully                      = 201 //登录成功
@@ -34,35 +35,35 @@ const (
 	StatusQueryAbnormalDataParkingSuccess   = 309 //查询异常数据停车场top10 成功
 	StatusQueryOverdueDataSuccess           = 310 //查询逾期数据停车场top10 失败
 
-	StatusRepeatedRegistration = 401 //注册重复
-	StatusPleaseRegister       = 402 //请先注册
-	StatusPasswordError        = 403 //密码错误,请重新输入
+	StatusRepeatedRegistration = 4001 //注册重复
+	StatusPleaseRegister       = 4002 //请先注册
+	StatusPasswordError        = 4003 //密码错误,请重新输入
 
-	StatusQueryTotalSettlementDataError    = 404 //查询结算总金额、总笔数 失败
-	StatusQueryTotalClarifyError           = 405 //查询已清分总金额、总笔数 失败
-	StatusQueryTotalBaddebtsError          = 406 //查询坏账总金额、总笔数 失败
-	StatusQueryShengwDisputedataError      = 407 //查询存在争议总金额、总笔数 失败
-	StatusQueryAbnormaldataError           = 408 //查询异常数据总金额、总笔数 失败
-	StatusQueryblacklistdataError          = 409 //查询黑名单总数、较2小时前变化值 失败
-	StatusQueryClearlingAndDisputePkgError = 410 //查询清分包、争议包的接收时间、包号 失败
-	StatusQueryClearlingcheckOneDataError  = 411 //查询清分核对结果 失败
-	StatusQueryDataclassificationError     = 412 //查询省外数据分类 失败
-	StatusQueryDataTurnMonitorError        = 413 //查询省外转结算 失败
-	StatusQuerySettlementTrendError        = 414 //查询省外结算趋势 失败
-	StatusQueryPacketMonitoringError       = 415 //查询省外数据包监控 失败
-	StatusQueryClarifydifferenceError      = 416 //查询最近15天清分包数据差额 失败
-	StatusQueryClarifyError                = 417 //按条件查询清分核对 失败
+	StatusQueryTotalSettlementDataError    = 4004 //查询结算总金额、总笔数 失败
+	StatusQueryTotalClarifyError           = 4005 //查询已清分总金额、总笔数 失败
+	StatusQueryTotalBaddebtsError          = 4006 //查询坏账总金额、总笔数 失败
+	StatusQueryShengwDisputedataError      = 4007 //查询存在争议总金额、总笔数 失败
+	StatusQueryAbnormaldataError           = 4008 //查询异常数据总金额、总笔数 失败
+	StatusQueryblacklistdataError          = 4009 //查询黑名单总数、较2小时前变化值 失败
+	StatusQueryClearlingAndDisputePkgError = 4010 //查询清分包、争议包的接收时间、包号 失败
+	StatusQueryClearlingcheckOneDataError  = 4011 //查询清分核对结果 失败
+	StatusQueryDataclassificationError     = 4012 //查询省外数据分类 失败
+	StatusQueryDataTurnMonitorError        = 4013 //查询省外转结算 失败
+	StatusQuerySettlementTrendError        = 4014 //查询省外结算趋势 失败
+	StatusQueryPacketMonitoringError       = 4015 //查询省外数据包监控 失败
+	StatusQueryClarifydifferenceError      = 4016 //查询最近15天清分包数据差额 失败
+	StatusQueryClarifyError                = 4017 //按条件查询清分核对 失败
 
-	StatusQuerySNTotalSettlementDataError = 501 //查询省内结算数据表的总条数、总金额 失败
-	StatusQuerySNSendTotalSettlemenError  = 502 //查询省内的已发送 总条数、总金额 失败
-	StatusQuerySNAlreadyPleaseDataError   = 503 //查询省内已请款的数据总条数、总金额 失败
-	StatusQuerySNRefusePayDataError       = 504 //查询坏账（拒付）数据 总条数、总金额 失败
-	StatusQuerySNRealTimeDataError        = 505 //查询省内结算实时数据监控 失败
-	StatusQuerySNSettlementTrendError     = 506 //查询省内前30日省内结算趋势概览 失败
-	StatusQueryDataSyncError              = 507 //查询海岭数据同步监控 失败
-	StatusQuerySNDataClassificationError  = 508 //查询省内结算数据分类 失败
-	StatusQueryAbnormalDataParkingError   = 509 //查询异常数据停车场top10 失败
-	StatusQueryOverdueDataError           = 510 //查询逾期数据停车场top10 失败
+	StatusQuerySNTotalSettlementDataError = 5001 //查询省内结算数据表的总条数、总金额 失败
+	StatusQuerySNSendTotalSettlemenError  = 5002 //查询省内的已发送 总条数、总金额 失败
+	StatusQuerySNAlreadyPleaseDataError   = 5003 //查询省内已请款的数据总条数、总金额 失败
+	StatusQuerySNRefusePayDataError       = 5004 //查询坏账（拒付）数据 总条数、总金额 失败
+	StatusQuerySNRealTimeDataError        = 5005 //查询省内结算实时数据监控 失败
+	StatusQuerySNSettlementTrendError     = 5006 //查询省内前30日省内结算趋势概览 失败
+	StatusQueryDataSyncError              = 5007 //查询海岭数据同步监控 失败
+	StatusQuerySNDataClassificationError  = 5008 //查询省内结算数据分类 失败
+	StatusQueryAbnormalDataParkingError   = 5009 //查询异常数据停车场top10 失败
+	StatusQueryOverdueDataError           = 5010 //查询逾期数据停车场top10 失败
 
 )
 
@@ -124,6 +125,7 @@ var statusText = map[int]string{
 	StatusQueryClarifydifferenceError:            "Query Clarify difference Error",
 	StatusQueryClarifySuccess:                    "Query Clarify Success",
 	StatusQueryClarifyError:                      "Query Clarify Error",
+	StatusSuccessfully:                           "Query Success",
 }
 
 // StatusText returns a text for the HTTP status code. It returns the empty

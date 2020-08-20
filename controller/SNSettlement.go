@@ -33,10 +33,10 @@ func QuerySNTotalSettlementData(c *gin.Context) {
 		return
 	}
 	if code == 301 {
-		c.JSON(http.StatusOK, dto.QueryResponse{Code: code, CodeMsg: types.StatusText(301), Data: *totaldata, Message: "查询省内结算数据表的总条数、总金额 成功"})
+		c.JSON(http.StatusOK, dto.QueryResponse{Code: 0, CodeMsg: types.StatusText(0), Data: *totaldata, Message: "查询省内结算数据表的总条数、总金额 成功"})
 	}
 	if code == 0 {
-		c.JSON(http.StatusOK, dto.Response{Code: code, Data: types.StatusText(types.StatusQuerySNTotalSettlementDataError), Message: "查询省内结算数据表的总条数、总金额 失败"})
+		c.JSON(http.StatusOK, dto.Response{Code: 5001, Data: types.StatusText(types.StatusQuerySNTotalSettlementDataError), Message: "查询省内结算数据表的总条数、总金额 失败"})
 	}
 }
 
@@ -62,10 +62,10 @@ func QuerySNSendTotalSettlementData(c *gin.Context) {
 		return
 	}
 	if code == 302 {
-		c.JSON(http.StatusOK, dto.QueryResponse{Code: code, CodeMsg: types.StatusText(302), Data: *totaldata, Message: "查询省内的已发送 总条数、总金额 成功"})
+		c.JSON(http.StatusOK, dto.QueryResponse{Code: 0, CodeMsg: types.StatusText(0), Data: *totaldata, Message: "查询省内的已发送 总条数、总金额 成功"})
 	}
 	if code == 0 {
-		c.JSON(http.StatusOK, dto.Response{Code: code, Data: types.StatusText(types.StatusQuerySNSendTotalSettlemenError), Message: "查询省内的已发送 总条数、总金额 失败"})
+		c.JSON(http.StatusOK, dto.Response{Code: 5002, Data: types.StatusText(types.StatusQuerySNSendTotalSettlemenError), Message: "查询省内的已发送 总条数、总金额 失败"})
 	}
 }
 
@@ -91,10 +91,10 @@ func QuerySNAlreadyPleaseData(c *gin.Context) {
 		return
 	}
 	if code == 303 {
-		c.JSON(http.StatusOK, dto.QueryResponse{Code: code, CodeMsg: types.StatusText(303), Data: *totaldata, Message: "查询省内已请款的数据总条数、总金额 成功"})
+		c.JSON(http.StatusOK, dto.QueryResponse{Code: 0, CodeMsg: types.StatusText(0), Data: *totaldata, Message: "查询省内已请款的数据总条数、总金额 成功"})
 	}
 	if code == 0 {
-		c.JSON(http.StatusOK, dto.Response{Code: code, Data: types.StatusText(types.StatusQuerySNAlreadyPleaseDataError), Message: "查询省内已请款的数据总条数、总金额 失败"})
+		c.JSON(http.StatusOK, dto.Response{Code: 5003, Data: types.StatusText(types.StatusQuerySNAlreadyPleaseDataError), Message: "查询省内已请款的数据总条数、总金额 失败"})
 	}
 }
 
@@ -120,10 +120,10 @@ func QuerySNRefusePayData(c *gin.Context) {
 		return
 	}
 	if code == 304 {
-		c.JSON(http.StatusOK, dto.QueryResponse{Code: code, CodeMsg: types.StatusText(304), Data: *totaldata, Message: "查询坏账（拒付）数据 总条数、总金额 成功"})
+		c.JSON(http.StatusOK, dto.QueryResponse{Code: 0, CodeMsg: types.StatusText(0), Data: *totaldata, Message: "查询坏账（拒付）数据 总条数、总金额 成功"})
 	}
 	if code == 0 {
-		c.JSON(http.StatusOK, dto.Response{Code: code, Data: types.StatusText(types.StatusQuerySNRefusePayDataError), Message: "查询坏账（拒付）数据 总条数、总金额 失败"})
+		c.JSON(http.StatusOK, dto.Response{Code: 5004, Data: types.StatusText(types.StatusQuerySNRefusePayDataError), Message: "查询坏账（拒付）数据 总条数、总金额 失败"})
 	}
 }
 
@@ -148,10 +148,10 @@ func QuerySNRealTimeData(c *gin.Context) {
 		return
 	}
 	if code == 305 {
-		c.JSON(http.StatusOK, dto.QueryResponse{Code: code, CodeMsg: types.StatusText(305), Data: *totaldata, Message: "查询省内结算实时数据监控 成功"})
+		c.JSON(http.StatusOK, dto.QueryResponse{Code: 0, CodeMsg: types.StatusText(0), Data: *totaldata, Message: "查询省内结算实时数据监控 成功"})
 	}
 	if code == 0 {
-		c.JSON(http.StatusOK, dto.Response{Code: code, Data: types.StatusText(types.StatusQuerySNRealTimeDataError), Message: "查询省内结算实时数据监控 失败"})
+		c.JSON(http.StatusOK, dto.Response{Code: 5005, Data: types.StatusText(types.StatusQuerySNRealTimeDataError), Message: "查询省内结算实时数据监控 失败"})
 	}
 }
 
@@ -177,10 +177,10 @@ func QuerySNSettlementTrend(c *gin.Context) {
 		return
 	}
 	if code == 306 {
-		c.JSON(http.StatusOK, dto.QueryResponse{Code: code, CodeMsg: types.StatusText(306), Data: *totaldata, Message: "查询省内前30日省内结算趋势概览 成功"})
+		c.JSON(http.StatusOK, dto.QueryResponse{Code: 0, CodeMsg: types.StatusText(0), Data: *totaldata, Message: "查询省内前30日省内结算趋势概览 成功"})
 	}
 	if code == 0 {
-		c.JSON(http.StatusOK, dto.Response{Code: code, Data: types.StatusText(types.StatusQuerySNSettlementTrendError), Message: "查询省内前30日省内结算趋势概览 失败"})
+		c.JSON(http.StatusOK, dto.Response{Code: 5006, Data: types.StatusText(types.StatusQuerySNSettlementTrendError), Message: "查询省内前30日省内结算趋势概览 失败"})
 	}
 }
 
@@ -206,10 +206,10 @@ func QueryDataSync(c *gin.Context) {
 		return
 	}
 	if code == 307 {
-		c.JSON(http.StatusOK, dto.QueryResponse{Code: code, CodeMsg: types.StatusText(307), Data: *totaldata, Message: "查询海岭数据同步监控 成功"})
+		c.JSON(http.StatusOK, dto.QueryResponse{Code: 0, CodeMsg: types.StatusText(0), Data: *totaldata, Message: "查询海岭数据同步监控 成功"})
 	}
 	if code == 0 {
-		c.JSON(http.StatusOK, dto.Response{Code: code, Data: types.StatusText(types.StatusQueryDataSyncError), Message: "查询海岭数据同步监控 失败"})
+		c.JSON(http.StatusOK, dto.Response{Code: 5007, Data: types.StatusText(types.StatusQueryDataSyncError), Message: "查询海岭数据同步监控 失败"})
 	}
 }
 
@@ -235,10 +235,10 @@ func QuerySNDataClassification(c *gin.Context) {
 		return
 	}
 	if code == 308 {
-		c.JSON(http.StatusOK, dto.QueryResponse{Code: code, CodeMsg: types.StatusText(308), Data: *totaldata, Message: " 查询省内结算数据分类 成功"})
+		c.JSON(http.StatusOK, dto.QueryResponse{Code: 0, CodeMsg: types.StatusText(0), Data: *totaldata, Message: " 查询省内结算数据分类 成功"})
 	}
 	if code == 0 {
-		c.JSON(http.StatusOK, dto.Response{Code: code, Data: types.StatusText(types.StatusQuerySNDataClassificationError), Message: " 查询省内结算数据分类 失败"})
+		c.JSON(http.StatusOK, dto.Response{Code: 5008, Data: types.StatusText(types.StatusQuerySNDataClassificationError), Message: " 查询省内结算数据分类 失败"})
 	}
 }
 
@@ -266,10 +266,10 @@ func QueryAbnormalDataParking(c *gin.Context) {
 		return
 	}
 	if code == 309 {
-		c.JSON(http.StatusOK, dto.QueryResponse{Code: code, CodeMsg: types.StatusText(309), Data: *totaldata, Message: "  查询异常数据停车场top10 成功"})
+		c.JSON(http.StatusOK, dto.QueryResponse{Code: 0, CodeMsg: types.StatusText(0), Data: *totaldata, Message: "  查询异常数据停车场top10 成功"})
 	}
 	if code == 0 {
-		c.JSON(http.StatusOK, dto.Response{Code: code, Data: types.StatusText(types.StatusQueryAbnormalDataParkingError), Message: "  查询异常数据停车场top10 失败"})
+		c.JSON(http.StatusOK, dto.Response{Code: 5009, Data: types.StatusText(types.StatusQueryAbnormalDataParkingError), Message: "  查询异常数据停车场top10 失败"})
 	}
 }
 
@@ -294,9 +294,9 @@ func QueryOverdueData(c *gin.Context) {
 		return
 	}
 	if code == 310 {
-		c.JSON(http.StatusOK, dto.QueryResponse{Code: code, CodeMsg: types.StatusText(310), Data: *totaldata, Message: "查询逾期数据停车场top10 成功"})
+		c.JSON(http.StatusOK, dto.QueryResponse{Code: 0, CodeMsg: types.StatusText(0), Data: *totaldata, Message: "查询逾期数据停车场top10 成功"})
 	}
 	if code == 0 {
-		c.JSON(http.StatusOK, dto.Response{Code: code, Data: types.StatusText(types.StatusQueryOverdueDataError), Message: "查询逾期数据停车场top10 失败"})
+		c.JSON(http.StatusOK, dto.Response{Code: 5010, Data: types.StatusText(types.StatusQueryOverdueDataError), Message: "查询逾期数据停车场top10 失败"})
 	}
 }

@@ -30,7 +30,7 @@ func DateTimeNowFormat() string {
 
 //2006-01-02 15:04:05
 func KuaizhaoTimeNowFormat() string {
-	return time.Now().Format("2006-01-02 15:00:00")
+	return time.Now().Format("2006-01-02 15:04:00")
 }
 
 func DateNowFormat() string {

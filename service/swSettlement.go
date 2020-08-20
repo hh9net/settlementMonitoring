@@ -102,35 +102,91 @@ func QueryAbnormaldata() (int, error, *dto.TotalAbnormalData) {
 }
 
 //Queryblacklistdata
-//查询异常的数据总金额、总笔数
 func Queryblacklistdata() (int, error, *dto.TotalBlacklistData) {
-
 	//查询黑名单总数、较2小时前变化值[最新的数据]
 	qerr, hmdjl := db.QueryBlacklisttable()
-
 	if qerr != nil {
 		log.Println(qerr)
 		return 0, qerr, nil
 	}
 	id := hmdjl.FNbId
+
 	if hmdjl.FNbHeimdzs == 0 {
 		id = id - 1
-	}
-	ts := 12 //需要查询条数【后面可以改】
-	qdterr, hmdjls := db.QueryBlacklistTiaoshutable(id, ts)
+		hmerr, hmdsj := db.QueryBlacklisttableByID(id)
+		if hmerr != nil {
+			log.Println(hmerr)
+			return 0, hmerr, nil
+		}
 
+		hmerr2, hmdsj2 := db.QueryBlacklisttableByID(id - 2)
+		if hmerr2 != nil {
+			log.Println(hmerr2)
+			return 0, hmerr2, nil
+		}
+		ts := 24 //需要查询条数
+		qdterr, hmdjls := db.QueryBlacklistTiaoshutable(id, ts)
+		if qdterr != nil {
+			log.Println(qdterr)
+			return 0, qdterr, nil
+		}
+		bs := make([]dto.BlackList, 24)
+		for i, b := range *hmdjls {
+			bs[i].Blacklistcount = b.FNbHeimdzs
+			bs[i].DateTime = b.FDtTongjwcsj.Format("2006-01-02 15:04:05")
+		}
+		bs12 := make([]dto.BlackList, 0)
+		for i, blist := range bs {
+			if i == 0 || i == 2 || i == 4 || i == 6 || i == 8 || i == 10 || i == 12 || i == 14 || i == 16 || i == 18 || i == 20 || i == 22 {
+				bs12 = append(bs12, blist)
+			}
+		}
+		changecount := hmdsj.FNbHeimdzs - hmdsj2.FNbHeimdzs
+		log.Println("查询黑名单总数、较2小时前变化值  成功")
+		return 208, nil, &dto.TotalBlacklistData{Blacklistcount: hmdsj.FNbHeimdzs,
+			ChangeCount: changecount,
+			DateTime:    hmdsj.FDtTongjwcsj.Format("2006-01-02 15:04:05"),
+			Blacklist:   bs12}
+	}
+
+	hmerr, hmdsj := db.QueryBlacklisttableByID(id)
+	if hmerr != nil {
+		log.Println(hmerr)
+		return 0, hmerr, nil
+	}
+
+	hmerr2, hmdsj2 := db.QueryBlacklisttableByID(id - 2)
+	if hmerr2 != nil {
+		log.Println(hmerr2)
+		return 0, hmerr2, nil
+	}
+	ts := 24 //需要查询条数
+	qdterr, hmdjls := db.QueryBlacklistTiaoshutable(id, ts)
 	if qdterr != nil {
 		log.Println(qdterr)
 		return 0, qdterr, nil
 	}
-
-	changecount := (*hmdjls)[2].FNbHeimdzs - (*hmdjls)[0].FNbHeimdzs
-	log.Println("查询黑名单总数、较2小时前变化值  成功", (*hmdjls)[2].FNbHeimdzs, changecount)
+	bs := make([]dto.BlackList, 24)
+	for i, b := range *hmdjls {
+		bs[i].Blacklistcount = b.FNbHeimdzs
+		bs[i].DateTime = b.FDtTongjwcsj.Format("2006-01-02 15:04:05")
+	}
+	bs12 := make([]dto.BlackList, 0)
+	for i, blist := range bs {
+		if i == 0 || i == 2 || i == 4 || i == 6 || i == 8 || i == 10 || i == 12 || i == 14 || i == 16 || i == 18 || i == 20 || i == 22 {
+			bs12 = append(bs12, blist)
+		}
+	}
+	changecount := hmdsj.FNbHeimdzs - hmdsj2.FNbHeimdzs
+	log.Println("查询黑名单总数、较2小时前变化值  成功")
 	//返回数据赋值
-	return 208, nil, &dto.TotalBlacklistData{Blacklistcount: (*hmdjls)[2].FNbHeimdzs, ChangeCount: changecount}
+	return 208, nil, &dto.TotalBlacklistData{Blacklistcount: hmdsj.FNbHeimdzs,
+		ChangeCount: changecount,
+		DateTime:    hmdsj.FDtTongjwcsj.Format("2006-01-02 15:04:05"),
+		Blacklist:   bs12}
 }
 
-//查询清分包、争议包的接收时间、包号 14天
+//查询清分包、争议包的接收时间、包号 14天 存redis中的
 func QueryClearlingAndDisputePackagedata() (int, error, *dto.ClearlAndDisputeData) {
 
 	//查询清分包、争议包的接收时间、包号[最新的数据]前14天数据[1天]
@@ -156,6 +212,8 @@ func QueryClearlingAndDisputePackagedata() (int, error, *dto.ClearlAndDisputeDat
 		str := strings.Split(vs[1], `|`)
 		clearAndDis.ClearPacgNo = str[0]
 		clearAndDis.Cleardatetime = str[1]
+		s := []byte(str[1])
+		clearAndDis.Data = string(s[0:10])
 		data = append(data, *clearAndDis)
 	}
 
@@ -169,6 +227,8 @@ func QueryClearlingAndDisputePackagedata() (int, error, *dto.ClearlAndDisputeDat
 		disstr := strings.Split(dvs[1], `|`)
 		data[i].Disputdatetime = disstr[1]
 		data[i].DisputPacgeNo = disstr[0]
+		b := []byte(disstr[1])
+		data[i].Data = string(b[0:10])
 	}
 
 	log.Println("查询清分包、争议包的接收时间、包号  成功。data数组长度:", len(data))
@@ -254,6 +314,7 @@ func QueryDataTurnMonitordata() (int, error, *[]dto.TurnDataResponse) {
 	for i, dd := range *ddtds {
 		datas[i].Jieszcount = dd.FNbJiesbsjts
 		datas[i].DDzcount = dd.FNbChedyssjts //dd
+		datas[i].DateTime = dd.FDtTongjwcsj.Format("2006-01-02 15:04:05")
 	}
 
 	//zdz 1:单点、2:总对总'
@@ -271,6 +332,7 @@ func QueryDataTurnMonitordata() (int, error, *[]dto.TurnDataResponse) {
 		TurndataResps[i].JieszCount = r.Jieszcount
 		TurndataResps[i].YuansCount = r.ZDZcount + r.DDzcount
 		TurndataResps[i].DifferCount = TurndataResps[i].YuansCount - r.Jieszcount
+		TurndataResps[i].DateTime = r.DateTime
 	}
 	log.Println("响应数据：", TurndataResps)
 	//返回数据
@@ -282,7 +344,6 @@ func QuerySettlementTrend() (int, error, *[]dto.SettlementTrend) {
 	ts := 30
 	//响应数据 list TurnDataResponse
 	Datas := make([]dto.SettlementTrend, ts)
-	//datas := make([]dto.TurnData, ts)
 	//查询数据
 	qerr, ds := db.QuerySettlementTrendbyday(ts)
 	if qerr != nil {
@@ -290,11 +351,12 @@ func QuerySettlementTrend() (int, error, *[]dto.SettlementTrend) {
 	}
 
 	for i, d := range *ds {
-		Datas[i].JiesuanAmount = d.FNbJiaoye
-		Datas[i].QingfAmount = d.FNbQingdje
-		Datas[i].DifferAmount = d.FNbChae
+		Datas[i].JiesuanAmount = utils.Fen2Yuan(d.FNbJiaoye)
+		Datas[i].QingfAmount = utils.Fen2Yuan(d.FNbQingdje)
+		Datas[i].DifferAmount = utils.Fen2Yuan(d.FNbChae)
 		Datas[i].JiesuanCount = d.FNbJiaoyts
 		Datas[i].QingfCount = d.FNbQingfts
+		Datas[i].DateTime = d.FDtKaistjsj.Format("2006-01-02 15:04:05")
 	}
 
 	log.Println("响应数据：", Datas)
@@ -315,13 +377,14 @@ func QueryPacketMonitoring() (int, error, *[]dto.PacketMonitoringdata) {
 	}
 
 	for i, d := range *ds {
-		Datas[i].Yuansbsl = d.FNbYuansjyydbsl
-		Datas[i].Dabaojine = d.FNbDabje
+		Datas[i].Yuansyingdbsl = d.FNbYuansjyydbsl
+		Datas[i].Dabaojine = utils.Fen2Yuan(d.FNbDabje)
 		Datas[i].Dabaosl = d.FNbDabsl
-		Datas[i].Fasbjine = d.FNbFasysjybje
+		Datas[i].Fasbjine = utils.Fen2Yuan(d.FNbFasysjybje)
 		Datas[i].Fasbsl = d.FNbFasysjybsl
-		Datas[i].Jizbjine = d.FNbJizbje
+		Datas[i].Jizbjine = utils.Fen2Yuan(d.FNbJizbje)
 		Datas[i].Jizbsl = d.FNbJizbsl
+		Datas[i].DateTime = d.FDtTongjwcsj.Format("2006-01-02 15:04:05")
 	}
 
 	log.Println("响应数据：", Datas)
@@ -388,13 +451,7 @@ func Clarifyconfirm() (int, error, *[]dto.PacketMonitoringdata) {
 	}
 
 	for i, d := range *ds {
-		Datas[i].Yuansbsl = d.FNbYuansjyydbsl
-		Datas[i].Dabaojine = d.FNbDabje
-		Datas[i].Dabaosl = d.FNbDabsl
-		Datas[i].Fasbjine = d.FNbFasysjybje
-		Datas[i].Fasbsl = d.FNbFasysjybsl
-		Datas[i].Jizbjine = d.FNbJizbje
-		Datas[i].Jizbsl = d.FNbJizbsl
+		Datas[i].Yuansyingdbsl = d.FNbYuansjyydbsl
 	}
 
 	log.Println("响应数据：", Datas)

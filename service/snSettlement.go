@@ -109,12 +109,13 @@ func QuerySNRealTimeData() (int, error, *[]dto.RealTimeSettlementData) {
 		return 0, err, nil
 	}
 	for i, d := range *ds {
-		Data[i].Jizjine = d.FNbShengncsje //省内产生金额
-		Data[i].Fasjine = d.FNbShengnyfssjje
-		Data[i].Jizjine = d.FNbShengnyjzsjje
+		Data[i].Jizjine = utils.Fen2Yuan(d.FNbShengncsje) //省内产生金额
+		Data[i].Fasjine = utils.Fen2Yuan(d.FNbShengnyfssjje)
+		Data[i].Jizjine = utils.Fen2Yuan(d.FNbShengnyjzsjje)
 		Data[i].Shengnjssl = d.FNbShengncsts
 		Data[i].Fassl = d.FNbShengnyfssjts
 		Data[i].Jizsl = d.FNbShengnyjzsjts
+		Data[i].DateTime = d.FDtTongjwcsj.Format("2006-01-02 15:04:05")
 	}
 	//返回数据赋值
 	return 305, nil, &Data
@@ -130,11 +131,12 @@ func QuerySNSettlementTrend() (int, error, *[]dto.SNClearandJiesuan) {
 		return 0, err, nil
 	}
 	for i, d := range *ds {
-		Data[i].JiesuanMoney = d.FNbShengnjyje //省内产生金额
-		Data[i].ClearlingMoney = d.FNbShengnqkje
-		Data[i].DiffMoney = d.FNbChae
+		Data[i].JiesuanMoney = utils.Fen2Yuan(d.FNbShengnjyje) //省内产生金额
+		Data[i].ClearlingMoney = utils.Fen2Yuan(d.FNbShengnqkje)
+		Data[i].DiffMoney = utils.Fen2Yuan(d.FNbChae)
 		Data[i].JiesuanCount = d.FNbJiaoyts
 		Data[i].ClearlingCount = d.FNbQingkts
+		Data[i].DateTime = d.FDtTongjwcsj.Format("2006-01-02 15:04:05")
 	}
 	//返回数据赋值
 	return 306, nil, &Data
@@ -152,6 +154,7 @@ func QueryDataSync() (int, error, *[]dto.DataSync) {
 	for i, d := range *ds {
 		Data[i].HailCount = d.FNbJiessjzl
 		Data[i].JiesuanCount = d.FNbYitbsjl
+		Data[i].DateTime = d.FDtTongjwcsj.Format("2006-01-02 15:04:05")
 	}
 	//返回数据赋值
 	return 307, nil, &Data
@@ -175,6 +178,7 @@ func QuerySNDataClassification() (int, error, *dto.ShengNDataClassification) {
 			Data.FNbWeifssl,
 			Data.FNbFassjl,
 			Data.FNbjufsjl,
+			Data.FNbQingksl,
 		}
 	}
 	//返回数据赋值
@@ -184,6 +188,7 @@ func QuerySNDataClassification() (int, error, *dto.ShengNDataClassification) {
 		data.FNbWeifssl,
 		data.FNbFassjl,
 		data.FNbjufsjl,
+		data.FNbQingksl,
 	}
 }
 
@@ -203,7 +208,7 @@ func QueryAbnormalDataParking() (int, error, *[]dto.AbnormalDataOfParking) {
 	for i, yqd := range *yqdatas {
 		Data[i].AbnormalDatacount = yqd.FNbZongts
 		Data[i].Parkingname = yqd.FVcTingccid
-		Data[i].AbnormalDataAmount = yqd.FNbZongje
+		Data[i].AbnormalDataAmount = utils.Fen2Yuan(yqd.FNbZongje)
 	}
 	//返回数据赋值
 	return 309, nil, &Data
@@ -211,7 +216,6 @@ func QueryAbnormalDataParking() (int, error, *[]dto.AbnormalDataOfParking) {
 
 //QueryOverdueData
 func QueryOverdueData() (int, error, *[]dto.Overduedata) {
-	//查询海岭数据同步监控
 	ts := 10
 	Data := make([]dto.Overduedata, ts)
 	err, data := db.QueryOverdueDataTable()
@@ -225,7 +229,7 @@ func QueryOverdueData() (int, error, *[]dto.Overduedata) {
 	for i, yqd := range *yqdatas {
 		Data[i].Overduecount = yqd.FNbYuqzts
 		Data[i].Parkingname = yqd.FVcTingccid
-		Data[i].OverdueAmount = yqd.FNbYuqzje
+		Data[i].OverdueAmount = utils.Fen2Yuan(yqd.FNbYuqzje)
 	}
 	//返回数据赋值
 	return 310, nil, &Data

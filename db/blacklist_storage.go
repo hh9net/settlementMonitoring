@@ -89,6 +89,18 @@ func QueryBlacklisttable() (error, *types.BJsjkHeimdjk) {
 	return nil, hmdtjs
 }
 
+func QueryBlacklisttableByID(id int) (error, *types.BJsjkHeimdjk) {
+	db := utils.GormClient.Client
+	hmdtjs := new(types.BJsjkHeimdjk)
+	//赋值
+	if err := db.Table("b_jsjk_heimdjk").Where("F_NB_ID=?", id).Last(&hmdtjs).Error; err != nil {
+		log.Println("查询最新的黑名单数据的数据记录时，QueryBlacklisttable error :", err)
+		return err, nil
+	}
+	log.Println("查询最新的黑名单数据的数据记录结果:", hmdtjs)
+	return nil, hmdtjs
+}
+
 //4、更新最新的黑名单总记录统计记录
 func UpdateBlacklistlData(data *types.BJsjkHeimdjk, id int) error {
 	//Newdb()
@@ -110,7 +122,7 @@ func QueryBlacklistTiaoshutable(id, ts int) (error, *[]types.BJsjkHeimdjk) {
 	db := utils.GormClient.Client
 	hmdtjs := make([]types.BJsjkHeimdjk, 0)
 	//赋值
-	if err := db.Table("b_jsjk_heimdjk").Where("F_NB_ID <= ? ", id).Where("F_NB_ID > ? ", id-ts).Limit(ts).Find(&hmdtjs).Error; err != nil {
+	if err := db.Table("b_jsjk_heimdjk").Where("F_NB_ID <= ? ", id).Order("F_NB_ID desc").Limit(ts).Find(&hmdtjs).Error; err != nil {
 		log.Println("查询最新的黑名单数据的数据记录时，QueryBlacklisttable error :", err)
 		return err, nil
 	}

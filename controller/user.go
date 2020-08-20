@@ -41,10 +41,10 @@ func Register(c *gin.Context) {
 		return
 	}
 	if code == 401 {
-		c.JSON(http.StatusOK, dto.Response{Code: code, Data: types.StatusText(401), Message: "重复注册"})
+		c.JSON(http.StatusOK, dto.Response{Code: 4001, Data: types.StatusText(4001), Message: "重复注册"})
 	}
 	if code == 200 {
-		c.JSON(http.StatusOK, dto.Response{Code: code, Message: "注册成功"})
+		c.JSON(http.StatusOK, dto.Response{Code: 0, Message: "注册成功"})
 	}
 }
 
@@ -80,19 +80,19 @@ func Login(c *gin.Context) {
 
 	if code == 402 {
 		logrus.Println("用户未注册，请先注册")
-		c.JSON(http.StatusOK, dto.Response{Code: code, Data: types.StatusText(402), Message: "用户未注册，请先注册"})
+		c.JSON(http.StatusOK, dto.Response{Code: 4002, Data: types.StatusText(4002), Message: "用户未注册，请先注册"})
 		return
 	}
 
 	if code == 403 {
 		logrus.Println("密码错误,请重新输入")
-		c.JSON(http.StatusOK, dto.Response{Code: code, Data: types.StatusText(403), Message: "密码错误,请重新输入"})
+		c.JSON(http.StatusOK, dto.Response{Code: 4003, Data: types.StatusText(4003), Message: "密码错误,请重新输入"})
 		return
 	}
 
 	if code == 201 {
 		logrus.Println("用户登录成功")
-		c.JSON(http.StatusOK, dto.Response{Code: code, Data: types.StatusText(201), Message: "用户登录成功"})
+		c.JSON(http.StatusOK, dto.Response{Code: 0, Data: types.StatusText(0), Message: "用户登录成功"})
 		return
 	}
 }

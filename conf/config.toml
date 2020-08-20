@@ -23,11 +23,11 @@ hmysql_pass         = Microvideo_1
 hmysql_databasename = blacklis
 
 ;[redis]
-;redis_addr         = "192.168.200.170:6379"
-redis_addr         = "127.0.0.1:6379"
+redis_addr         = "192.168.200.170:6379"
+;redis_addr         = "127.0.0.1:6379"
 redis_pass         = Microvideo_1
 redis_databasename = "3"
 
 ;[ip_address]
-ip_address          =127.0.0.1:8089
+ip_address          =192.168.200.201:6089
 

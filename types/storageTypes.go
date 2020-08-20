@@ -476,6 +476,7 @@ type ClearlingAndDisputeData struct {
 	Cleardatetime  string
 	DisputPacgeNo  string
 	Disputdatetime string
+	Data           string
 }
 
 type DataClassification struct {
