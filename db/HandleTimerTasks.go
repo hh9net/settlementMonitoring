@@ -14,6 +14,7 @@ import (
 //1定时任务 一天一次的
 func HandleDayTasks() {
 	tiker := time.NewTicker(time.Hour * 1) //每15秒执行一下 一天一次的
+	//tiker := time.NewTicker(time.Minute * 1) //每15秒执行一下 一天一次的
 
 	for {
 		log.Println(utils.DateTimeFormat(<-tiker.C), "执行线程1，处理一天一次的定时任务")
