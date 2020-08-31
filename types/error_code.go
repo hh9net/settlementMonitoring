@@ -53,6 +53,7 @@ const (
 	StatusQueryPacketMonitoringError       = 4015 //查询省外数据包监控 失败
 	StatusQueryClarifydifferenceError      = 4016 //查询最近15天清分包数据差额 失败
 	StatusQueryClarifyError                = 4017 //按条件查询清分核对 失败
+	StatusExportExcelError                 = 4018 //导出清分包核对记录表 失败
 
 	StatusQuerySNTotalSettlementDataError = 5001 //查询省内结算数据表的总条数、总金额 失败
 	StatusQuerySNSendTotalSettlemenError  = 5002 //查询省内的已发送 总条数、总金额 失败
@@ -126,6 +127,7 @@ var statusText = map[int]string{
 	StatusQueryClarifySuccess:                    "Query Clarify Success",
 	StatusQueryClarifyError:                      "Query Clarify Error",
 	StatusSuccessfully:                           "Query Success",
+	StatusExportExcelError:                       "Export Excel Error",
 }
 
 // StatusText returns a text for the HTTP status code. It returns the empty

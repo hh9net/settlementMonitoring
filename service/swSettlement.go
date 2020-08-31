@@ -2,7 +2,10 @@ package service
 
 import (
 	"errors"
+	"fmt"
 	log "github.com/sirupsen/logrus"
+	"io/ioutil"
+	"os"
 	"settlementMonitoring/db"
 	"settlementMonitoring/dto"
 	"settlementMonitoring/types"
@@ -190,13 +193,13 @@ func Queryblacklistdata() (int, error, *dto.TotalBlacklistData) {
 func QueryClearlingAndDisputePackagedata() (int, error, *dto.ClearlAndDisputeData) {
 
 	//查询清分包、争议包的接收时间、包号[最新的数据]前14天数据[1天]
-
-	chmgeterr, cleardata := utils.RedisHMGet(utils.RedisInit(), "clear", utils.OldData(14))
+	date := utils.OldData(14)
+	chmgeterr, cleardata := utils.RedisHMGet(utils.RedisInit(), "clear", date)
 	if chmgeterr != nil {
 		return 0, chmgeterr, nil
 	}
 
-	dhmgeterr, disputdata := utils.RedisHMGet(utils.RedisInit(), "disput", utils.OldData(14))
+	dhmgeterr, disputdata := utils.RedisHMGet(utils.RedisInit(), "disput", date)
 	if dhmgeterr != nil {
 		return 0, dhmgeterr, nil
 	}
@@ -205,32 +208,30 @@ func QueryClearlingAndDisputePackagedata() (int, error, *dto.ClearlAndDisputeDat
 	for _, clearData := range *cleardata {
 		clearAndDis := new(types.ClearlingAndDisputeData)
 		if clearData == "no data" {
-			data = append(data, types.ClearlingAndDisputeData{ClearPacgNo: "no clear package"})
+			data = append(data, types.ClearlingAndDisputeData{ClearPacgNo: ""})
 			continue
 		}
 		vs := strings.Split(clearData, `"`)
 		str := strings.Split(vs[1], `|`)
 		clearAndDis.ClearPacgNo = str[0]
 		clearAndDis.Cleardatetime = str[1]
-		s := []byte(str[1])
-		clearAndDis.Data = string(s[0:10])
 		data = append(data, *clearAndDis)
 	}
 
 	for i, disputData := range *disputdata {
 		if disputData == "no data" {
 			//data = append(data, types.ClearlingAndDisputeData{ClearPacgNo: "no clear package", DisputPacgeNo: "no disput package"})
-			data[i].DisputPacgeNo = "no disput package"
+			data[i].DisputPacgeNo = ""
 			continue
 		}
 		dvs := strings.Split(disputData, `"`)
 		disstr := strings.Split(dvs[1], `|`)
 		data[i].Disputdatetime = disstr[1]
 		data[i].DisputPacgeNo = disstr[0]
-		b := []byte(disstr[1])
-		data[i].Data = string(b[0:10])
 	}
-
+	for i, da := range date {
+		data[i].Date = da
+	}
 	log.Println("查询清分包、争议包的接收时间、包号  成功。data数组长度:", len(data))
 	//if len(data)!=
 	//返回数据赋值
@@ -249,10 +250,10 @@ func StatisticalClearlingcheck() (int, error, *[]dto.ClearlingcheckData) {
 	//返回数据赋值
 	Data := make([]dto.ClearlingcheckData, len(*checkdata))
 	for i, data := range *checkdata {
-		Data[i].Clearlingpakgje = data.FNbQingfje
+		Data[i].Clearlingpakgje = utils.Fen2Yuan(data.FNbQingfje)
 		Data[i].Clearlingpakgxh = data.FNbQingfbxh
 		Data[i].Clearlingpakgts = data.FNbQingfts
-		Data[i].Tongjqfje = data.FNbTongjqfje
+		Data[i].Tongjqfje = utils.Fen2Yuan(data.FNbTongjqfje)
 		Data[i].Tongjqfts = data.FNbTongjqfts
 		Data[i].Hedjg = data.FNbHedjg
 		Data[i].Tongjrq = data.FVcTongjrq
@@ -276,14 +277,16 @@ func Dataclassification() (int, error, *dto.Dataclassification) {
 		if err2 != nil {
 			return 0, err2, nil
 		}
-		return 211, nil, &dto.Dataclassification{Shengwzcount: data.FNbJiaoyzts,
-			Yiqfcount:   data.FNbQingfsjts,  //已清分总条数（不含坏账）
-			Jizcount:    data.FNbJizsjts,    //记账
-			Zhengycount: data.FNbZhengysjts, //争议
-			Weidbcount:  data.FNbWeidbsjts,  //未打包
-			Yidbcount:   data.FNbYidbsjts,   //已打包
-			Yifscount:   data.FNbYifssjts,   //已发送
-			Huaizcount:  data.FNbHuaizsjts,  //坏账
+		return 211, nil, &dto.Dataclassification{
+			Shengwzcount: data.FNbJiaoyzts,
+			Yiqfcount:    data.FNbQingfsjts,  //已清分总条数（不含坏账）
+			Jizcount:     data.FNbJizsjts,    //记账
+			Zhengycount:  data.FNbZhengysjts, //争议
+			Weidbcount:   data.FNbWeidbsjts,  //未打包
+			Yidbcount:    data.FNbYidbsjts,   //已打包
+			Yifscount:    data.FNbYifssjts,   //已发送
+			Huaizcount:   data.FNbHuaizsjts,  //坏账
+
 		}
 	}
 
@@ -405,19 +408,36 @@ func Clarifydifference() (int, error, *[]dto.DifferAmount) {
 	}
 
 	for i, d := range *ds {
-		Datas[i].Differamount = d.FNbQingfje - d.FNbQingfje
+		Datas[i].Differamount = utils.Fen2Yuan(d.FNbQingfje - d.FNbTongjqfje)
+		Datas[i].DateTime = d.FVcTongjrq
 	}
 	log.Println("响应数据：", Datas)
 	//返回数据
 	return 215, nil, &Datas
 }
 
-//查询最近15天清分包数据差额
-func ClarifyQuery(req dto.ReqQueryClarify) (int, error, *[]dto.ClearlingcheckData) {
+func ClarifyQuery(req dto.ReqQueryClarify) (int, error, *dto.Clearlingcheckdata) {
 	log.Print("清分核对请求参数：", req)
 	//获取请求数据
-	err, qfhdreqs := db.QueryClearlingcheck(&req)
+	//var err error
+	//var qfhdreqs *[]types.BJsjkQingfhd
+
+	err, qfhdreqs, zongjls, zongys := db.QueryClearlingcheck(&req)
 	if err != nil {
+		if fmt.Sprint(err) == "请输入开始查询时间" {
+			//查询用户是否被注册，查询失败
+			return 0, err, nil
+		}
+		if fmt.Sprint(err) == "请输入查询截止时间" {
+			//查询用户是否被注册，查询失败
+			return 0, err, nil
+		}
+
+		if fmt.Sprint(err) == "请输入正确的每页展示记录数" {
+			//查询用户是否被注册，查询失败
+			return 0, err, nil
+		}
+
 		//查询用户是否被注册，查询失败
 		return 0, err, nil
 	}
@@ -425,17 +445,22 @@ func ClarifyQuery(req dto.ReqQueryClarify) (int, error, *[]dto.ClearlingcheckDat
 	Datas := make([]dto.ClearlingcheckData, len(*qfhdreqs))
 	for i, d := range *qfhdreqs {
 		Datas[i].Clearlingpakgxh = d.FNbQingfbxh
-		Datas[i].Clearlingpakgje = d.FNbQingfje
+		Datas[i].Clearlingpakgje = utils.Fen2Yuan(d.FNbQingfje)
 		Datas[i].Clearlingpakgts = d.FNbQingfts
-		Datas[i].Tongjqfje = d.FNbTongjqfje
+		Datas[i].Tongjqfje = utils.Fen2Yuan(d.FNbTongjqfje)
 		Datas[i].Tongjqfts = d.FNbTongjqfts
 		Datas[i].Hedjg = d.FNbHedjg
 		Datas[i].Tongjrq = d.FVcTongjrq
 		Datas[i].Qingfbjssj = utils.DateTimeFormat(d.FDtQingfbjssj)
 	}
-	log.Println("响应数据：", Datas)
+	Data := dto.Clearlingcheckdata{
+		Clearlingcheck: Datas,
+		ZongTS:         zongjls,
+		ZongYS:         zongys,
+	}
+	log.Println("响应数据：", Data)
 	//返回数据
-	return 216, nil, &Datas
+	return 216, nil, &Data
 }
 
 //清分确认【未实现】
@@ -457,4 +482,63 @@ func Clarifyconfirm() (int, error, *[]dto.PacketMonitoringdata) {
 	log.Println("响应数据：", Datas)
 	//返回数据
 	return 217, nil, &Datas
+}
+
+func ExportExcel(req dto.ReqClarifyExportExcel) (int, error, []byte, string) {
+	log.Print("清分核对导出请求参数：", req)
+	//获取请求数据
+
+	err, qfhdreqs := db.QueryClearlingcheckByConditions(&req)
+	if err != nil {
+		if fmt.Sprint(err) == "请输入开始查询时间" {
+			//查询用户是否被注册，查询失败
+			return 0, err, nil, ""
+		}
+		if fmt.Sprint(err) == "请输入查询截止时间" {
+			//查询用户是否被注册，查询失败
+			return 0, err, nil, ""
+		}
+	}
+	// ExportExcel 导出Excel文件
+	// sheetName 工作表名称
+	// columns 列名切片
+	// rows 数据切片，是一个二维数组
+	//  ExportExcel(sheetName string, columns []string, rows [][]interface{})
+	columns := []string{"统计日期", "统计清分数据(条)", "统计清分金额(元)", "清分包接收(条)", "清分包金额(元)", "清分包接收时间", "清分包编号", "校验状态"}
+	rows := make([][]interface{}, 0)
+	for _, qfhdsj := range *qfhdreqs {
+		row := make([]interface{}, 0)
+		row = append(row, qfhdsj.FVcTongjrq)
+		row = append(row, qfhdsj.FNbTongjqfts)
+		row = append(row, utils.Fen2Yuan(qfhdsj.FNbTongjqfje))
+		row = append(row, qfhdsj.FNbQingfts)
+		row = append(row, utils.Fen2Yuan(qfhdsj.FNbQingfje))
+		row = append(row, qfhdsj.FDtQingfbjssj)
+		row = append(row, qfhdsj.FNbQingfbxh)
+		if qfhdsj.FNbHedjg == 1 {
+			row = append(row, "校验成功")
+		}
+		if qfhdsj.FNbHedjg == 2 {
+			row = append(row, "校验失败")
+		}
+		rows = append(rows, row)
+	}
+	log.Println("导出文件名为：清分包数据核对记录表.xlsx 成功", rows[0])
+
+	path := utils.ExportExcel("清分包数据核对记录", columns, rows)
+
+	log.Println("要发送excle 文件的path:=", path)
+	file, oserr := os.Open("./" + path)
+	if oserr != nil {
+		log.Println("os.Open error:", oserr)
+		return 0, oserr, nil, ""
+	}
+	data, rerr := ioutil.ReadAll(file)
+	if rerr != nil {
+		return 0, rerr, nil, ""
+	}
+	defer file.Close()
+
+	//返回数据
+	return 218, nil, data, path
 }

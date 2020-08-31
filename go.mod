@@ -3,6 +3,7 @@ module settlementMonitoring
 go 1.14
 
 require (
+	github.com/360EntSecGroup-Skylar/excelize v1.4.1
 	github.com/BurntSushi/toml v0.3.1
 	github.com/Shopify/sarama v1.26.4
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
+	"math"
 	"settlementMonitoring/config"
 	"settlementMonitoring/db/oracledb"
 	"settlementMonitoring/dto"
@@ -2109,25 +2110,166 @@ func QuerySettlementclearlingcheck(ts int) (error, *[]types.BJsjkQingfhd) {
 }
 
 //查询 清分核对结果
-func QueryClearlingcheck(req *dto.ReqQueryClarify) (error, *[]types.BJsjkQingfhd) {
+func QueryClearlingcheck(req *dto.ReqQueryClarify) (error, *[]types.BJsjkQingfhd, int, int) {
 	db := utils.GormClient.Client
-	if req.CheckState == "0" {
+	log.Println("req:", req)
+	if req.BeginTime == "" {
+		return errors.New("请输入开始查询时间"), nil, 0, 0
+	}
+
+	if req.EndTime == "" {
+		return errors.New("请输入查询截止时间"), nil, 0, 0
+	}
+
+	if req.Prepage == 0 {
+		return errors.New("请输入正确的每页展示记录数"), nil, 0, 0
+	}
+	//查询全部
+	if req.CheckState == 0 {
 		hmdtjs := make([]types.BJsjkQingfhd, 0)
 		//赋值Order("created_at desc"),,FVcTongjrq
-		if err := db.Table("b_jsjk_qingfhd").Where("F_VC_TONGJRQ >=?", req.BeginTime).Where("F_VC_TONGJRQ <=?", req.EndTime).Order("F_NB_ID desc").Find(&hmdtjs).Error; err != nil {
-			log.Println("查询最新的ts条省外清分核对数据时，QuerySettlementclearlingcheck error :", err)
-			return err, nil
+		//倒序默认
+		if req.Orderstatus == 2 {
+			//查询总数
+			var result []types.Result
+			sqlstr4 := `select count(F_NB_QINGFBXH) as count  from b_jsjk_qingfhd where F_VC_TONGJRQ >= ? and F_VC_TONGJRQ <= ?`
+			db.Raw(sqlstr4, req.BeginTime, req.EndTime).Scan(&result)
+			log.Println("查询总记录数:", result[0].Count)
+
+			//根据总数，和prepage每页数量 生成分页总数
+			totalpages := int(math.Ceil(float64(result[0].Count) / float64(req.Prepage))) //page总数
+			if req.Currentpageid > totalpages {
+				req.Currentpageid = totalpages
+			}
+
+			if req.Currentpageid <= 0 {
+				req.Currentpageid = 1
+			}
+
+			if err := db.Table("b_jsjk_qingfhd").Where("F_VC_TONGJRQ >=?", req.BeginTime).Where("F_VC_TONGJRQ <=?", req.EndTime).Order("F_NB_ID desc").Offset((req.Currentpageid - 1) * req.Prepage).Limit(req.Prepage).Find(&hmdtjs).Error; err != nil {
+				log.Println("查询最新的ts条省外清分核对数据时，QuerySettlementclearlingcheck error :", err)
+				return err, nil, 0, 0
+			}
+			return nil, &hmdtjs, result[0].Count, totalpages
+		} else {
+			//查询总数
+			var result []types.Result
+			sqlstr4 := `select count(F_NB_QINGFBXH) as count  from b_jsjk_qingfhd where F_VC_TONGJRQ >= ? and F_VC_TONGJRQ <= ?`
+			db.Raw(sqlstr4, req.BeginTime, req.EndTime).Scan(&result)
+			log.Println("查询总记录数:", result[0].Count)
+
+			//根据总数，和prepage每页数量 生成分页总数
+			totalpages := int(math.Ceil(float64(result[0].Count) / float64(req.Prepage))) //page总数
+			if req.Currentpageid > totalpages {
+				req.Currentpageid = totalpages
+			}
+			if req.Currentpageid <= 0 {
+				req.Currentpageid = 1
+			}
+			if err := db.Table("b_jsjk_qingfhd").Where("F_VC_TONGJRQ >=?", req.BeginTime).Where("F_VC_TONGJRQ <=?", req.EndTime).Order("F_NB_ID").Offset((req.Currentpageid - 1) * req.Prepage).Limit(req.Prepage).Find(&hmdtjs).Error; err != nil {
+				log.Println("查询最新的ts条省外清分核对数据时，QuerySettlementclearlingcheck error :", err)
+				return err, nil, 0, 0
+			}
+			return nil, &hmdtjs, result[0].Count, totalpages
 		}
-		log.Println("查询最新的ts条省外清分核对结果:", hmdtjs)
-		return nil, &hmdtjs
 	}
+
 	hmdtjs := make([]types.BJsjkQingfhd, 0)
 	//赋值Order("created_at desc"),,FVcTongjrq
-	if err := db.Table("b_jsjk_qingfhd").Where("F_VC_TONGJRQ >=?", req.BeginTime).Where("F_VC_TONGJRQ <=?", req.EndTime).Where("F_NB_HEDJG =?", req.CheckState).Order("F_NB_ID desc").Find(&hmdtjs).Error; err != nil {
-		log.Println("查询最新的ts条省外清分核对数据时，QuerySettlementclearlingcheck error :", err)
-		return err, nil
-	}
-	log.Println("查询最新的ts条省外清分核对结果:", hmdtjs)
-	return nil, &hmdtjs
+	//倒序默认
+	if req.Orderstatus == 2 {
+		//查询总数
+		var result []types.Result
+		sqlstr4 := `select count(F_NB_QINGFBXH) as count  from b_jsjk_qingfhd where F_VC_TONGJRQ >= ? and F_VC_TONGJRQ <= ? and F_NB_HEDJG =?`
+		db.Raw(sqlstr4, req.BeginTime, req.EndTime, req.CheckState).Scan(&result)
+		log.Println("查询总记录数:", result[0].Count)
 
+		//根据总数，和prepage每页数量 生成分页总数
+		totalpages := int(math.Ceil(float64(result[0].Count) / float64(req.Prepage))) //page总数
+		if req.Currentpageid > totalpages {
+			req.Currentpageid = totalpages
+		}
+
+		if req.Currentpageid <= 0 {
+			req.Currentpageid = 1
+		}
+
+		if err := db.Table("b_jsjk_qingfhd").Where("F_VC_TONGJRQ >=?", req.BeginTime).Where("F_VC_TONGJRQ <=?", req.EndTime).Where("F_NB_HEDJG =?", req.CheckState).Order("F_NB_ID desc").Offset((req.Currentpageid - 1) * req.Prepage).Limit(req.Prepage).Find(&hmdtjs).Error; err != nil {
+			log.Println("查询清分核对数据时 error :", err)
+			return err, nil, 0, 0
+		}
+		return nil, &hmdtjs, result[0].Count, totalpages
+	} else {
+		//查询总数
+		var result []types.Result
+		sqlstr4 := `select count(F_NB_QINGFBXH) as count  from b_jsjk_qingfhd where F_VC_TONGJRQ >= ? and F_VC_TONGJRQ <= ?`
+		db.Raw(sqlstr4, req.BeginTime, req.EndTime).Scan(&result)
+		log.Println("查询总记录数:", result[0].Count)
+
+		//根据总数，和prepage每页数量 生成分页总数
+		totalpages := int(math.Ceil(float64(result[0].Count) / float64(req.Prepage))) //page总数
+		if req.Currentpageid > totalpages {
+			req.Currentpageid = totalpages
+		}
+		if req.Currentpageid <= 0 {
+			req.Currentpageid = 1
+		}
+		if err := db.Table("b_jsjk_qingfhd").Where("F_VC_TONGJRQ >=?", req.BeginTime).Where("F_VC_TONGJRQ <=?", req.EndTime).Where("F_NB_HEDJG =?", req.CheckState).Order("F_NB_ID").Offset((req.Currentpageid - 1) * req.Prepage).Limit(req.Prepage).Find(&hmdtjs).Error; err != nil {
+			log.Println("查询省外清分核对数据时 error :", err)
+			return err, nil, 0, 0
+		}
+		return nil, &hmdtjs, result[0].Count, totalpages
+	}
+}
+
+//根据条件查询 清分核对结果
+func QueryClearlingcheckByConditions(req *dto.ReqClarifyExportExcel) (error, *[]types.BJsjkQingfhd) {
+	db := utils.GormClient.Client
+	log.Println("req:", req)
+	if req.BeginTime == "" {
+		return errors.New("请输入开始查询时间"), nil
+	}
+	if req.EndTime == "" {
+		return errors.New("请输入查询截止时间"), nil
+	}
+	//查询全部
+	if req.CheckState == 0 {
+		hmdtjs := make([]types.BJsjkQingfhd, 0)
+		//赋值Order("created_at desc"),,FVcTongjrq
+		//倒序默认
+		if req.Orderstatus == 2 {
+			//查询总数
+			if err := db.Table("b_jsjk_qingfhd").Where("F_VC_TONGJRQ >=?", req.BeginTime).Where("F_VC_TONGJRQ <=?", req.EndTime).Order("F_NB_ID desc").Find(&hmdtjs).Error; err != nil {
+				log.Println("查询省外清分核对数据时  error :", err)
+				return err, nil
+			}
+			return nil, &hmdtjs
+		} else {
+			//查询总数
+			if err := db.Table("b_jsjk_qingfhd").Where("F_VC_TONGJRQ >=?", req.BeginTime).Where("F_VC_TONGJRQ <=?", req.EndTime).Order("F_NB_ID").Find(&hmdtjs).Error; err != nil {
+				log.Println("查询省外清分核对数据时 error :", err)
+				return err, nil
+			}
+			return nil, &hmdtjs
+		}
+	}
+
+	hmdtjs := make([]types.BJsjkQingfhd, 0)
+	//赋值Order("created_at desc"),,FVcTongjrq
+	//倒序默认
+	if req.Orderstatus == 2 {
+		//查询总数
+		if err := db.Table("b_jsjk_qingfhd").Where("F_VC_TONGJRQ >=?", req.BeginTime).Where("F_VC_TONGJRQ <=?", req.EndTime).Where("F_NB_HEDJG =?", req.CheckState).Order("F_NB_ID desc").Find(&hmdtjs).Error; err != nil {
+			log.Println("查询清分核对数据时 error :", err)
+			return err, nil
+		}
+		return nil, &hmdtjs
+	} else {
+		//查询总数
+		if err := db.Table("b_jsjk_qingfhd").Where("F_VC_TONGJRQ >=?", req.BeginTime).Where("F_VC_TONGJRQ <=?", req.EndTime).Where("F_NB_HEDJG =?", req.CheckState).Order("F_NB_ID").Find(&hmdtjs).Error; err != nil {
+			log.Println("查询省外清分核对数据时 error :", err)
+			return err, nil
+		}
+		return nil, &hmdtjs
+	}
 }

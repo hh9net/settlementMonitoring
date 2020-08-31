@@ -8,50 +8,50 @@ type QueryResponse struct {
 }
 
 type RealTimeSettlementData struct {
-	Shengnjssl   int    `json:"shengnjssl"  example:"123"`   //省内结算数量
-	Shengnjsjine string `json:"shengnjsjine"  example:"123"` //省内结算金额
-	Fassl        int    `json:"fassl"  example:"123"`        //已发送 数量
-	Fasjine      string `json:"fasjine"  example:"123"`      //已发送 金额
-	Jizsl        int    `json:"jizsl"  example:"123"`        //记账数量
-	Jizjine      string `json:"jizjine"  example:"123"`      //记账金额
-	DateTime     string `json:"datetime"  example:"123"`     //完成时间
+	Shengnjssl   int    `json:"num"  example:"123"`               //省内结算数量
+	Shengnjsjine string `json:"money"  example:"123"`             //省内结算金额
+	Fassl        int    `json:"send_num"  example:"123"`          //已发送 数量
+	Fasjine      string `json:"send_money"  example:"123"`        //已发送 金额
+	Jizsl        int    `json:"keepaccount_num"  example:"123"`   //记账数量
+	Jizjine      string `json:"keepaccount_money"  example:"123"` //记账金额
+	DateTime     string `json:"datetime"  example:"123"`          //完成时间
 }
 
 type SNClearandJiesuan struct {
-	JiesuanMoney   string `json:"jiesuanmoney"  example:"123"`    //交易总金额
-	ClearlingMoney string `json:"clearlingmoney"  example:"123"`  //清分总金额
-	DiffMoney      string `json:"diffmoney"  example:"123"`       //清分总金额
-	JiesuanCount   int    `json:"jiesuancount"  example:"123"`    //交易结算条数
-	ClearlingCount int    `json:"clearlingcount"  example:"123"`  //清分总笔数
+	JiesuanMoney   string `json:"total_money"  example:"123"`     //交易总金额
+	ClearlingMoney string `json:"clearl_money"  example:"123"`    //清分总金额
+	DiffMoney      string `json:"diff_money"  example:"123"`      //清分总金额
+	JiesuanCount   int    `json:"count"  example:"123"`           //交易结算条数
+	ClearlingCount int    `json:"clear_count"  example:"123"`     //清分总笔数
 	DateTime       string `json:"datetime"  example:"2020-08-18"` //完成时间
 
 }
 
 type DataSync struct {
-	JiesuanCount int    `json:"jiesuancount"  example:"123"`    //交易结算条数
-	HailCount    int    `json:"hailcount"  example:"123"`       //清分总笔数
+	JiesuanCount int    `json:"sync_count"  example:"123"`      //交易结算条数
+	HailCount    int    `json:"source_count"  example:"123"`    //清分总笔数
 	DateTime     string `json:"datetime"  example:"2020-08-18"` //完成时间
 
 }
 
 type ShengNDataClassification struct {
-	Shengnzcount int `json:"shengnzcount"  example:"123"` //结算总数据
-	Yiqkcount    int `json:"yiqkcount"  example:"123"`    //已清分总条数（不含坏账）
-	Weifscount   int `json:"weifscount"  example:"123"`   //未打包
-	Yifscount    int `json:"yifscount"  example:"123"`    //已发送
-	Jufuzcount   int `json:"jufuzcount"  example:"123"`   //坏账
-	Jizcount     int `json:"jizcount"  example:"123"`     //已记账
+	Shengnzcount int `json:"count"  example:"123"`             //结算总数据
+	Yiqkcount    int `json:"clear_count"  example:"123"`       //已清分总条数（不含坏账）
+	Weifscount   int `json:"no_send_count"  example:"123"`     //未打包
+	Yifscount    int `json:"send_count"  example:"123"`        //已发送
+	Jufuzcount   int `json:"bad_debts_count"  example:"123"`   //坏账
+	Jizcount     int `json:"keepaccount_count"  example:"123"` //已记账
 }
 
 type Overduedata struct {
-	Overduecount  int    `json:"overduecount"  example:"123"`  //逾期数量
-	Parkingname   string `json:"parkingname"  example:"南京南站"`  //停车场名称
-	OverdueAmount string `json:"overdueamount"  example:"123"` //逾期金额
+	Overduecount  int    `json:"overdue_count"  example:"123"`  //逾期数量
+	Parkingname   string `json:"parking_name"  example:"南京南站"`  //停车场名称
+	OverdueAmount string `json:"overdue_amount"  example:"123"` //逾期金额
 }
 
 //AbnormalDataOfParking
 type AbnormalDataOfParking struct {
-	AbnormalDatacount  int    `json:"abnormaldatacount"  example:"123"`
-	Parkingname        string `json:"parkingname"  example:"南京南站"` //停车场名称
-	AbnormalDataAmount string `json:"abnormaldataamount"  example:"123"`
+	AbnormalDatacount  int    `json:"abnormal_data_count"  example:"123"`
+	Parkingname        string `json:"parking_name"  example:"南京南站"` //停车场名称
+	AbnormalDataAmount string `json:"abnormal_data_amount"  example:"123"`
 }

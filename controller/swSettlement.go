@@ -8,6 +8,7 @@ import (
 	"settlementMonitoring/dto"
 	"settlementMonitoring/service"
 	"settlementMonitoring/types"
+	"settlementMonitoring/utils"
 )
 
 /*  接口1方法注释   */
@@ -439,5 +440,48 @@ func Clarifyconfirm(c *gin.Context) {
 	}
 	if code == 0 {
 		c.JSON(http.StatusOK, dto.Response{Code: 4015, Data: types.StatusText(types.StatusQueryPacketMonitoringError), Message: "清分确认 失败 【待实现】"})
+	}
+}
+
+//ExportExcel
+
+/*  接口14方法注释  */
+//@Summary 导出清分核对记录为excel api
+//@Tags 导出清分核对记录为excel
+//@version 1.0
+//@Accept application/json
+//@Param req body dto.Reqlogin true "请求参数"
+//@Success 200 object dto.Response 成功后返回值
+//@Failure 404 object dto.ResponseFailure 查询失败
+//@Router /sw/exportexcel [post]
+func ExportExcel(c *gin.Context) {
+	req := dto.ReqClarifyExportExcel{}
+	respFailure := dto.ResponseFailure{}
+
+	if err := c.Bind(&req); err != nil {
+		logrus.Errorf("ReqQueryClarify json unmarshal err: %v", err.Error())
+		respFailure.Code = -1
+		respFailure.Message = fmt.Sprintf("json unmarshal err: %v", err.Error())
+		c.JSON(http.StatusOK, respFailure)
+		return
+	}
+	//导出清分核对记录为excel
+	code, err, totaldata, fileName := service.ExportExcel(req)
+	if err != nil {
+		logrus.Errorf("QueryClarify err: %v", err.Error())
+		respFailure.Code = code
+		respFailure.Message = fmt.Sprintf("QueryClarify err: %v", err.Error())
+		c.JSON(http.StatusOK, respFailure)
+		return
+	}
+	logrus.Println("fileName:", fileName)
+	if code == 218 {
+		//c.JSON(http.StatusOK, dto.QuerResponse{Code: 0, CodeMsg: types.StatusText(0), Data: totaldata, Message: "导出清分包核对记录表 成功"})
+		c.Header("Content-Disposition", "attachment;filename="+fileName)
+		c.Writer.Write(totaldata)
+		utils.DelFile("./" + fileName)
+	}
+	if code == 0 {
+		c.JSON(http.StatusOK, dto.Response{Code: 4018, Data: types.StatusText(types.StatusExportExcelError), Message: "导出清分包核对记录表 失败"})
 	}
 }

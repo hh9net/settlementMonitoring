@@ -52,6 +52,13 @@ func TestStatisticalClearlingcheck(t *testing.T) {
 //
 func TestClarifyQuery(t *testing.T) {
 	db.Newdb()
-	req := dto.ReqQueryClarify{BeginTime: "2020-07-31", EndTime: "2020-08-14", CheckState: "2"}
+	req := dto.ReqQueryClarify{BeginTime: "2020-08-15", EndTime: "2020-08-19", CheckState: 0, Currentpageid: 1, Prepage: 10}
 	log.Println(ClarifyQuery(req))
+}
+
+//ExportExcel
+func TestExportExcel(t *testing.T) {
+	db.Newdb()
+	req := dto.ReqClarifyExportExcel{BeginTime: "2020-08-10", EndTime: "2020-08-22", CheckState: 2, Orderstatus: 1}
+	log.Println(ExportExcel(req))
 }

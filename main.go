@@ -23,20 +23,18 @@ func main() {
 	IpAddress := conf.IpAddress
 	db.DBInit(mstr) //初始化数据库
 	//goroutine1
-	//go db.HandleDayTasks()
+	go db.HandleDayTasks()
 	//goroutine2
-	//go db.HandleHourTasks()
+	go db.HandleHourTasks()
 	//goroutine3
-	//go db.HandleMinutesTasks()
-	////goroutine4 处理kafka
-	//go db.HandleKafkaDataConsume()
+	go db.HandleMinutesTasks()
 	//http处理
 	router.RouteInit(IpAddress)
 	for {
 		//tiker := time.NewTicker(time.Second * 1)
 		for {
 			//log.Println("执行主go程 ", utils.DateTimeFormat(<-tiker.C))
-			//处理kafka
+			//处理kafka数据
 			utils.ConsumerGroup()
 		}
 	}

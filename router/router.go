@@ -59,7 +59,7 @@ func AuthAPIInit(route *gin.RouterGroup) {
 	route.GET("/sw/clearlingAndDisputePackageSettlement", controller.QueryClearlingAndDisputePackage)
 	//省外数据分类
 	route.GET("/sw/dataclassification", controller.Dataclassification)
-	//省外转结算监控
+	//省外24小时原始表转结算监控
 	route.GET("/sw/dataturnmonitor", controller.QueryDataTurnMonitor)
 	//省外结算趋势查询
 	route.GET("/sw/settlementtrend", controller.QuerySettlementTrendbyDay)
@@ -94,6 +94,8 @@ func AuthAPIInit(route *gin.RouterGroup) {
 	route.GET("/sw/clearlingcheck", controller.Clearlingcheck)
 	//查询按条件清分核对
 	route.POST("/sw/clarifyquery", controller.ClarifyQuery)
+	//导出清分核对记录为excel
+	route.POST("/sw/exportexcel", controller.ExportExcel)
 
 	//省外清分核对确认【待处理Clarify confirm】
 	route.POST("/sw/clarifyconfirm", controller.Clarifyconfirm)

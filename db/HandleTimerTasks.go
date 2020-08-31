@@ -13,7 +13,7 @@ import (
 //goroutine1
 //1定时任务 一天一次的
 func HandleDayTasks() {
-	tiker := time.NewTicker(time.Hour * 12) //每15秒执行一下 一天一次的
+	tiker := time.NewTicker(time.Hour * 1) //每15秒执行一下 一天一次的
 
 	for {
 		log.Println(utils.DateTimeFormat(<-tiker.C), "执行线程1，处理一天一次的定时任务")
@@ -127,7 +127,7 @@ func HandleDayTasks() {
 //goroutine2
 //2定时任务 按小时的
 func HandleHourTasks() {
-	tiker := time.NewTicker(time.Minute * 60) //每15秒执行一下
+	tiker := time.NewTicker(time.Minute * 30) //每15秒执行一下
 
 	for {
 		log.Println(utils.DateTimeFormat(<-tiker.C), "执行线程2，处理按小时的定时任务")
@@ -165,7 +165,7 @@ func HandleHourTasks() {
 //goroutine3
 //3定时任务 按分钟的
 func HandleMinutesTasks() {
-	tiker := time.NewTicker(time.Minute * 2) //每15秒执行一下
+	tiker := time.NewTicker(time.Minute * 10) //每15秒执行一下
 
 	for {
 		log.Println(utils.DateTimeFormat(<-tiker.C), "执行线程3，处理按分钟的定时任务")
