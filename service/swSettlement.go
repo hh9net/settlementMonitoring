@@ -359,7 +359,7 @@ func QuerySettlementTrend() (int, error, *[]dto.SettlementTrend) {
 		Datas[i].DifferAmount = utils.Fen2Yuan(d.FNbChae)
 		Datas[i].JiesuanCount = d.FNbJiaoyts
 		Datas[i].QingfCount = d.FNbQingfts
-		Datas[i].DateTime = d.FDtKaistjsj.Format("2006-01-02 15:04:05")
+		Datas[i].DateTime = d.FDtTongjwcsj.Format("2006-01-02 15:04:05")
 	}
 
 	log.Println("响应数据：", Datas)

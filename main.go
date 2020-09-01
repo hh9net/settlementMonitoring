@@ -1,6 +1,7 @@
 package main
 
 import (
+	log "github.com/sirupsen/logrus"
 	"settlementMonitoring/config"
 	"settlementMonitoring/db"
 	"settlementMonitoring/router"
@@ -31,9 +32,9 @@ func main() {
 	//http处理
 	router.RouteInit(IpAddress)
 	for {
-		//tiker := time.NewTicker(time.Second * 1)
+		tiker := time.NewTicker(time.Second * 10)
 		for {
-			//log.Println("执行主go程 ", utils.DateTimeFormat(<-tiker.C))
+			log.Println("执行主go程 处理kafka数据+++++++++++++++++++++++++++++++++++++++++++++++++++++++++处理kafka数据", utils.DateTimeFormat(<-tiker.C))
 			//处理kafka数据
 			utils.ConsumerGroup()
 		}

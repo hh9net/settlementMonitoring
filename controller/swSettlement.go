@@ -4,11 +4,13 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
+	"log"
 	"net/http"
 	"settlementMonitoring/dto"
 	"settlementMonitoring/service"
 	"settlementMonitoring/types"
 	"settlementMonitoring/utils"
+	"strconv"
 )
 
 /*  接口1方法注释   */
@@ -484,4 +486,53 @@ func ExportExcel(c *gin.Context) {
 	if code == 0 {
 		c.JSON(http.StatusOK, dto.Response{Code: 4018, Data: types.StatusText(types.StatusExportExcelError), Message: "导出清分包核对记录表 失败"})
 	}
+}
+
+//SetRedis
+
+/*  接口14方法注释  */
+//@Summary 导出清分核对记录为excel api
+//@Tags 导出清分核对记录为excel
+//@version 1.0
+//@Accept application/json
+//@Param req body dto.Reqlogin true "请求参数"
+//@Success 200 object dto.Response 成功后返回值
+//@Failure 404 object dto.ResponseFailure 查询失败
+//@Router /sw/exportexcel [post]
+func SetRedis(c *gin.Context) {
+	conn := utils.RedisInit() //初始化redis
+	//redis set新值
+	s := strconv.Itoa(int(1)) + "|" + strconv.Itoa(1) + "|" + strconv.Itoa(int(1)) + "|" + strconv.Itoa(1) + "|" + strconv.Itoa(int(1)) + "|" + strconv.Itoa(1)
+	rseterr := utils.RedisSet(conn, "snshishishuju", s)
+	if rseterr != nil {
+		logrus.Print("set redis snshishishuju 零值error", rseterr)
+	}
+	rhseterr := utils.RedisSet(conn, "swjiesuantotal", strconv.Itoa(int(1))+"|"+strconv.Itoa(1))
+	if rhseterr != nil {
+		logrus.Print("set redis swjiesuantotal 零值error", rhseterr)
+	}
+	rsnseterr := utils.RedisSet(conn, "snjiesuantotal", strconv.Itoa(int(1))+"|"+strconv.Itoa(1))
+	if rsnseterr != nil {
+		logrus.Print("set redis snjiesuantotal 零值error", rsnseterr)
+	}
+	m := make(map[string]string, 0)
+	// key:日期    value:"包号"｜"时间"
+
+	m["2020-09-00"] = "999990" + "|" + "2020-09-00 11:11:11"
+	//2、把数据存储于redis  接收时间、包号
+	hmseterr := utils.RedisHMSet(utils.RedisInit(), "clear", m)
+	if hmseterr != nil {
+		logrus.Print("set redis clear 零值error", rsnseterr)
+	}
+
+	m["2020-09-00"] = "999990" + "|" + "2020-09-00 11:11:11"
+	//2、把数据存储于redis  接收时间、包号
+	chmseterr := utils.RedisHMSet(utils.RedisInit(), "disput", m)
+	if chmseterr != nil {
+		logrus.Print("set redis  disput 零值error", chmseterr)
+	}
+
+	log.Println("set redis 成功 ", s, strconv.Itoa(int(1))+"|"+strconv.Itoa(1), strconv.Itoa(int(1))+"|"+strconv.Itoa(1))
+	c.JSON(http.StatusOK, dto.Response{Code: 4020, Data: "set redis ok", Message: "set redis   零值 ok "})
+
 }

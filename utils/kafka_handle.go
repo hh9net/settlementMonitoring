@@ -141,7 +141,7 @@ func NewKafka() *Kafka {
 	}
 }
 
-var brokers = []string{"192.168.200.170:9092"}
+var brokers = []string{"172.18.70.21:9092"}
 var topics = []string{"billDataCollectTopic", "zdzBillExitDataCollectTopic"}
 var group = "39"
 

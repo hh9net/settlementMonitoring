@@ -13,11 +13,11 @@ import (
 //goroutine1
 //1定时任务 一天一次的
 func HandleDayTasks() {
-	tiker := time.NewTicker(time.Hour * 1) //每15秒执行一下 一天一次的
-	//tiker := time.NewTicker(time.Minute * 1) //每15秒执行一下 一天一次的
+	//tiker := time.NewTicker(time.Hour * 1) //每15秒执行一下 一天一次的
+	tiker := time.NewTicker(time.Minute * 20) //每15秒执行一下 一天一次的
 
 	for {
-		log.Println(utils.DateTimeFormat(<-tiker.C), "执行线程1，处理一天一次的定时任务")
+		log.Println(utils.DateTimeFormat(<-tiker.C), "执行线程1，处理一天一次的定时任务11111111111111111111111111111111111111111111111111111111111111111")
 		//任务一
 		//查询省外结算总金额、总笔数
 		qerr := QuerTotalSettlementData()
@@ -128,10 +128,10 @@ func HandleDayTasks() {
 //goroutine2
 //2定时任务 按小时的
 func HandleHourTasks() {
-	tiker := time.NewTicker(time.Minute * 30) //每15秒执行一下
+	tiker := time.NewTicker(time.Minute * 10) //每15秒执行一下
 
 	for {
-		log.Println(utils.DateTimeFormat(<-tiker.C), "执行线程2，处理按小时的定时任务")
+		log.Println(utils.DateTimeFormat(<-tiker.C), "执行线程2，处理按小时的定时任务222222222222222222222222222222222222222222222222")
 		//任务1 待处理争议数据
 		qderr := QueryShengwDisputedata()
 		if qderr != nil {
@@ -148,11 +148,11 @@ func HandleHourTasks() {
 			log.Println("查询黑名单统计总数定时任务 error:", qhmderr)
 		}
 
-		//任务4 海玲数据同步
-		tberr := QueryDataSyncdata()
-		if tberr != nil {
-			log.Println("查询海玲数据同步定时任务 error:", tberr)
-		}
+		////任务4 海玲数据同步
+		//tberr := QueryDataSyncdata()
+		//if tberr != nil {
+		//	log.Println("查询海玲数据同步定时任务 error:", tberr)
+		//}
 
 		//任务5 异常数据top10
 		yctoperr := QueryAbnormalDataOfParkingdata()
@@ -166,10 +166,10 @@ func HandleHourTasks() {
 //goroutine3
 //3定时任务 按分钟的
 func HandleMinutesTasks() {
-	tiker := time.NewTicker(time.Minute * 10) //每15秒执行一下
+	tiker := time.NewTicker(time.Minute * 5) //每15秒执行一下
 
 	for {
-		log.Println(utils.DateTimeFormat(<-tiker.C), "执行线程3，处理按分钟的定时任务")
+		log.Println(utils.DateTimeFormat(<-tiker.C), "执行线程3，处理按分钟的定时任务333333333333333333333333333333333333333333333333333333333333333333")
 		//任务一 转结算24小时监控
 		dterr := DataTurnMonitor()
 		if dterr != nil {
@@ -839,7 +839,7 @@ func ShengNRealTimeSettlementData() error {
 	}
 	//get redis
 	conn := utils.RedisInit() //初始化redis
-	// key:"jiestotal"  value："金额｜总条数"
+	// key:"snshishishuju"  value："金额｜总条数"
 	rhgeterr, value := utils.RedisGet(conn, "snshishishuju")
 	if rhgeterr != nil {
 		return rhgeterr
@@ -931,35 +931,35 @@ func QueryShengNSettlementTrenddata() error {
 }
 
 //2.4 海玲数据同步
-func QueryDataSyncdata() error {
-	// 查询海玲数据同步
-	hlnum, tongbcount := QueryDataSync()
-
-	//1、新增海玲数据同步
-	inerr := InsertDataSyncTable()
-	if inerr != nil {
-		return inerr
-	}
-	//2、查询最新一条海玲数据同步
-	qerr, data := QueryDataSyncTable()
-	if qerr != nil {
-		return qerr
-	}
-	//4、赋值
-	Data := new(types.BJsjkShujtbjk)
-	Data.FNbJiessjzl = hlnum                     //   `F_NB_JIESJZL` int DEFAULT NULL COMMENT '结算数据总量',F_NB_JIESSJZL
-	Data.FNbYitbsjl = tongbcount                 //   `F_NB_YITBSJL` int DEFAULT NULL COMMENT '已同步数据量',
-	Data.FDtTongjwcsj = utils.StrTimeToNowtime() //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
-	Data.FVcTongjrq = utils.DateNowFormat()      //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
-
-	//5、更新最新一条海玲数据同步记录
-	uperr := UpdateDataSyncTable(Data, data.FNbId)
-	if uperr != nil {
-		return uperr
-	}
-	log.Printf("更新最新一条海玲数据同步成功")
-	return nil
-}
+//func QueryDataSyncdata() error {
+//	// 查询海玲数据同步
+//	hlnum, tongbcount := QueryDataSync()
+//
+//	//1、新增海玲数据同步
+//	inerr := InsertDataSyncTable()
+//	if inerr != nil {
+//		return inerr
+//	}
+//	//2、查询最新一条海玲数据同步
+//	qerr, data := QueryDataSyncTable()
+//	if qerr != nil {
+//		return qerr
+//	}
+//	//4、赋值
+//	Data := new(types.BJsjkShujtbjk)
+//	Data.FNbJiessjzl = hlnum                     //   `F_NB_JIESJZL` int DEFAULT NULL COMMENT '结算数据总量',F_NB_JIESSJZL
+//	Data.FNbYitbsjl = tongbcount                 //   `F_NB_YITBSJL` int DEFAULT NULL COMMENT '已同步数据量',
+//	Data.FDtTongjwcsj = utils.StrTimeToNowtime() //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
+//	Data.FVcTongjrq = utils.DateNowFormat()      //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
+//
+//	//5、更新最新一条海玲数据同步记录
+//	uperr := UpdateDataSyncTable(Data, data.FNbId)
+//	if uperr != nil {
+//		return uperr
+//	}
+//	log.Printf("更新最新一条海玲数据同步成功")
+//	return nil
+//}
 
 //AbnormalDataOfParking
 //2.5 海玲数据同步

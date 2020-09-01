@@ -3,7 +3,7 @@ package oracledb
 import (
 	"database/sql"
 	"fmt"
-	_ "github.com/mattn/go-oci8"
+	//_ "github.com/mattn/go-oci8"
 	"log"
 	"os"
 )

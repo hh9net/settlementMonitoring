@@ -99,6 +99,8 @@ func AuthAPIInit(route *gin.RouterGroup) {
 
 	//省外清分核对确认【待处理Clarify confirm】
 	route.POST("/sw/clarifyconfirm", controller.Clarifyconfirm)
+	//set redis 零值
+	route.GET("/sw/setredis", controller.SetRedis)
 }
 
 //以下为cors实现
