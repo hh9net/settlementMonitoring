@@ -15,12 +15,12 @@ func Register(req dto.ReqRegister) (int, error) {
 	err, jg := db.QueryUsermsg(req.UserName)
 	if err != nil {
 		//查询用户是否被注册，查询失败
-		return 400, err
+		return types.StatusRegistError, err
 	}
 	//校验数据
 	if jg > 0 {
 		logrus.Println("重复注册")
-		return 401, nil
+		return types.StatusRepeatedRegistration, nil
 	}
 	data := new(types.BJsjkJiesjkptyhb)
 
@@ -32,11 +32,11 @@ func Register(req dto.ReqRegister) (int, error) {
 	inerr := db.UserInsert(data)
 	if inerr != nil {
 		logrus.Println("db.UserInsert error!")
-		return 402, inerr
+		return types.StatusRegistError, inerr
 	}
 	logrus.Println("注册成功")
 	//返回数据
-	return 200, nil
+	return types.StatusRegisteredSuccessfully, nil
 }
 
 //登录
@@ -48,19 +48,19 @@ func Login(req dto.Reqlogin) (int, error) {
 	//校验密码
 	if err != nil && jgs == nil {
 		logrus.Println("请先注册")
-		return 402, nil
+		return types.StatusPleaseRegister, nil
 	}
 	if err != nil {
 		//查询用户是否被注册，查询失败
-		return 400, err
+		return types.StatusRegistError, err
 	}
 	for _, jg := range *jgs {
 		if jg.FVcYonghmm != req.Password {
 			logrus.Println("密码错误")
-			return 403, errors.New("密码错误,请重新输入")
+			return types.StatusPasswordError, errors.New("密码错误,请重新输入")
 		}
 	}
 	logrus.Println("密码正确，登录成功")
 	//返回数据
-	return 201, nil
+	return types.StatusSuccessfully, nil
 }

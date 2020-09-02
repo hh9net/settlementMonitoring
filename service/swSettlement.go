@@ -21,18 +21,18 @@ func QuerTotalSettlementData() (int, error, *dto.TotalSettlementData) {
 	// key:"jiestotal"  value："金额｜总条数"
 	rhgeterr, value := utils.RedisGet(conn, "swjiesuantotal")
 	if rhgeterr != nil {
-		return 0, rhgeterr, nil
+		return types.Statuszero, rhgeterr, nil
 	}
 	if value == nil {
 		log.Println("查询数据库获取总金额、总笔数为空 ")
-		return 0, errors.New("get redis value==nil"), nil
+		return types.Statuszero, errors.New("get redis value==nil"), nil
 	}
 
 	vstr := string(value.([]uint8))
 	log.Println("The get redis value is ", vstr)
 
 	if !utils.StringExist(vstr, "|") {
-		return 0, errors.New("get redis error"), nil
+		return types.Statuszero, errors.New("get redis error"), nil
 	}
 
 	vs := strings.Split(vstr, `"`)
@@ -42,7 +42,7 @@ func QuerTotalSettlementData() (int, error, *dto.TotalSettlementData) {
 	zts, _ := strconv.Atoi(v[1])
 	log.Println("查询成功", "jine: ", int64(zje), "Count", zts)
 	//返回数据赋值
-	return 203, nil, &dto.TotalSettlementData{Amount: utils.Fen2Yuan(int64(zje)), Count: zts}
+	return types.StatusQuerySWTotalSettlementDataSuccessfully, nil, &dto.TotalSettlementData{Amount: utils.Fen2Yuan(int64(zje)), Count: zts}
 }
 
 //查询省外已清分总金额、总笔数
@@ -51,11 +51,11 @@ func QuerTotalClarify() (int, error, *dto.TotalClarifyData) {
 	qerr, qingfjg := db.QueryShengwClearingdata()
 	if qerr != nil {
 		log.Println("查询省外已清分总金额、总笔数,查询最新数据时  error!", qerr)
-		return 0, qerr, nil //不用返回前端
+		return types.Statuszero, qerr, nil //不用返回前端
 	}
 	log.Println("查询省外已清分总金额、总笔数 (包含坏账的)成功")
 	//返回数据赋值
-	return 204, nil, &dto.TotalClarifyData{Amount: utils.Fen2Yuan(qingfjg.FNbZongje), Count: qingfjg.FNbZongts}
+	return types.StatusSuccessfully, nil, &dto.TotalClarifyData{Amount: utils.Fen2Yuan(qingfjg.FNbZongje), Count: qingfjg.FNbZongts}
 }
 
 //查询省外坏账总金额、总笔数
@@ -64,11 +64,11 @@ func QuerTotalBaddebts() (int, error, *dto.TotalBaddebtsData) {
 	qerr, qingfjg := db.QueryShengwClearingdata()
 	if qerr != nil {
 		log.Println("查询省外坏账总金额、总笔数,查询最新数据时  error!", qerr)
-		return 0, qerr, nil //不用返回前端
+		return types.Statuszero, qerr, nil //不用返回前端
 	}
 	log.Println("查询省外坏账总金额、总笔数 成功")
 	//返回数据赋值
-	return 205, nil, &dto.TotalBaddebtsData{Amount: utils.Fen2Yuan(qingfjg.FNbHuaizje), Count: qingfjg.FNbHuaizts}
+	return types.StatusSuccessfully, nil, &dto.TotalBaddebtsData{Amount: utils.Fen2Yuan(qingfjg.FNbHuaizje), Count: qingfjg.FNbHuaizts}
 }
 
 //查询存在争议的数据总金额、总笔数
@@ -77,11 +77,11 @@ func QueryDisputedata() (int, error, *dto.TotalDisputeData) {
 	qerr, zyjg := db.QueryShengwDispute()
 	if qerr != nil {
 		log.Println("查询存在争议的数据总金额、总笔数,查询最新数据时  error!", qerr)
-		return 0, qerr, nil //不用返回前端
+		return types.Statuszero, qerr, nil //不用返回前端
 	}
 	log.Println("查询存在争议的数据总金额、总笔数 (包含坏账的)成功")
 	//返回数据赋值
-	return 206, nil, &dto.TotalDisputeData{Amount: utils.Fen2Yuan(zyjg.FNbZongje), Count: zyjg.FNbZongts}
+	return types.StatusSuccessfully, nil, &dto.TotalDisputeData{Amount: utils.Fen2Yuan(zyjg.FNbZongje), Count: zyjg.FNbZongts}
 }
 
 //查询异常的数据总金额、总笔数
@@ -91,17 +91,17 @@ func QueryAbnormaldata() (int, error, *dto.TotalAbnormalData) {
 	yccount, ycamount, qycerr := db.QueryAbnormalData(1)
 	if qycerr != nil {
 		log.Println(qycerr)
-		return 0, qycerr, nil
+		return types.Statuszero, qycerr, nil
 	}
 	ddyccount, ddycamount, ddqycerr := db.QueryAbnormalData(2)
 	if ddqycerr != nil {
 		log.Println(ddqycerr)
-		return 0, ddqycerr, nil
+		return types.Statuszero, ddqycerr, nil
 	}
 
 	log.Println("查询异常的数据总金额、总笔数  成功")
 	//返回数据赋值
-	return 207, nil, &dto.TotalAbnormalData{Amount: utils.Fen2Yuan(ycamount + ddycamount), Count: yccount + ddyccount}
+	return types.StatusSuccessfully, nil, &dto.TotalAbnormalData{Amount: utils.Fen2Yuan(ycamount + ddycamount), Count: yccount + ddyccount}
 }
 
 //Queryblacklistdata
@@ -110,7 +110,7 @@ func Queryblacklistdata() (int, error, *dto.TotalBlacklistData) {
 	qerr, hmdjl := db.QueryBlacklisttable()
 	if qerr != nil {
 		log.Println(qerr)
-		return 0, qerr, nil
+		return types.Statuszero, qerr, nil
 	}
 	id := hmdjl.FNbId
 
@@ -119,19 +119,19 @@ func Queryblacklistdata() (int, error, *dto.TotalBlacklistData) {
 		hmerr, hmdsj := db.QueryBlacklisttableByID(id)
 		if hmerr != nil {
 			log.Println(hmerr)
-			return 0, hmerr, nil
+			return types.Statuszero, hmerr, nil
 		}
 
 		hmerr2, hmdsj2 := db.QueryBlacklisttableByID(id - 2)
 		if hmerr2 != nil {
 			log.Println(hmerr2)
-			return 0, hmerr2, nil
+			return types.Statuszero, hmerr2, nil
 		}
 		ts := 24 //需要查询条数
 		qdterr, hmdjls := db.QueryBlacklistTiaoshutable(id, ts)
 		if qdterr != nil {
 			log.Println(qdterr)
-			return 0, qdterr, nil
+			return types.Statuszero, qdterr, nil
 		}
 		bs := make([]dto.BlackList, 24)
 		for i, b := range *hmdjls {
@@ -146,7 +146,7 @@ func Queryblacklistdata() (int, error, *dto.TotalBlacklistData) {
 		}
 		changecount := hmdsj.FNbHeimdzs - hmdsj2.FNbHeimdzs
 		log.Println("查询黑名单总数、较2小时前变化值  成功")
-		return 208, nil, &dto.TotalBlacklistData{Blacklistcount: hmdsj.FNbHeimdzs,
+		return types.StatusSuccessfully, nil, &dto.TotalBlacklistData{Blacklistcount: hmdsj.FNbHeimdzs,
 			ChangeCount: changecount,
 			DateTime:    hmdsj.FDtTongjwcsj.Format("2006-01-02 15:04:05"),
 			Blacklist:   bs12}
@@ -155,19 +155,19 @@ func Queryblacklistdata() (int, error, *dto.TotalBlacklistData) {
 	hmerr, hmdsj := db.QueryBlacklisttableByID(id)
 	if hmerr != nil {
 		log.Println(hmerr)
-		return 0, hmerr, nil
+		return types.Statuszero, hmerr, nil
 	}
 
 	hmerr2, hmdsj2 := db.QueryBlacklisttableByID(id - 2)
 	if hmerr2 != nil {
 		log.Println(hmerr2)
-		return 0, hmerr2, nil
+		return types.Statuszero, hmerr2, nil
 	}
 	ts := 24 //需要查询条数
 	qdterr, hmdjls := db.QueryBlacklistTiaoshutable(id, ts)
 	if qdterr != nil {
 		log.Println(qdterr)
-		return 0, qdterr, nil
+		return types.Statuszero, qdterr, nil
 	}
 	bs := make([]dto.BlackList, 24)
 	for i, b := range *hmdjls {
@@ -183,7 +183,7 @@ func Queryblacklistdata() (int, error, *dto.TotalBlacklistData) {
 	changecount := hmdsj.FNbHeimdzs - hmdsj2.FNbHeimdzs
 	log.Println("查询黑名单总数、较2小时前变化值  成功")
 	//返回数据赋值
-	return 208, nil, &dto.TotalBlacklistData{Blacklistcount: hmdsj.FNbHeimdzs,
+	return types.StatusSuccessfully, nil, &dto.TotalBlacklistData{Blacklistcount: hmdsj.FNbHeimdzs,
 		ChangeCount: changecount,
 		DateTime:    hmdsj.FDtTongjwcsj.Format("2006-01-02 15:04:05"),
 		Blacklist:   bs12}
@@ -196,12 +196,12 @@ func QueryClearlingAndDisputePackagedata() (int, error, *dto.ClearlAndDisputeDat
 	date := utils.OldData(14)
 	chmgeterr, cleardata := utils.RedisHMGet(utils.RedisInit(), "clear", date)
 	if chmgeterr != nil {
-		return 0, chmgeterr, nil
+		return types.Statuszero, chmgeterr, nil
 	}
 
 	dhmgeterr, disputdata := utils.RedisHMGet(utils.RedisInit(), "disput", date)
 	if dhmgeterr != nil {
-		return 0, dhmgeterr, nil
+		return types.Statuszero, dhmgeterr, nil
 	}
 	data := make([]types.ClearlingAndDisputeData, 0)
 
@@ -235,7 +235,7 @@ func QueryClearlingAndDisputePackagedata() (int, error, *dto.ClearlAndDisputeDat
 	log.Println("查询清分包、争议包的接收时间、包号  成功。data数组长度:", len(data))
 	//if len(data)!=
 	//返回数据赋值
-	return 209, nil, &dto.ClearlAndDisputeData{data}
+	return types.StatusSuccessfully, nil, &dto.ClearlAndDisputeData{data}
 }
 
 //省外清分核对 StatisticalClearlingcheck
@@ -244,7 +244,7 @@ func StatisticalClearlingcheck() (int, error, *[]dto.ClearlingcheckData) {
 	ts := 100
 	err, checkdata := db.QueryCheckResultbyTs(ts)
 	if err != nil {
-		return 0, err, nil
+		return types.Statuszero, err, nil
 	}
 	log.Println("清分核对结果:", checkdata)
 	//返回数据赋值
@@ -259,7 +259,7 @@ func StatisticalClearlingcheck() (int, error, *[]dto.ClearlingcheckData) {
 		Data[i].Tongjrq = data.FVcTongjrq
 		Data[i].Qingfbjssj = utils.DateTimeFormat(data.FDtQingfbjssj)
 	}
-	return 210, nil, &Data
+	return types.StatusSuccessfully, nil, &Data
 }
 
 //省外数据分类
@@ -268,16 +268,16 @@ func Dataclassification() (int, error, *dto.Dataclassification) {
 	//查询记录
 	err, dataclassification := db.QuerySWDataClassificationTable()
 	if err != nil {
-		return 0, err, nil
+		return types.Statuszero, err, nil
 	}
 	log.Println("清分核对结果:", dataclassification)
 
 	if dataclassification.FNbJiaoyzts == 0 {
 		err2, data := db.QuerySWDataClassificationTableByID(dataclassification.FNbId - 1)
 		if err2 != nil {
-			return 0, err2, nil
+			return types.Statuszero, err2, nil
 		}
-		return 211, nil, &dto.Dataclassification{
+		return types.StatusSuccessfully, nil, &dto.Dataclassification{
 			Shengwzcount: data.FNbJiaoyzts,
 			Yiqfcount:    data.FNbQingfsjts,  //已清分总条数（不含坏账）
 			Jizcount:     data.FNbJizsjts,    //记账
@@ -291,7 +291,7 @@ func Dataclassification() (int, error, *dto.Dataclassification) {
 	}
 
 	//返回数据赋值
-	return 211, nil, &dto.Dataclassification{Shengwzcount: dataclassification.FNbJiaoyzts,
+	return types.StatusSuccessfully, nil, &dto.Dataclassification{Shengwzcount: dataclassification.FNbJiaoyzts,
 		Yiqfcount:   dataclassification.FNbQingfsjts,  //已清分总条数（不含坏账）
 		Jizcount:    dataclassification.FNbJizsjts,    //记账
 		Zhengycount: dataclassification.FNbZhengysjts, //争议
@@ -312,7 +312,7 @@ func QueryDataTurnMonitordata() (int, error, *[]dto.TurnDataResponse) {
 	//dd 1:单点、2:总对总'
 	ddqerr, ddtds := db.QueryDataTurnMonitortable(ts, 1)
 	if ddqerr != nil {
-		return 0, ddqerr, nil
+		return types.Statuszero, ddqerr, nil
 	}
 	for i, dd := range *ddtds {
 		datas[i].Jieszcount = dd.FNbJiesbsjts
@@ -323,7 +323,7 @@ func QueryDataTurnMonitordata() (int, error, *[]dto.TurnDataResponse) {
 	//zdz 1:单点、2:总对总'
 	zdzqerr, zdztds := db.QueryDataTurnMonitortable(ts, 2)
 	if zdzqerr != nil {
-		return 0, zdzqerr, nil
+		return types.Statuszero, zdzqerr, nil
 	}
 	for i, dd := range *zdztds {
 		datas[i].ZDZcount = dd.FNbChedyssjts //zdz
@@ -339,7 +339,7 @@ func QueryDataTurnMonitordata() (int, error, *[]dto.TurnDataResponse) {
 	}
 	log.Println("响应数据：", TurndataResps)
 	//返回数据
-	return 212, nil, &TurndataResps
+	return types.StatusSuccessfully, nil, &TurndataResps
 }
 
 //结算趋势
@@ -350,7 +350,7 @@ func QuerySettlementTrend() (int, error, *[]dto.SettlementTrend) {
 	//查询数据
 	qerr, ds := db.QuerySettlementTrendbyday(ts)
 	if qerr != nil {
-		return 0, qerr, nil
+		return types.Statuszero, qerr, nil
 	}
 
 	for i, d := range *ds {
@@ -364,7 +364,7 @@ func QuerySettlementTrend() (int, error, *[]dto.SettlementTrend) {
 
 	log.Println("响应数据：", Datas)
 	//返回数据
-	return 213, nil, &Datas
+	return types.StatusSuccessfully, nil, &Datas
 }
 
 // 查询省外数据包监控  144条
@@ -376,7 +376,7 @@ func QueryPacketMonitoring() (int, error, *[]dto.PacketMonitoringdata) {
 	//查询数据
 	qerr, ds := db.QueryPacketMonitoringtable(ts)
 	if qerr != nil {
-		return 0, qerr, nil
+		return types.Statuszero, qerr, nil
 	}
 
 	for i, d := range *ds {
@@ -392,7 +392,7 @@ func QueryPacketMonitoring() (int, error, *[]dto.PacketMonitoringdata) {
 
 	log.Println("响应数据：", Datas)
 	//返回数据
-	return 214, nil, &Datas
+	return types.StatusSuccessfully, nil, &Datas
 }
 
 //查询最近15天清分包数据差额
@@ -404,7 +404,7 @@ func Clarifydifference() (int, error, *[]dto.DifferAmount) {
 	//查询数据
 	qerr, ds := db.QuerySettlementclearlingcheck(ts)
 	if qerr != nil {
-		return 0, qerr, nil
+		return types.Statuszero, qerr, nil
 	}
 
 	for i, d := range *ds {
@@ -413,7 +413,7 @@ func Clarifydifference() (int, error, *[]dto.DifferAmount) {
 	}
 	log.Println("响应数据：", Datas)
 	//返回数据
-	return 215, nil, &Datas
+	return types.StatusSuccessfully, nil, &Datas
 }
 
 func ClarifyQuery(req dto.ReqQueryClarify) (int, error, *dto.Clearlingcheckdata) {
@@ -426,20 +426,20 @@ func ClarifyQuery(req dto.ReqQueryClarify) (int, error, *dto.Clearlingcheckdata)
 	if err != nil {
 		if fmt.Sprint(err) == "请输入开始查询时间" {
 			//查询用户是否被注册，查询失败
-			return 0, err, nil
+			return types.Statuszero, err, nil
 		}
 		if fmt.Sprint(err) == "请输入查询截止时间" {
 			//查询用户是否被注册，查询失败
-			return 0, err, nil
+			return types.Statuszero, err, nil
 		}
 
 		if fmt.Sprint(err) == "请输入正确的每页展示记录数" {
 			//查询用户是否被注册，查询失败
-			return 0, err, nil
+			return types.Statuszero, err, nil
 		}
 
 		//查询用户是否被注册，查询失败
-		return 0, err, nil
+		return types.Statuszero, err, nil
 	}
 	//响应数据 list
 	Datas := make([]dto.ClearlingcheckData, len(*qfhdreqs))
@@ -460,7 +460,7 @@ func ClarifyQuery(req dto.ReqQueryClarify) (int, error, *dto.Clearlingcheckdata)
 	}
 	log.Println("响应数据：", Data)
 	//返回数据
-	return 216, nil, &Data
+	return types.StatusSuccessfully, nil, &Data
 }
 
 //清分确认【未实现】
@@ -472,7 +472,7 @@ func Clarifyconfirm() (int, error, *[]dto.PacketMonitoringdata) {
 	//查询数据
 	qerr, ds := db.QueryPacketMonitoringtable(ts)
 	if qerr != nil {
-		return 0, qerr, nil
+		return types.Statuszero, qerr, nil
 	}
 
 	for i, d := range *ds {
@@ -481,7 +481,7 @@ func Clarifyconfirm() (int, error, *[]dto.PacketMonitoringdata) {
 
 	log.Println("响应数据：", Datas)
 	//返回数据
-	return 217, nil, &Datas
+	return types.StatusSuccessfully, nil, &Datas
 }
 
 func ExportExcel(req dto.ReqClarifyExportExcel) (int, error, []byte, string) {
@@ -492,11 +492,11 @@ func ExportExcel(req dto.ReqClarifyExportExcel) (int, error, []byte, string) {
 	if err != nil {
 		if fmt.Sprint(err) == "请输入开始查询时间" {
 			//查询用户是否被注册，查询失败
-			return 0, err, nil, ""
+			return types.Statuszero, err, nil, ""
 		}
 		if fmt.Sprint(err) == "请输入查询截止时间" {
 			//查询用户是否被注册，查询失败
-			return 0, err, nil, ""
+			return types.Statuszero, err, nil, ""
 		}
 	}
 	// ExportExcel 导出Excel文件
@@ -531,14 +531,14 @@ func ExportExcel(req dto.ReqClarifyExportExcel) (int, error, []byte, string) {
 	file, oserr := os.Open("./" + path)
 	if oserr != nil {
 		log.Println("os.Open error:", oserr)
-		return 0, oserr, nil, ""
+		return types.Statuszero, oserr, nil, ""
 	}
 	data, rerr := ioutil.ReadAll(file)
 	if rerr != nil {
-		return 0, rerr, nil, ""
+		return types.Statuszero, rerr, nil, ""
 	}
 	defer file.Close()
 
 	//返回数据
-	return 218, nil, data, path
+	return types.StatusSuccessfully, nil, data, path
 }

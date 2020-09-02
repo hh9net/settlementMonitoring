@@ -7,6 +7,8 @@ const (
 	StatusEarlyHints         = 103 // RFC 8297
 	StatusSuccessfully       = 0
 
+	Statuszero = 10000 //error
+
 	StatusRegisteredSuccessfully                 = 200 //注册成功
 	StatusLoginSuccessfully                      = 201 //登录成功
 	StatusQuerySWTotalSettlementDataSuccessfully = 203 //查询结算总金额、总笔数 成功
@@ -24,20 +26,20 @@ const (
 	StatusQueryClarifydifferenceSuccess          = 215 //查询最近15天清分包数据差额 成功
 	StatusQueryClarifySuccess                    = 216 //查询清分核对 失败
 
-	StatusQuerySNTotalSettlementDataSuccess = 301 //查询省内结算数据表的总条数、总金额 成功
-	StatusQuerySNSendTotalSettlemenSuccess  = 302 //查询省内的已发送 总条数、总金额 成功
-	StatusQuerySNAlreadyPleaseDataSuccess   = 303 //查询省内已请款的数据总条数、总金额 成功
-	StatusQuerySNRefusePayDataSuccess       = 304 //查询坏账（拒付）数据 总条数、总金额 成功
-	StatusQuerySNRealTimeDataSuccess        = 305 //查询省内结算实时数据监控 成功
-	StatusQuerySNSettlementTrendSuccess     = 306 //查询省内前30日省内结算趋势概览 成功
-	StatusQueryDataSyncSuccess              = 307 //查询海岭数据同步监控 成功
-	StatusQuerySNDataClassificationSuccess  = 308 //查询省内结算数据分类 成功
-	StatusQueryAbnormalDataParkingSuccess   = 309 //查询异常数据停车场top10 成功
-	StatusQueryOverdueDataSuccess           = 310 //查询逾期数据停车场top10 失败
-
-	StatusRepeatedRegistration = 4001 //注册重复
-	StatusPleaseRegister       = 4002 //请先注册
-	StatusPasswordError        = 4003 //密码错误,请重新输入
+	StatusQuerySNTotalSettlementDataSuccess = 301  //查询省内结算数据表的总条数、总金额 成功
+	StatusQuerySNSendTotalSettlemenSuccess  = 302  //查询省内的已发送 总条数、总金额 成功
+	StatusQuerySNAlreadyPleaseDataSuccess   = 303  //查询省内已请款的数据总条数、总金额 成功
+	StatusQuerySNRefusePayDataSuccess       = 304  //查询坏账（拒付）数据 总条数、总金额 成功
+	StatusQuerySNRealTimeDataSuccess        = 305  //查询省内结算实时数据监控 成功
+	StatusQuerySNSettlementTrendSuccess     = 306  //查询省内前30日省内结算趋势概览 成功
+	StatusQueryDataSyncSuccess              = 307  //查询海岭数据同步监控 成功
+	StatusQuerySNDataClassificationSuccess  = 308  //查询省内结算数据分类 成功
+	StatusQueryAbnormalDataParkingSuccess   = 309  //查询异常数据停车场top10 成功
+	StatusQueryOverdueDataSuccess           = 310  //查询逾期数据停车场top10 失败
+	StatusRegistError                       = 400  //查询用户是否被注册失败
+	StatusRepeatedRegistration              = 4001 //注册重复
+	StatusPleaseRegister                    = 4002 //请先注册
+	StatusPasswordError                     = 4003 //密码错误,请重新输入
 
 	StatusQueryTotalSettlementDataError    = 4004 //查询结算总金额、总笔数 失败
 	StatusQueryTotalClarifyError           = 4005 //查询已清分总金额、总笔数 失败

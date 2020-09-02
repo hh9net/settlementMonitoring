@@ -40,8 +40,9 @@ func Register(c *gin.Context) {
 		c.JSON(http.StatusOK, respFailure)
 		return
 	}
+
 	//401 返回的一个状态
-	if code == 401 {
+	if code == types.StatusRepeatedRegistration {
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusRepeatedRegistration, Data: types.StatusText(types.StatusRepeatedRegistration), Message: "重复注册"})
 	}
 	if code == types.StatusRegisteredSuccessfully {
@@ -79,19 +80,19 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	if code == 402 {
+	if code == types.StatusPleaseRegister {
 		logrus.Println("用户未注册，请先注册")
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusPleaseRegister, Data: types.StatusText(types.StatusPleaseRegister), Message: "用户未注册，请先注册"})
 		return
 	}
 
-	if code == 403 {
+	if code == types.StatusPasswordError {
 		logrus.Println("密码错误,请重新输入")
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusPasswordError, Data: types.StatusText(types.StatusPasswordError), Message: "密码错误,请重新输入"})
 		return
 	}
 
-	if code == 201 {
+	if code == types.StatusSuccessfully {
 		logrus.Println("用户登录成功")
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: types.StatusText(types.StatusSuccessfully), Message: "用户登录成功"})
 		return

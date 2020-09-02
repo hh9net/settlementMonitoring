@@ -36,7 +36,7 @@ func QueryTotalSettlementData(c *gin.Context) {
 	if code == types.StatusQuerySWTotalSettlementDataSuccessfully {
 		c.JSON(http.StatusOK, dto.QuerResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "查询结算总金额、总笔数 成功"})
 	}
-	if code == 0 {
+	if code == types.Statuszero {
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryTotalSettlementDataError, Data: types.StatusText(types.StatusQueryTotalSettlementDataError), Message: "查询结算总金额、总笔数 失败"})
 	}
 }
@@ -61,10 +61,10 @@ func QueryTotalClarify(c *gin.Context) {
 		c.JSON(http.StatusOK, respFailure)
 		return
 	}
-	if code == 204 {
+	if code == types.StatusSuccessfully {
 		c.JSON(http.StatusOK, dto.QuerResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "查询已清分总金额、总笔数 成功"})
 	}
-	if code == 0 {
+	if code == types.Statuszero {
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryTotalSettlementDataError, Data: types.StatusText(types.StatusQueryTotalSettlementDataError), Message: "查询已清分总金额、总笔数 失败"})
 	}
 }
@@ -89,11 +89,11 @@ func QueryTotalBaddebts(c *gin.Context) {
 		c.JSON(http.StatusOK, respFailure)
 		return
 	}
-	if code == 205 {
+	if code == types.StatusSuccessfully {
 		c.JSON(http.StatusOK, dto.QuerResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "查询坏账总金额、总笔数 成功"})
 	}
 	//返回失败
-	if code == 0 {
+	if code == types.Statuszero {
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryTotalBaddebtsError, Data: types.StatusText(types.StatusQueryTotalBaddebtsError), Message: "查询坏账总金额、总笔数 失败"})
 	}
 }
@@ -118,10 +118,10 @@ func QueryShengwDisputedata(c *gin.Context) {
 		c.JSON(http.StatusOK, respFailure)
 		return
 	}
-	if code == 206 {
+	if code == types.StatusSuccessfully {
 		c.JSON(http.StatusOK, dto.QuerResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "查询存在争议总金额、总笔数 成功"})
 	}
-	if code == 0 {
+	if code == types.Statuszero {
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryShengwDisputedataError, Data: types.StatusText(types.StatusQueryShengwDisputedataError), Message: "查询存在争议总金额、总笔数 失败"})
 	}
 }
@@ -146,10 +146,10 @@ func QueryAbnormaldata(c *gin.Context) {
 		c.JSON(http.StatusOK, respFailure)
 		return
 	}
-	if code == 207 {
+	if code == types.StatusSuccessfully {
 		c.JSON(http.StatusOK, dto.QuerResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "查询异常数据总金额、总笔数 成功"})
 	}
-	if code == 0 {
+	if code == types.Statuszero {
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryAbnormaldataError, Data: types.StatusText(types.StatusQueryAbnormaldataError), Message: "查询异常数据总金额、总笔数 失败"})
 	}
 }
@@ -174,10 +174,10 @@ func Queryblacklistdata(c *gin.Context) {
 		c.JSON(http.StatusOK, respFailure)
 		return
 	}
-	if code == 208 {
+	if code == types.StatusSuccessfully {
 		c.JSON(http.StatusOK, dto.QuerResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "查询黑名单总数、较2小时前变化值 成功"})
 	}
-	if code == 0 {
+	if code == types.Statuszero {
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryblacklistdataError, Data: types.StatusText(types.StatusQueryblacklistdataError), Message: "查询黑名单总数、较2小时前变化值 失败"})
 	}
 }
@@ -202,10 +202,10 @@ func QueryClearlingAndDisputePackage(c *gin.Context) {
 		c.JSON(http.StatusOK, respFailure)
 		return
 	}
-	if code == 209 {
+	if code == types.StatusSuccessfully {
 		c.JSON(http.StatusOK, dto.QuerResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "查询清分包、争议包的接收时间、包号 成功"})
 	}
-	if code == 0 {
+	if code == types.Statuszero {
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryClearlingAndDisputePkgError, Data: types.StatusText(types.StatusQueryClearlingAndDisputePkgError), Message: "查询清分包、争议包的接收时间、包号 失败"})
 	}
 }
@@ -230,10 +230,10 @@ func Clearlingcheck(c *gin.Context) {
 		c.JSON(http.StatusOK, respFailure)
 		return
 	}
-	if code == 210 {
+	if code == types.StatusSuccessfully {
 		c.JSON(http.StatusOK, dto.QuerResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "查询清分核对结果 成功"})
 	}
-	if code == 0 {
+	if code == types.Statuszero {
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryClearlingcheckOneDataError, Data: types.StatusText(types.StatusQueryClearlingcheckOneDataError), Message: "查询清分核对结果 失败"})
 	}
 }
@@ -258,10 +258,10 @@ func Dataclassification(c *gin.Context) {
 		c.JSON(http.StatusOK, respFailure)
 		return
 	}
-	if code == 211 {
+	if code == types.StatusSuccessfully {
 		c.JSON(http.StatusOK, dto.QuerResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "查询省外数据分类 成功"})
 	}
-	if code == 0 {
+	if code == types.Statuszero {
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryDataclassificationError, Data: types.StatusText(types.StatusQueryDataclassificationError), Message: "查询省外数据分类 失败"})
 	}
 }
@@ -286,10 +286,10 @@ func QueryDataTurnMonitor(c *gin.Context) {
 		c.JSON(http.StatusOK, respFailure)
 		return
 	}
-	if code == 212 {
+	if code == types.StatusSuccessfully {
 		c.JSON(http.StatusOK, dto.QuerResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "查询省外转结算 成功"})
 	}
-	if code == 0 {
+	if code == types.Statuszero {
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryDataTurnMonitorError, Data: types.StatusText(types.StatusQueryDataTurnMonitorError), Message: "查询省外转结算 失败"})
 	}
 }
@@ -314,10 +314,10 @@ func QuerySettlementTrendbyDay(c *gin.Context) {
 		c.JSON(http.StatusOK, respFailure)
 		return
 	}
-	if code == 213 {
+	if code == types.StatusSuccessfully {
 		c.JSON(http.StatusOK, dto.QuerResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "查询省外结算趋势 成功"})
 	}
-	if code == 0 {
+	if code == types.Statuszero {
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQuerySettlementTrendError, Data: types.StatusText(types.StatusQuerySettlementTrendError), Message: "查询省外结算趋势 失败"})
 	}
 }
@@ -342,10 +342,10 @@ func PacketMonitoring(c *gin.Context) {
 		c.JSON(http.StatusOK, respFailure)
 		return
 	}
-	if code == 214 {
+	if code == types.StatusSuccessfully {
 		c.JSON(http.StatusOK, dto.QuerResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "查询省外数据包监控 成功"})
 	}
-	if code == 0 {
+	if code == types.Statuszero {
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryPacketMonitoringError, Data: types.StatusText(types.StatusQueryPacketMonitoringError), Message: "查询省外数据包监控 失败"})
 	}
 }
@@ -372,10 +372,10 @@ func Clarifydifference(c *gin.Context) {
 		c.JSON(http.StatusOK, respFailure)
 		return
 	}
-	if code == 215 {
+	if code == types.StatusSuccessfully {
 		c.JSON(http.StatusOK, dto.QuerResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "查询最近15天清分包数据差额 成功"})
 	}
-	if code == 0 {
+	if code == types.Statuszero {
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryClarifydifferenceError, Data: types.StatusText(types.StatusQueryClarifydifferenceError), Message: "查询最近15天清分包数据差额 失败"})
 	}
 }
@@ -410,10 +410,10 @@ func ClarifyQuery(c *gin.Context) {
 		c.JSON(http.StatusOK, respFailure)
 		return
 	}
-	if code == 216 {
+	if code == types.StatusSuccessfully {
 		c.JSON(http.StatusOK, dto.QuerResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "查询清分核对 成功"})
 	}
-	if code == 0 {
+	if code == types.Statuszero {
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryClarifyError, Data: types.StatusText(types.StatusQueryClarifyError), Message: "查询清分核对 失败"})
 	}
 }
@@ -438,10 +438,10 @@ func Clarifyconfirm(c *gin.Context) {
 		c.JSON(http.StatusOK, respFailure)
 		return
 	}
-	if code == 217 {
+	if code == types.StatusSuccessfully {
 		c.JSON(http.StatusOK, dto.QuerResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "清分确认成功 【待实现】"})
 	}
-	if code == 0 {
+	if code == types.Statuszero {
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryPacketMonitoringError, Data: types.StatusText(types.StatusQueryPacketMonitoringError), Message: "清分确认 失败 【待实现】"})
 	}
 }
@@ -478,13 +478,13 @@ func ExportExcel(c *gin.Context) {
 		return
 	}
 	logrus.Println("fileName:", fileName)
-	if code == 218 {
+	if code == types.StatusSuccessfully {
 		//c.JSON(http.StatusOK, dto.QuerResponse{Code: 0, CodeMsg: types.StatusText(0), Data: totaldata, Message: "导出清分包核对记录表 成功"})
 		c.Header("Content-Disposition", "attachment;filename="+fileName)
 		c.Writer.Write(totaldata)
 		utils.DelFile("./" + fileName)
 	}
-	if code == 0 {
+	if code == types.Statuszero {
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusExportExcelError, Data: types.StatusText(types.StatusExportExcelError), Message: "导出清分包核对记录表 失败"})
 	}
 }
