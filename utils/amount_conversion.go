@@ -10,7 +10,7 @@ func Fen2Yuan(price int64) string {
 
 	d := decimal.New(1, 2) //分除以100得到元
 	result := decimal.NewFromFloat(float64(price)).DivRound(d, 2).StringFixed(2)
-	log.Printf("输入值为：%d,分转元后，精度为二的结果为：%s\n", price, result)
+	//log.Printf("输入值为：%d,分转元后，精度为二的结果为：%s\n", price, result)
 	return result
 }
 

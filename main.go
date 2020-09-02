@@ -19,9 +19,6 @@ func main() {
 	conf := config.ConfigInit() //初始化配置
 	log.Println("配置文件信息：", *conf)
 	utils.InitLogrus(conf.LogPath, conf.LogFileName, time.Duration(24*conf.LogMaxAge)*time.Hour, time.Duration(conf.LogRotationTime)*time.Hour)
-	types.RedisAddr = conf.RedisAddr
-	log.Println("RedisAddrConf:=", conf.RedisAddr)
-	utils.RedisInit() //初始化redis
 
 	//黑名单数据库：	"root:Microvideo_1@tcp(122.51.24.189:3307)/blacklist?charset=utf8&parseTime=true&loc=Local"
 	types.HmdDBAddrconf = conf.HMUserName + ":" + conf.HMPass + "@tcp(" + conf.HMHostname + ":" + conf.HMPort + ")/" + conf.HMdatabasename + "?charset=utf8&parseTime=true&loc=Local"
@@ -38,6 +35,10 @@ func main() {
 	types.KafkaIp = conf.KafkaIp
 	log.Println("KafkaIp:", types.KafkaIp)
 
+	types.RedisAddr = conf.RedisAddr
+	log.Println("RedisAddrConf:=", conf.RedisAddr)
+	utils.RedisInit() //初始化redis
+
 	//goroutine1
 	go db.HandleDayTasks()
 	//goroutine2
@@ -51,7 +52,8 @@ func main() {
 		for {
 			log.Println("执行主go程 处理kafka数据+++++++++++++++++++++++++++++++++++++++++++++++++++++++++处理kafka数据", utils.DateTimeFormat(<-tiker.C))
 			//处理kafka数据
-			utils.ConsumerGroup()
+			err := utils.ConsumerGroup()
+			log.Println("+++++++++++++++++++++++++++++++++++++++++++++++++++执行主go程 处理kafka数据 error :", err)
 		}
 	}
 }

@@ -432,8 +432,8 @@ func handleErrors(group *sarama.ConsumerGroup, wg *sync.WaitGroup) {
 }
 
 //消费
-func consume(group *sarama.ConsumerGroup, wg *sync.WaitGroup, name string) {
-	log.Println(name + " group " + "start")
+func consume(group *sarama.ConsumerGroup, wg *sync.WaitGroup, name string) error {
+	log.Println(name + " group " + "start ++++++++++++++++++++消费 kafka consume +++++++++++++++++++++++")
 	wg.Done()
 	ctx := context.Background()
 	for {
@@ -441,7 +441,9 @@ func consume(group *sarama.ConsumerGroup, wg *sync.WaitGroup, name string) {
 		handler := consumerGroupHandler{name: name}
 		err := (*group).Consume(ctx, topics, handler)
 		if err != nil {
-			panic(err)
+			log.Println("++++++++++++++++++【(*group).Consume  error】  +++++++++++++++++++++", err)
+			//panic(err)
+			return err
 		}
 		log.Println(name+" group "+"start ok", "+++++++++++++++++++++++[kafka ok]+++++++++++++++++++++++++")
 
@@ -449,19 +451,23 @@ func consume(group *sarama.ConsumerGroup, wg *sync.WaitGroup, name string) {
 }
 
 //main 调用 消费kafka
-func ConsumerGroup() {
+func ConsumerGroup() error {
 	var wg sync.WaitGroup
 	config := sarama.NewConfig()
 	config.Consumer.Return.Errors = false
 	config.Version = sarama.V0_10_2_0
-	client, err := sarama.NewClient([]string{"localhost:9092", "192.168.200.170:9092", types.KafkaIp}, config)
+	client, err := sarama.NewClient([]string{types.KafkaIp}, config)
 	defer client.Close()
 	if err != nil {
-		panic(err)
+		log.Println("++++++++++++++++++++++++++sarama.NewClient 执行出错: ", err)
+		return err
+		//panic(err)
 	}
 	group1, err := sarama.NewConsumerGroupFromClient("c1", client)
 	if err != nil {
-		panic(err)
+		log.Println("+++++++++++++++++++++++++++++++sarama.NewConsumerGroupFromClient 执行出错: ", err)
+		return err
+		//panic(err)
 	}
 	//group2, err := sarama.NewConsumerGroupFromClient("c2", client)
 	//if err != nil {
@@ -475,7 +481,11 @@ func ConsumerGroup() {
 	//defer group2.Close()
 	//defer group3.Close()
 	wg.Add(1)
-	go consume(&group1, &wg, "c1")
+	//处理kafka
+	cerr := consume(&group1, &wg, "c1")
+	if cerr != nil {
+		return cerr
+	}
 	//go consume(&group2,&wg,"c2")
 	//go consume(&group3,&wg,"c3")
 	wg.Wait()
@@ -484,4 +494,5 @@ func ConsumerGroup() {
 	select {
 	case <-signals:
 	}
+	return nil
 }
