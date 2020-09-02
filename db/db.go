@@ -1,6 +1,7 @@
 package db
 
 import (
+	"settlementMonitoring/types"
 	"settlementMonitoring/utils"
 )
 
@@ -18,7 +19,7 @@ func DBInit(mstr string) {
 
 func HmdDBInit() {
 	HmdGormClient = utils.HmdInitGormDB(&utils.HmdDBConfig{
-		HmdDBAddr:    "root:Microvideo_1@tcp(122.51.24.189:3307)/blacklist?charset=utf8&parseTime=true&loc=Local",
+		HmdDBAddr:    types.HmdDBAddrconf,
 		MaxIdleConns: 30,
 		LogMode:      utils.Uint8ToBool(1),
 	})

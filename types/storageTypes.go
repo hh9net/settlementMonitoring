@@ -2,6 +2,11 @@ package types
 
 import "time"
 
+var RedisAddr string
+var HmdDBAddrconf string
+var Frequency int
+var KafkaIp string
+
 //1 结算统计监控表 b_jsjk_jiestj
 type BJsjkJiestj struct {
 	FNbId int `gorm:"column:F_NB_ID; AUTO_INCREMENT ;primary_key"` //`F_NB_ID` '唯一自增id',

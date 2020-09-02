@@ -81,6 +81,12 @@ type Config struct { //配置文件要通过tag来指定配置文件中的名称
 
 	//外网id
 	IpAddress string `ini:"ip_address"`
+
+	//频率
+	Frequency int `ini:"frequency"`
+
+	//kafkaip
+	KafkaIp string `ini:"kafka_ip"`
 }
 
 //读取配置文件并转成结构体

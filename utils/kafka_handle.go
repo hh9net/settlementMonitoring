@@ -254,6 +254,7 @@ func (h consumerGroupHandler) ConsumeClaim(sess sarama.ConsumerGroupSession, cla
 	for msg := range claim.Messages() {
 		log.Printf("%s group Message topic:%q partition:%d offset:%d  value:%s\n", h.name, msg.Topic, msg.Partition, msg.Offset, string(msg.Value))
 		//消息处理
+		log.Println("消息处理中+++++++++++++++++++++++++++++++消息处理中++++++++++++++++++++++++++++++++++++++++++++")
 		ProcessMessage(msg.Topic, msg.Value)
 
 		// 手动确认消息
@@ -264,7 +265,7 @@ func (h consumerGroupHandler) ConsumeClaim(sess sarama.ConsumerGroupSession, cla
 
 //处理消息
 func ProcessMessage(topic string, msg []byte) {
-	log.Println("topic:", topic)
+	log.Println("++++++++++++++++++++++++++++++++++++++++++++topic:", topic)
 	var (
 		Totalstr     string
 		Parkingid    string
@@ -442,6 +443,8 @@ func consume(group *sarama.ConsumerGroup, wg *sync.WaitGroup, name string) {
 		if err != nil {
 			panic(err)
 		}
+		log.Println(name+" group "+"start ok", "+++++++++++++++++++++++[kafka ok]+++++++++++++++++++++++++")
+
 	}
 }
 
@@ -451,7 +454,7 @@ func ConsumerGroup() {
 	config := sarama.NewConfig()
 	config.Consumer.Return.Errors = false
 	config.Version = sarama.V0_10_2_0
-	client, err := sarama.NewClient([]string{"localhost:9092", "192.168.200.170:9092", "172.18.70.21:9092"}, config)
+	client, err := sarama.NewClient([]string{"localhost:9092", "192.168.200.170:9092", types.KafkaIp}, config)
 	defer client.Close()
 	if err != nil {
 		panic(err)

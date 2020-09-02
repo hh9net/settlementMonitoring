@@ -7,6 +7,7 @@ import (
 	"github.com/garyburd/redigo/redis"
 	log "github.com/sirupsen/logrus"
 	"reflect"
+	"settlementMonitoring/types"
 )
 
 /*
@@ -40,8 +41,7 @@ func RedisInit() *redis.Conn {
 	//连接数据库
 	//address := "127.0.0.1:6379"
 	//address := "192.168.200.170:6379"
-	address := "172.18.70.21:6379"
-
+	address := types.RedisAddr
 	conn, err := redis.Dial("tcp", address /*,redis.DialPassword("123456")*/)
 	if err != nil {
 		panic(err)

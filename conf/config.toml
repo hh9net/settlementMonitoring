@@ -23,11 +23,19 @@ hmysql_pass         = Microvideo_1
 hmysql_databasename = blacklis
 
 ;[redis]
+;redis_addr         = "172.18.70.21:6379"
 redis_addr         = "192.168.200.170:6379"
-;redis_addr         = "127.0.0.1:6379"
+
 redis_pass         = Microvideo_1
 redis_databasename = "3"
 
 ;[ip_address]
-ip_address          =0.0.0.0:6089
+ip_address          =172.18.70.22:6089
+
+
+;[frequency]
+frequency          =60
+
+;[kafka_ip]
+kafka_ip          ="172.18.70.21:9092"
 
