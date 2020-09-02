@@ -100,8 +100,8 @@ func QuerySNRefusePayData() (int, error, *dto.TotalSettlementData) {
 
 //QuerySNRealTimeData
 func QuerySNRealTimeData() (int, error, *[]dto.RealTimeSettlementData) {
-	//查询省内结算实时数据监控
-	ts := 30
+	//查询省内结算实时数据监控 应该 144 条
+	ts := 60
 	Data := make([]dto.RealTimeSettlementData, ts)
 
 	err, ds := db.QuerySNRealTimeSettlementData(ts)

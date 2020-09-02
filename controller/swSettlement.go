@@ -507,19 +507,19 @@ func SetRedis(c *gin.Context) {
 	if rseterr != nil {
 		logrus.Print("set redis snshishishuju 零值error", rseterr)
 	}
+	//redis set新值
 	rhseterr := utils.RedisSet(conn, "swjiesuantotal", strconv.Itoa(int(1))+"|"+strconv.Itoa(1))
 	if rhseterr != nil {
 		logrus.Print("set redis swjiesuantotal 零值error", rhseterr)
 	}
+	//redis set新值
 	rsnseterr := utils.RedisSet(conn, "snjiesuantotal", strconv.Itoa(int(1))+"|"+strconv.Itoa(1))
 	if rsnseterr != nil {
 		logrus.Print("set redis snjiesuantotal 零值error", rsnseterr)
 	}
-	m := make(map[string]string, 0)
-	// key:日期    value:"包号"｜"时间"
 
+	m := make(map[string]string, 0)
 	m["2020-09-00"] = "999990" + "|" + "2020-09-00 11:11:11"
-	//2、把数据存储于redis  接收时间、包号
 	hmseterr := utils.RedisHMSet(utils.RedisInit(), "clear", m)
 	if hmseterr != nil {
 		logrus.Print("set redis clear 零值error", rsnseterr)

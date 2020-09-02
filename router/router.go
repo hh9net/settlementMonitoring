@@ -90,7 +90,7 @@ func AuthAPIInit(route *gin.RouterGroup) {
 
 	//最近15天清分包数据差额
 	route.GET("/sw/clarifydifference", controller.Clarifydifference)
-	//查询清分包数据校验 最新100条清分核对
+	//查询清分包数据校验 最新100条清分核对【不做了】
 	route.GET("/sw/clearlingcheck", controller.Clearlingcheck)
 	//查询按条件清分核对
 	route.POST("/sw/clarifyquery", controller.ClarifyQuery)

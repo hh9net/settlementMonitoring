@@ -367,9 +367,9 @@ func QuerySettlementTrend() (int, error, *[]dto.SettlementTrend) {
 	return 213, nil, &Datas
 }
 
-// 查询省外数据包监控
+// 查询省外数据包监控  144条
 func QueryPacketMonitoring() (int, error, *[]dto.PacketMonitoringdata) {
-	ts := 30
+	ts := 60
 	//响应数据 list TurnDataResponse
 	Datas := make([]dto.PacketMonitoringdata, ts)
 

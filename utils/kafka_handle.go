@@ -451,7 +451,7 @@ func ConsumerGroup() {
 	config := sarama.NewConfig()
 	config.Consumer.Return.Errors = false
 	config.Version = sarama.V0_10_2_0
-	client, err := sarama.NewClient([]string{"localhost:9092", "192.168.200.170:9292", "172.18.70.21:9392"}, config)
+	client, err := sarama.NewClient([]string{"localhost:9092", "192.168.200.170:9092", "172.18.70.21:9092"}, config)
 	defer client.Close()
 	if err != nil {
 		panic(err)

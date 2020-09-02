@@ -63,10 +63,10 @@ func HandleDayTasks() {
 
 		//省内业务
 		//任务 八
-		//省内结算监控
+		//省内结算总金额、总条数监控
 		snjserr := ShengnJieSuanData()
 		if snjserr != nil {
-			log.Println("查询省内结算监控定时任务 error:", snjserr)
+			log.Println("查询省内结算总金额、总条数-监控定时任务 error:", snjserr)
 		}
 
 		//任务 久
@@ -153,6 +153,7 @@ func HandleHourTasks() {
 		//if tberr != nil {
 		//	log.Println("查询海玲数据同步定时任务 error:", tberr)
 		//}
+		log.Println("插入 oracle 海玲数据同步定时任务 成功+++++++++++++++++++++++++++【2.4】+++++++++++++++++++++++++++++++")
 
 		//任务5 异常数据top10
 		yctoperr := QueryAbnormalDataOfParkingdata()
@@ -173,12 +174,12 @@ func HandleMinutesTasks() {
 		//任务一 转结算24小时监控
 		dterr := DataTurnMonitor()
 		if dterr != nil {
-			log.Println("转结算定时任务 error:", dterr)
+			log.Println("省外之前24小时转结算定时任务 error:", dterr)
 		}
 		//任务二 数据包监控
 		perr := PacketMonitoring()
 		if perr != nil {
-			log.Println("数据包监控定时任务 error:", perr)
+			log.Println("省外结算数据包监控定时任务 error:", perr)
 		}
 		//任务三 省内实时数据监控
 		snsserr := ShengNRealTimeSettlementData()
@@ -229,7 +230,7 @@ func QuerTotalSettlementData() error {
 		return rhseterr
 	}
 
-	log.Println("更新省外结算统计最新统计记录成功")
+	log.Println("更新省外结算统计最新统计记录成功++++++++++++++++++++++++++++[1.1]++++++++++++++++++++++++++++++++++")
 	//返回数据赋值
 	return nil
 }
@@ -271,7 +272,7 @@ func QuerTotalClarify() error {
 		return uperr //不用返回前端
 	}
 
-	log.Println("更新清分监控表数据成功")
+	log.Println("更新清分监控表数据成功+++++++++++++++++++++++[1.2]++++++++++++++++++++++++++")
 	//返回数据赋值
 	return nil
 }
@@ -312,6 +313,7 @@ func QueryTingccJieSuan() error {
 		if rhseterr != nil {
 			return rhseterr
 		}
+		log.Println("按停车场获取-停车场总金额、总笔数 -【RedisHSet】jiesstatistical 成功 【++++++++++++[1.3]++++++++++++++++++】")
 	}
 	return nil
 }
@@ -348,6 +350,7 @@ func QueryClearlingAndDisputePackage() error {
 	if hmseterr != nil {
 		return hmseterr
 	}
+	log.Println("获取清分包-【RedisHSet】 v:=clear 成功 【++++++++++++[1.4]++++++++++++++++++】")
 
 	//1查询争议处理数据
 	qderr, dispute := QueryDisputedata(utils.Yesterdaydate())
@@ -376,6 +379,8 @@ func QueryClearlingAndDisputePackage() error {
 	if dishmseterr != nil {
 		return dishmseterr
 	}
+	log.Println("获取争议包-【RedisHSet】 v:=disput 成功 【++++++++++++[1.4]++++++++++++++++++】")
+
 	return nil
 }
 
@@ -410,7 +415,7 @@ func QueryShengwDisputedata() error {
 		return uperr //不用返回前端
 	}
 
-	log.Println("更新最新争议数据的统计结果成功")
+	log.Println("更新最新存在争议数据的统计结果成功++++++++++++++++++++【2.1】++++++++++++++++++++++++")
 	//返回数据赋值
 	return nil
 }
@@ -428,6 +433,9 @@ func QueryAbnormaldata() error {
 		log.Println("查询单点异常数据统计的总金额、总笔数定时任务 error:", qddycerr)
 		return qddycerr
 	}
+
+	log.Println("插入异常数据统计执行定时任务 成功+++++++++++++++++++++++++++++【2.2】++++++++++++++++++++++")
+
 	return nil
 }
 
@@ -498,7 +506,7 @@ func QueryblacklistCount() error {
 	if uperr != nil {
 		return uperr
 	}
-
+	log.Println("插入最新的黑名单的数据记录成功+++++++++++++++++++++++++【2.3】+++++++++++++++++++++++ ")
 	return nil
 }
 
@@ -536,6 +544,7 @@ func DataClassification() error {
 	if uperr != nil {
 		return uperr
 	}
+	log.Println("更新 最新的省外结算数据分类 记录 成功+++++++++++++++++++++++[1.6]+++++++++++++++++++++++")
 
 	return nil
 }
@@ -591,6 +600,7 @@ func DataTurnMonitor() error {
 	if dduperr != nil {
 		return dduperr
 	}
+	log.Println("插入之前24小时转结算表数据 记录 完成【按分钟统计】+++++++++++++++++++++++++【3.1】+++++++++++++++++++++++++")
 
 	return nil
 }
@@ -625,7 +635,11 @@ func SettlementTrendbyDay() error {
 		if uperr != nil {
 			return uperr
 		}
+
 	}
+
+	log.Println("更新之前30天 省外结算趋势表数据 记录 成功+++++++【1.7】++++++++++")
+
 	return nil
 }
 
@@ -660,10 +674,13 @@ func PacketMonitoring() error {
 	if uperr != nil {
 		return uperr
 	}
+
+	log.Println("插入省外结算数据包表数据 记录 完成++++++++++++++++++++++++++++++【3.2】++++++++++++++++++++++++++++++++++++")
+
 	return nil
 }
 
-// 1.8 省内结算监控
+// 1.8 省内结算总金额、总笔数监控
 func ShengnJieSuanData() error {
 	//1、新增省内结算监控记录
 	inerr := InsertShengnJieSuanTable()
@@ -697,7 +714,7 @@ func ShengnJieSuanData() error {
 	if rseterr != nil {
 		return rseterr
 	}
-	log.Println("更新省内结算统计最新统计记录成功")
+	log.Println("更新省内结算总金额、总笔数到redis 成功+++++++++++++【1.8】+++++++")
 	return nil
 }
 
@@ -728,7 +745,7 @@ func ShengnSendJieSuanData() error {
 	if uperr != nil {
 		return uperr
 	}
-	log.Println("省内发送结算数据金额、条数成功")
+	log.Println("插入省内发送结算数据金额、条数成功+++++++++++++++++++++【1.9】++++++++++")
 	return nil
 }
 
@@ -758,7 +775,7 @@ func QueryShengnRefusePayData() error {
 	if uperr != nil {
 		return uperr
 	}
-	log.Println("更新拒付数据金额、条数成功")
+	log.Println("更新拒付数据金额、条数成功+++++++++++++++[1.10]+++++++++++++++++")
 	return nil
 }
 
@@ -788,7 +805,7 @@ func QueryShengnAlreadyPleaseData() error {
 	if uperr != nil {
 		return uperr
 	}
-	log.Println("更新省内已请款金额、条数成功")
+	log.Println("更新省内已请款金额、条数成功+++++++++++++++++++[1.11]+++++++++++++++++++")
 	return nil
 }
 
@@ -821,18 +838,18 @@ func QuerySNDataClassificationData() error {
 	if uperr != nil {
 		return uperr
 	}
-	log.Println("更新省内结算分类成功")
+	log.Println("更新省内结算分类成功++++++++++++++++++++++[1.12]+++++++++++++++++++")
 	return nil
 }
 
-//3.2  	省内实时数据
+//3.3 	省内实时数据
 func ShengNRealTimeSettlementData() error {
-	//1、新增数据包表
+	//1、新增实时数据表
 	inerr := InsertSNRealTimeSettlementDataTable()
 	if inerr != nil {
 		return inerr
 	}
-	//2、查询最新一次
+	//2、查询实时数据最新一次
 	qerr, xdata := QuerySNRealTimeSettlementDataTable()
 	if qerr != nil {
 		return qerr
@@ -864,9 +881,9 @@ func ShengNRealTimeSettlementData() error {
 	fszts, _ := strconv.Atoi(v[3])  //省内已发送数据条数
 	jzjine, _ := strconv.Atoi(v[4]) //省内已记账数据金额
 	jzzts, _ := strconv.Atoi(v[5])  //省内已记账数据条数
-	log.Println("查询成功", "省内产生金额: ", int64(zje), "省内产生条数:", zts, "省内已发送数据金额:", fsjine, "省内已发送数据条数:", fszts, "省内已记账数据金额:", jzjine, "省内已记账数据条数:", jzzts)
+	log.Println("获取省内实时成功+++++++++：", "省内产生金额: ", int64(zje), "省内产生条数:", zts, "省内已发送数据金额:", fsjine, "省内已发送数据条数:", fszts, "省内已记账数据金额:", jzjine, "省内已记账数据条数:", jzzts)
 
-	//3、查询数据包数据
+	//3、查询实时数据
 	data := QueryRealTimeSettlementData()
 
 	//4、赋值
@@ -880,11 +897,12 @@ func ShengNRealTimeSettlementData() error {
 	ssdata.FDtTongjwcsj = utils.StrTimeToNowtime()         //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
 	ssdata.FVcTongjrq = utils.KuaizhaoTimeNowFormat()      //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
 
-	//5、更新数据包监控
+	//5、更新实时数据监控
 	uperr := UpdateSNRealTimeSettlementDataTable(ssdata, xdata.FNbId)
 	if uperr != nil {
 		return uperr
 	}
+	log.Println("插入省内今日实时数据 完成++++++++++++++++++++++【3.3】++++++++++++++++++++++++")
 
 	//redis set新值
 	s := strconv.Itoa(int(data.Shengnjsjine)) + "|" + strconv.Itoa(data.Shengnjssl) + "|" + strconv.Itoa(int(data.Fasjine)) + "|" + strconv.Itoa(data.Fassl) + "|" + strconv.Itoa(int(data.Jizjine)) + "|" + strconv.Itoa(data.Jizsl)
@@ -893,6 +911,8 @@ func ShengNRealTimeSettlementData() error {
 		return rseterr
 	}
 	log.Println("set redis 成功 ")
+	log.Println("set redis 省内今日实时数据 完成 [ snshishishuju ]  ++++++++++++++++++++++【3.3】++++++++++++++++++++++++")
+
 	return nil
 }
 
@@ -925,8 +945,10 @@ func QueryShengNSettlementTrenddata() error {
 		if uperr != nil {
 			return uperr
 		}
-		log.Printf("更新第%d天省内结算趋势成功", i+1)
+		log.Printf("更新第%d天省内结算趋势成功+++++++++++++", i+1)
 	}
+	log.Println("更新省内之前30天结算趋势成功+++++++++++++++++++++++++【1.13】+++++++++++++++++++++++++")
+
 	return nil
 }
 
@@ -962,18 +984,18 @@ func QueryShengNSettlementTrenddata() error {
 //}
 
 //AbnormalDataOfParking
-//2.5 海玲数据同步
+//2.5 异常数据top10
 func QueryAbnormalDataOfParkingdata() error {
-	// 查询海玲数据同步
+	// 查询异常数据top10
 	dddata, zdzdata := QueryAbnormalDataOfParking()
 
 	for _, dd := range *dddata {
-		//1、新增海玲数据同步
+		//1、新增异常数据top10
 		inerr := InsertAbnormalDataOfParkingTable(1)
 		if inerr != nil {
 			return inerr
 		}
-		//2、查询最新一条海玲数据同步
+		//2、查询最新一条异常数据top10
 		qerr, data := QueryAbnormalDataOfParkingTable()
 		if qerr != nil {
 			return qerr
@@ -987,21 +1009,21 @@ func QueryAbnormalDataOfParkingdata() error {
 		Data.FVcKuaizsj = utils.KuaizhaoTimeNowFormat() //   `F_VC_KUAIZSJ` datetime DEFAULT NULL COMMENT '快照时间',
 		Data.FDtTongjwcsj = utils.StrTimeToNowtime()    //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
 
-		//5、更新最新一条海玲数据同步记录
+		//5、更新最新一条异常数据top10
 		uperr := UpdateAbnormalDataOfParkingTable(Data, data.FNbId)
 		if uperr != nil {
 			return uperr
 		}
-		log.Printf("更新单点最新一条海玲数据同步成功")
+		log.Printf("更新单点最新一条异常数据top10成功")
 	}
 
 	for _, zdz := range *zdzdata {
-		//1、新增海玲数据同步
+		//1、新增异常数据top10
 		inerr := InsertAbnormalDataOfParkingTable(1)
 		if inerr != nil {
 			return inerr
 		}
-		//2、查询最新一条海玲数据同步
+		//2、查询最新一条异常数据top10
 		qerr, zdzdata := QueryAbnormalDataOfParkingTable()
 		if qerr != nil {
 			return qerr
@@ -1015,13 +1037,14 @@ func QueryAbnormalDataOfParkingdata() error {
 		Data.FVcKuaizsj = utils.KuaizhaoTimeNowFormat() //   `F_VC_KUAIZSJ` datetime DEFAULT NULL COMMENT '快照时间',
 		Data.FDtTongjwcsj = utils.StrTimeToNowtime()    //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
 
-		//5、更新最新一条海玲数据同步记录
+		//5、更新最新一条异常数据top10
 		uperr := UpdateAbnormalDataOfParkingTable(Data, zdzdata.FNbId)
 		if uperr != nil {
 			return uperr
 		}
-		log.Printf("更新总对总最新一条海玲数据同步成功")
+		log.Printf("更新异常数据top10成功+++++++++++++++ ")
 	}
+	log.Printf("插入异常数据top10成功++++++++++++++++++【2.5】++++++++++++++++")
 
 	return nil
 }
@@ -1054,8 +1077,9 @@ func Overduedata() error {
 		if uperr != nil {
 			return uperr
 		}
-		log.Printf("更新逾期数据成功")
+		log.Printf("插入逾期数据成功+++++++++++")
 	}
+	log.Printf("更新逾期数据成功+++++++++++++++++++++++++++[1.14]++++++++++++++++++++++++++++")
 	return nil
 }
 
@@ -1075,7 +1099,6 @@ func SWSettlementTrendbyDay() error {
 		}
 		//3、赋值
 		qushijl := new(types.BJsjkShengwtccjsqs)
-
 		qushijl.FVcTingccid = qsdata.Parkingid                        //   `F_VC_TINGCCID` varchar(32) DEFAULT NULL COMMENT '停车场id',
 		qushijl.FNbJiaoyje = qsdata.JiesuanMoney                      //   `F_NB_JIAOYJE` bigint DEFAULT NULL COMMENT '交易金额',
 		qushijl.FNbQingfje = qsdata.ClearlingMoney                    //   `F_NB_QINGFJE` bigint DEFAULT NULL COMMENT '清分金额',
@@ -1091,6 +1114,7 @@ func SWSettlementTrendbyDay() error {
 			return uperr
 		}
 	}
+	log.Printf("更新省外停车场结算趋势+++++++++++++++++++++++++++[1.15]++++++++++++++++++++++++++++")
 	return nil
 }
 
@@ -1126,6 +1150,8 @@ func SNSettlementTrendbyDay() error {
 			return uperr
 		}
 	}
+
+	log.Printf("更新省内停车场结算趋势+++++++++++++++++++++++++++[1.16]++++++++++++++++++++++++++++")
 	return nil
 }
 

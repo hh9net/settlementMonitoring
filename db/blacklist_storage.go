@@ -114,6 +114,8 @@ func UpdateBlacklistlData(data *types.BJsjkHeimdjk, id int) error {
 		log.Println("最新的黑名单的数据记录 error", err)
 		return err
 	}
+	log.Println("更新最新的黑名单的数据记录成功+++++++++++++++++++++++ ")
+
 	return nil
 }
 

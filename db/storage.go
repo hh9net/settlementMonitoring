@@ -525,7 +525,7 @@ func StatisticalClearlingcheck() error {
 		return qerr
 	}
 	if clear == nil {
-		log.Println("昨日没有清分包")
+		log.Println("+++++++++++++++++++++++++++昨日没有清分包++++++++++++++++++++++")
 		return errors.New("昨日没有清分包，需要检查清分包是否接收")
 	}
 
@@ -536,16 +536,16 @@ func StatisticalClearlingcheck() error {
 	if disputerr != nil {
 		return disputerr
 	}
-	log.Println("清分包清分总金额", clear.FNbQingfzje)
-	log.Println("今日核对清分结果的总金额", keepAccount+Disput.FNbQuerxyjzdzje)
+	log.Println("清分包清分总金额：", clear.FNbQingfzje)
+	log.Println("今日核对清分结果的总金额：", keepAccount+Disput.FNbQuerxyjzdzje)
 
 	var is int
 	if (clear.FNbQingfzje == keepAccount+Disput.FNbQuerxyjzdzje) && (clear.FNbQingfsl == keepAccountCount+zyfgsl) {
 		is = 1
-		log.Println("清分金额核对正确")
+		log.Println("清分金额核对正确++++++++++++++")
 	} else {
 		is = 2
-		log.Println("清分金额核对不正确")
+		log.Println("清分金额核对不正确++++++++++++++++")
 	}
 	//把清分核对结果存数据库
 	data := new(types.BJsjkQingfhd)
@@ -563,6 +563,7 @@ func StatisticalClearlingcheck() error {
 	if cherr != nil {
 		return cherr
 	}
+	log.Println("清分金额核对完成++++++++++++++++++++【1.5】+++++++++++++")
 
 	return nil
 }
@@ -650,7 +651,7 @@ func CheckResult(clear *types.BJsjkQingfhd) error {
 		log.Println("Insert b_jsjk_qingfhd error", err)
 		return err
 	}
-	log.Println("新增清分核对结果成功！", clear.FNbQingfbxh)
+	log.Println("新增清分核对结果成功！++++++++++++++++++++++++++++++++++++++++++++++++", clear.FNbQingfbxh)
 	return nil
 }
 
@@ -775,7 +776,7 @@ func UpdateSWDataClassificationTable(data *types.BJsjkShengwjssjfl, id int) erro
 		log.Println("更新 最新的省外结算数据分类 记录 时 error", err)
 		return err
 	}
-	log.Println("更新 最新的省外结算数据分类 记录 完成")
+	log.Println("更新 最新的省外结算数据分类 记录 成功++++++++++++++++++++++++++++++++++++++++++++++")
 	return nil
 }
 
@@ -980,7 +981,7 @@ func UpdateSettlementTrendbyDayTable(data *types.BJsjkShengwjsqs, id int) error 
 		log.Println("更新省外结算趋势表数据 记录 时 error", err)
 		return err
 	}
-	log.Println("更新省外结算趋势表数据 记录 完成")
+	log.Println("更新省外结算趋势表数据 记录 成功+++++++++++++++++")
 	return nil
 }
 
@@ -1090,10 +1091,10 @@ func UpdatePacketMonitoringTable(data *types.BJsjkShujbjk, id int) error {
 	shujub.FDtTongjwcsj = data.FDtTongjwcsj       //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
 	shujub.FVcKuaizsj = data.FVcKuaizsj           //   `F_DT_KUAIZSJ` datetime DEFAULT NULL COMMENT '快照时间',
 	if err := db.Table("b_jsjk_shujbjk").Where("F_NB_ID=?", id).Updates(&shujub).Error; err != nil {
-		log.Println("更新省外结算趋势表数据 记录 时 error", err)
+		log.Println("更新省外结算数据包表数据 记录 时 error", err)
 		return err
 	}
-	log.Println("更新省外结算趋势表数据 记录 完成")
+	log.Println("更新省外结算数据包表数据 记录 完成++++++++++++++++++++++")
 	return nil
 }
 
@@ -1142,10 +1143,10 @@ func QueryShengnJieSuanTable() (error, *types.BJsjkJiestj) {
 func UpdateShengnJieSuanTable(data *types.BJsjkJiestj, id int) error {
 	db := utils.GormClient.Client
 	if err := db.Table("b_jsjk_jiestj").Where("F_NB_ID=?", id).Updates(&data).Error; err != nil {
-		log.Println("更新省外结算趋势表数据 记录 时 error", err)
+		log.Println("更新结算表数据 记录 时 error", err)
 		return err
 	}
-	log.Println("更新省外结算趋势表数据 记录 完成")
+	log.Println("省内结算总金额、总条数 更新结算表数据 记录 完成+++++++++++++")
 	return nil
 }
 
@@ -1199,7 +1200,7 @@ func UpdateShengnSendTable(data *types.BJsjkShengnyfssjtj, id int) error {
 		log.Println("更新省内已发送 记录 时 error", err)
 		return err
 	}
-	log.Println("更新省内已发送记录 完成")
+	log.Println("更新省内已发送记录 完成+++++++++++++++")
 	return nil
 }
 
@@ -1276,7 +1277,7 @@ func UpdateShengnRefusePayTable(data *types.BJsjkShengnjfsjtj, id int) error {
 		log.Println("更新省内已发送 记录 时 error", err)
 		return err
 	}
-	log.Println("更新省内已发送记录 完成")
+	log.Println("更新省内已发送记录 完成++++++++++++++++++++++++")
 	return nil
 }
 
@@ -1340,7 +1341,7 @@ func UpdateShengnAlreadyPleaseTable(data *types.BJsjkShengnqktj, id int) error {
 		log.Println("更新省已请款数据时 error", err)
 		return err
 	}
-	log.Println("更新已请款数据 完成")
+	log.Println("更新已请款数据 完成++++++++++++++++++")
 	return nil
 }
 
@@ -1430,7 +1431,7 @@ func UpdateSNDataClassificationTable(data *types.BJsjkShengnjssjfl, id int) erro
 		log.Println("更新省内结算数据分类时 error", err)
 		return err
 	}
-	log.Println("更新省内结算数据分类 完成")
+	log.Println("更新省内结算数据分类 完成++++++++++++++++++")
 	return nil
 }
 
@@ -1533,7 +1534,7 @@ func UpdateSNRealTimeSettlementDataTable(data *types.BJsjkShengnsssjjk, id int) 
 		log.Println("更新省内今日实时数据时 error", err)
 		return err
 	}
-	log.Println("更新省内今日实时数据 完成")
+	log.Println("更新省内今日实时数据 完成+++++++++++++++++++")
 	return nil
 }
 
@@ -1751,7 +1752,7 @@ func QueryAbnormalDataOfParkingTable() (error, *types.BJsjkYicsjtcctj) {
 		log.Println("查询最新一条异常数据停车场表 error :", err)
 		return err, nil
 	}
-	log.Println("查询异常数据停车场表:", shuju)
+	log.Println("查询异常数据停车场表数据:", shuju)
 	return nil, shuju
 }
 
@@ -2017,7 +2018,7 @@ func UpdateSWSettlementTrendTable(data *types.BJsjkShengwtccjsqs, id int) error 
 		log.Println("更新省外停车场结算表时 error", err)
 		return err
 	}
-	log.Println("更新省外停车场结算表 完成")
+	log.Println("更新省外停车场结算表 完成+++++++++++++++++++++++")
 	return nil
 }
 
@@ -2091,7 +2092,7 @@ func UpdateSNSettlementTrendTable(data *types.BJsjkShengntccjsqs, id int) error 
 		log.Println("更新省内停车场结算趋势表时 error", err)
 		return err
 	}
-	log.Println("更新省内停车场结算趋势表 完成")
+	log.Println("更新省内停车场结算趋势表 完成++++++++++++++++++++++++++++++")
 	return nil
 }
 
