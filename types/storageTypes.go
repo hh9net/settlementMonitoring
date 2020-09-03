@@ -6,6 +6,8 @@ var RedisAddr string
 var HmdDBAddrconf string
 var Frequency int
 var KafkaIp string
+var DdkafkaTopic string
+var ZdzkafkaTopic string
 
 //1 结算统计监控表 b_jsjk_jiestj
 type BJsjkJiestj struct {

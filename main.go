@@ -33,7 +33,9 @@ func main() {
 	log.Println("10分钟快照的频率 的条数：", types.Frequency)
 	//kafkaip
 	types.KafkaIp = conf.KafkaIp
-	log.Println("KafkaIp:", types.KafkaIp)
+	types.DdkafkaTopic = conf.DdkafkaTopic
+	types.ZdzkafkaTopic = conf.ZdzkafkaTopic
+	log.Println("KafkaIp:", types.KafkaIp, "DdkafkaTopic:", types.DdkafkaTopic, "zdzkafkaTopic:", types.ZdzkafkaTopic)
 
 	types.RedisAddr = conf.RedisAddr
 	log.Println("RedisAddrConf:=", conf.RedisAddr)
@@ -45,15 +47,15 @@ func main() {
 	go db.HandleHourTasks()
 	//goroutine3
 	go db.HandleMinutesTasks()
+	//kafka处理
+	go db.HandleKafka()
 	//http处理
 	router.RouteInit(IpAddress)
+	tiker := time.NewTicker(time.Minute * 1)
 	for {
-		tiker := time.NewTicker(time.Second * 10)
-		for {
-			log.Println("执行主go程 处理kafka数据+++++++++++++++++++++++++++++++++++++++++++++++++++++++++处理kafka数据", utils.DateTimeFormat(<-tiker.C))
-			//处理kafka数据
-			err := utils.ConsumerGroup()
-			log.Println("+++++++++++++++++++++++++++++++++++++++++++++++++++执行主go程 处理kafka数据 error :", err)
-		}
+		log.Println("执行主go程 ", <-tiker.C)
+		log.Println("执行主go程 休息1分钟 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+		time.Sleep(time.Minute * 1)
 	}
+
 }

@@ -362,7 +362,7 @@ func QuerySettlementTrend() (int, error, *[]dto.SettlementTrend) {
 		Datas[i].DateTime = d.FDtTongjwcsj.Format("2006-01-02 15:04:05")
 	}
 
-	log.Println("响应数据：", Datas)
+	log.Println("响应数据：", len(Datas))
 	//返回数据
 	return types.StatusSuccessfully, nil, &Datas
 }
@@ -390,7 +390,7 @@ func QueryPacketMonitoring() (int, error, *[]dto.PacketMonitoringdata) {
 		Datas[i].DateTime = d.FDtTongjwcsj.Format("2006-01-02 15:04:05")
 	}
 
-	log.Println("响应数据：", Datas)
+	log.Println("响应数据：", len(Datas))
 	//返回数据
 	return types.StatusSuccessfully, nil, &Datas
 }
@@ -411,7 +411,7 @@ func Clarifydifference() (int, error, *[]dto.DifferAmount) {
 		Datas[i].Differamount = utils.Fen2Yuan(d.FNbQingfje - d.FNbTongjqfje)
 		Datas[i].DateTime = d.FVcTongjrq
 	}
-	log.Println("响应数据：", Datas)
+	log.Println("响应数据：", len(Datas))
 	//返回数据
 	return types.StatusSuccessfully, nil, &Datas
 }
@@ -458,7 +458,7 @@ func ClarifyQuery(req dto.ReqQueryClarify) (int, error, *dto.Clearlingcheckdata)
 		ZongTS:         zongjls,
 		ZongYS:         zongys,
 	}
-	log.Println("响应数据：", Data)
+	log.Println("响应数据：", len(Datas))
 	//返回数据
 	return types.StatusSuccessfully, nil, &Data
 }

@@ -20,10 +20,10 @@ hmysql_hostname     = 122.51.24.189
 hmysql_port         = 3307
 hmysql_user         = root
 hmysql_pass         = Microvideo_1
-hmysql_databasename = blacklis
+hmysql_databasename = blacklist
 
 ;[redis]
-;redis_addr         = "172.18.70.21:6379"
+;redis_addr         = "192.168.200.201:6379"
 redis_addr         = "172.18.70.21:6379"
 
 redis_pass         = Microvideo_1
@@ -38,4 +38,6 @@ frequency          =60
 
 ;[kafka_ip]
 kafka_ip          ="172.18.70.21:9092"
+ddkafka_topic      ="billExitDataCollectTopic"
+zdzkafka_topic     ="zdzBillExitDataCollectTopic"
 

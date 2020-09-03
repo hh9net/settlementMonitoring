@@ -13,8 +13,8 @@ import (
 //goroutine1
 //1定时任务 一天一次的
 func HandleDayTasks() {
-	//tiker := time.NewTicker(time.Hour * 1) //每15秒执行一下 一天一次的
-	tiker := time.NewTicker(time.Minute * 20) //每15秒执行一下 一天一次的
+	tiker := time.NewTicker(time.Hour * 24) //每15秒执行一下 一天一次的
+	//tiker := time.NewTicker(time.Minute * 20) //每15秒执行一下 一天一次的
 
 	for {
 		log.Println(utils.DateTimeFormat(<-tiker.C), "执行线程1，处理一天一次的定时任务11111111111111111111111111111111111111111111111111111111111111111")
@@ -128,7 +128,7 @@ func HandleDayTasks() {
 //goroutine2
 //2定时任务 按小时的
 func HandleHourTasks() {
-	tiker := time.NewTicker(time.Minute * 10) //每15秒执行一下
+	tiker := time.NewTicker(time.Minute * 60) //每15秒执行一下
 
 	for {
 		log.Println(utils.DateTimeFormat(<-tiker.C), "执行线程2，处理按小时的定时任务222222222222222222222222222222222222222222222222")
@@ -167,7 +167,7 @@ func HandleHourTasks() {
 //goroutine3
 //3定时任务 按分钟的
 func HandleMinutesTasks() {
-	tiker := time.NewTicker(time.Minute * 5) //每15秒执行一下
+	tiker := time.NewTicker(time.Minute * 10) //每15秒执行一下
 
 	for {
 		log.Println(utils.DateTimeFormat(<-tiker.C), "执行线程3，处理按分钟的定时任务333333333333333333333333333333333333333333333333333333333333333333")
@@ -186,6 +186,20 @@ func HandleMinutesTasks() {
 		if snsserr != nil {
 			log.Println("省内实时数据监控 定时任务 error:", snsserr)
 		}
+	}
+
+}
+
+//goroutine4
+//3定时任务 按分钟的
+func HandleKafka() {
+	tiker := time.NewTicker(time.Second * 10)
+	for {
+		log.Println(<-tiker.C)
+		log.Println("执行go程 处理kafka数据++++++++++++++++++++++++【kafka执行】+++++++++++++++++++++++++++++++++处理kafka数据")
+		//处理kafka数据
+		err := utils.ConsumerGroup()
+		log.Println("+++++++++++++++++++++++++++++++++++++++++++++++++++【执行go程 处理kafka数据】 error :", err)
 	}
 
 }

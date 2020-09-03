@@ -3,6 +3,7 @@ package utils
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"github.com/Shopify/sarama"
 	log "github.com/sirupsen/logrus"
 	"os"
@@ -146,11 +147,11 @@ var topics = []string{"billDataCollectTopic", "zdzBillExitDataCollectTopic"}
 var group = "39"
 
 func (p *Kafka) Init() func() {
-	log.Infoln("kafka init...")
+	log.Println("++++++++++++++++++++++++++++++++++kafka init...")
 
 	version, err := sarama.ParseKafkaVersion(p.version)
 	if err != nil {
-		log.Fatalf("Error parsing Kafka version: %v", err)
+		log.Println("+++++++++++++++++++++++++++++++++++++++Error parsing Kafka version: %v", err)
 	}
 	config := sarama.NewConfig()
 	config.Version = version
@@ -161,7 +162,7 @@ func (p *Kafka) Init() func() {
 	ctx, cancel := context.WithCancel(context.Background())
 	client, err := sarama.NewConsumerGroup(p.brokers, p.group, config)
 	if err != nil {
-		log.Fatalf("Error creating consumer group client: %v", err)
+		log.Println("+++++++++++++++++++++++++++++++++++++++++++++Error creating consumer group client: %v", err)
 	}
 
 	wg := &sync.WaitGroup{}
@@ -173,25 +174,25 @@ func (p *Kafka) Init() func() {
 		}()
 		for {
 			if err := client.Consume(ctx, p.topics, p); err != nil {
-				log.Fatalf("Error from consumer: %v", err)
+				log.Println("++++++++++++++++++++++++++++++++Error from consumer: %v", err)
 			}
 			// check if context was cancelled, signaling that the consumer should stop
 			if ctx.Err() != nil {
-				log.Println(ctx.Err())
+				log.Println("+++++++++++++++++++++++++ctx.Err():", ctx.Err())
 				return
 			}
 			p.ready = make(chan bool)
 		}
 	}()
 	<-p.ready
-	log.Infoln("Sarama consumer up and running!...")
+	log.Infoln("+++++++++++++++++++++++++++++Sarama consumer up and running!...")
 	// 保证在系统退出时，通道里面的消息被消费
 	return func() {
-		log.Info("kafka close")
+		log.Println("+++++++++++++++++++++++++++++kafka close")
 		cancel()
 		wg.Wait()
 		if err = client.Close(); err != nil {
-			log.Errorf("Error closing client: %v", err)
+			log.Println("++++++++++++++++++++++++++++++++++Error closing client: %v", err)
 		}
 	}
 }
@@ -220,7 +221,7 @@ func (p *Kafka) ConsumeClaim(session sarama.ConsumerGroupSession, claim sarama.C
 	// 具体消费消息
 	for message := range claim.Messages() {
 		msg := string(message.Value)
-		log.Infof("msg: %s", msg)
+		log.Println("+++++++++++++++++++++++++++++++msg:", msg)
 		time.Sleep(time.Second)
 		//run.Run(msg)
 		// 更新位移
@@ -252,11 +253,14 @@ func (consumerGroupHandler) Cleanup(_ sarama.ConsumerGroupSession) error { retur
 //消费主张
 func (h consumerGroupHandler) ConsumeClaim(sess sarama.ConsumerGroupSession, claim sarama.ConsumerGroupClaim) error {
 	for msg := range claim.Messages() {
-		log.Printf("%s group Message topic:%q partition:%d offset:%d  value:%s\n", h.name, msg.Topic, msg.Partition, msg.Offset, string(msg.Value))
+		log.Printf("++++++++++++++%s group Message topic:%q partition:%d offset:%d  value:%s\n", h.name, msg.Topic, msg.Partition, msg.Offset, string(msg.Value))
 		//消息处理
-		log.Println("消息处理中+++++++++++++++++++++++++++++++消息处理中++++++++++++++++++++++++++++++++++++++++++++")
-		ProcessMessage(msg.Topic, msg.Value)
-
+		log.Println("消息已接受，正处理中+++++++++++++++++++++++++++++++消息已接受，正处理中++++++++++++++++++++++++++++++++++++++++++++")
+		err := ProcessMessage(msg.Topic, msg.Value)
+		if err != nil {
+			log.Println("+++++++++++++++++++++++【ProcessMessage  error】++++++++++++++++++++++")
+		}
+		log.Println("消息处理完成+++++++++++++++++++++++++++++++消息处理完成++++++++++++++++++++++++++++++++++++++++++++")
 		// 手动确认消息
 		sess.MarkMessage(msg, "")
 	}
@@ -264,8 +268,8 @@ func (h consumerGroupHandler) ConsumeClaim(sess sarama.ConsumerGroupSession, cla
 }
 
 //处理消息
-func ProcessMessage(topic string, msg []byte) {
-	log.Println("++++++++++++++++++++++++++++++++++++++++++++topic:", topic)
+func ProcessMessage(topic string, msg []byte) error {
+	log.Println("++++++++++++++++++++++++【topic,msg的值】++++++++++++++++++++topic,msg :", topic, string(msg))
 	var (
 		Totalstr     string
 		Parkingid    string
@@ -276,8 +280,8 @@ func ProcessMessage(topic string, msg []byte) {
 		data := new(types.KafKaMsg)
 		err := json.Unmarshal(msg, &data)
 		if err != nil {
-			log.Println("dd json.Unmarshal error:", err)
-			return
+			log.Println("dd +++++++++++++++++++++++++++++++++++++json.Unmarshal error:", err)
+			return err
 		}
 		Totalstr = data.Data.Money
 		Parkingid = data.Data.Parking_id
@@ -288,8 +292,8 @@ func ProcessMessage(topic string, msg []byte) {
 		data := new(types.KafkaMessage)
 		err := json.Unmarshal(msg, &data)
 		if err != nil {
-			log.Println("zdz json.Unmarshal error:", err)
-			return
+			log.Println("zdz ++++++++++++++++++++++++++++++++++++++++json.Unmarshal error:", err)
+			return err
 		}
 		Totalstr = data.Data.Money
 		Parkingid = data.Data.Parking_id
@@ -297,30 +301,33 @@ func ProcessMessage(topic string, msg []byte) {
 		log.Println(data.Head.Source_type)
 	case "topic1":
 		log.Println(string(msg))
-		return
+		return nil
+	case "sun":
+		log.Println("++++++ topic:sun 获取的值：", string(msg))
+		return nil
 	}
-	log.Println("Totalstr:", Totalstr, "Parkingid:", Parkingid)
+	log.Println("+++++++++++++++++++++++++++Totalstr:", Totalstr, "+++++++++++++++++++++++++Parkingid:", Parkingid)
 	//把数据更新到redis
 	conn := RedisInit() //初始化redis
 	//1、获取redis中数据
 	rhgeterr, value := RedisHGet(conn, "jiesstatistical", Parkingid)
 	if rhgeterr != nil {
-		return
+		return rhgeterr
 	}
 	//该停车场为第一次出现
 	if value == nil {
 		rhseterr := RedisHSet(conn, "jiesstatistical", Parkingid, Totalstr+"|"+strconv.Itoa(1))
 		if rhseterr != nil {
 			log.Println(rhseterr)
-			return
+			return rhseterr
 		}
-		return
+		return nil
 	}
 	vstr := string(value.([]uint8))
 	log.Println("The hget value is ：", vstr)
 
 	if !StringExist(vstr, "|") {
-		return
+		return errors.New("+++++++++++++++[kafka  326 hang  error ] ++++++++++++++++++++++++")
 	}
 	vs := strings.Split(vstr, `"`)
 	v := strings.Split(vs[1], `|`)
@@ -338,32 +345,34 @@ func ProcessMessage(topic string, msg []byte) {
 	// key:"jiesstatistical"  item: 停车场id  value："金额｜总条数"
 	rhseterr := RedisHSet(conn, "jiesstatistical", Parkingid, strconv.Itoa(zje)+"|"+strconv.Itoa(zts))
 	if rhseterr != nil {
-		log.Println(rhseterr)
-		return
+		log.Println("++++++++++++++++++++++++++++++++++rhseterr+++++++++++++++++++++++:", rhseterr)
 	}
-	log.Println("停车场总金额、总笔数更新到redis 成功！")
+	log.Println("++++++++++++++++++++停车场总金额、总笔数更新到redis 成功！+++++++++++++++++++++")
 	switch Card_network {
 	//省内结算总金额
 	case "3201":
 		//1、查询数据getredis
 		geterr, getvalue := RedisGet(conn, "snjiesuantotal")
 		if geterr != nil {
-			return
+			log.Println(geterr, "geterr++++++++++++++++++++")
+			return errors.New("+++++++++++++++[kafka  370 hang  error ] ++++++++++++++++++++++++")
 		}
 		if getvalue == nil {
 			log.Println("结算总金额、总笔数 get redis  属于第一次")
 			setRedis := RedisSet(conn, "snjiesuantotal", Totalstr+"|"+strconv.Itoa(1))
 			if setRedis != nil {
-				return
+				log.Println(setRedis, "setRedis++++++++++++++++++++")
+
 			}
-			return
+			return nil
 		}
 
 		getvstr := string(getvalue.([]uint8))
-		log.Println("The  get redis value is :", getvstr)
+		log.Println("++++++++++++++++++++++++++++++++++The  get redis value is :", getvstr)
 
 		if !StringExist(getvstr, "|") {
-			return
+			return errors.New("+++++++++++++++[kafka  370 hang  error ] ++++++++++++++++++++++++")
+
 		}
 		//\"3000|3\" 去掉 " 号
 		vst := strings.Split(getvstr, `"`)
@@ -380,7 +389,7 @@ func ProcessMessage(topic string, msg []byte) {
 		//3、更新到redis
 		setredis := RedisSet(conn, "snjiesuantotal", strconv.Itoa(jszje)+"|"+strconv.Itoa(jszts))
 		if setredis != nil {
-			return
+			return setredis
 		}
 
 	default:
@@ -388,13 +397,13 @@ func ProcessMessage(topic string, msg []byte) {
 		//1、查询数据getredis
 		geterr, getvalue := RedisGet(conn, "swjiesuantotal")
 		if geterr != nil {
-			return
+			return geterr
 		}
 		if getvalue == nil {
 			log.Println("结算总金额、总笔数 get redis  属于第一次")
 			setRedis := RedisSet(conn, "swjiesuantotal", Totalstr+"|"+strconv.Itoa(1))
 			if setRedis != nil {
-				return
+				return setRedis
 			}
 		}
 
@@ -402,7 +411,8 @@ func ProcessMessage(topic string, msg []byte) {
 		log.Println("The  get redis value is ", getvstr)
 
 		if !StringExist(getvstr, "|") {
-			return
+
+			return errors.New("+++++++++++++++[kafka 410  hang  error ] ++++++++++++++++++++++++")
 		}
 		//\"3000|3\" 去掉 " 号
 		vst := strings.Split(getvstr, `"`)
@@ -419,9 +429,10 @@ func ProcessMessage(topic string, msg []byte) {
 		//3、更新到redis
 		setredis := RedisSet(conn, "swjiesuantotal", strconv.Itoa(jszje)+"|"+strconv.Itoa(jszts))
 		if setredis != nil {
-			return
+			return setredis
 		}
 	}
+	return nil
 }
 
 func handleErrors(group *sarama.ConsumerGroup, wg *sync.WaitGroup) {
@@ -433,12 +444,17 @@ func handleErrors(group *sarama.ConsumerGroup, wg *sync.WaitGroup) {
 
 //消费
 func consume(group *sarama.ConsumerGroup, wg *sync.WaitGroup, name string) error {
-	log.Println(name + " group " + "start ++++++++++++++++++++消费 kafka consume +++++++++++++++++++++++")
+	log.Println(name+" group "+"start ok ++++++++++++++++++++消费 kafka consume +++++++++++++++++++++++name:", name)
 	wg.Done()
 	ctx := context.Background()
 	for {
-		topics := []string{"zdzBillExitDataCollectTopic", "topic1", "billDataCollectTopic"}
+		//c1 ：group  topics := []string{"zdzBillExitDataCollectTopic", "topic1","sun", "billDataCollectTopic"}
+		ddtopic := types.DdkafkaTopic
+		zdztopic := types.ZdzkafkaTopic
+		topics := []string{zdztopic, "topic1", "sun", ddtopic}
 		handler := consumerGroupHandler{name: name}
+
+		log.Println("+++++++++++++++++++topics:", topics)
 		err := (*group).Consume(ctx, topics, handler)
 		if err != nil {
 			log.Println("++++++++++++++++++【(*group).Consume  error】  +++++++++++++++++++++", err)
@@ -456,13 +472,14 @@ func ConsumerGroup() error {
 	config := sarama.NewConfig()
 	config.Consumer.Return.Errors = false
 	config.Version = sarama.V0_10_2_0
-	client, err := sarama.NewClient([]string{types.KafkaIp}, config)
+	client, err := sarama.NewClient([]string{types.KafkaIp, "192.168.200.201:9092"}, config)
 	defer client.Close()
 	if err != nil {
 		log.Println("++++++++++++++++++++++++++sarama.NewClient 执行出错: ", err)
 		return err
 		//panic(err)
 	}
+
 	group1, err := sarama.NewConsumerGroupFromClient("c1", client)
 	if err != nil {
 		log.Println("+++++++++++++++++++++++++++++++sarama.NewConsumerGroupFromClient 执行出错: ", err)
