@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"fmt"
 	log "github.com/sirupsen/logrus"
 	"settlementMonitoring/db"
 	"settlementMonitoring/dto"
@@ -220,6 +221,10 @@ func QueryOverdueData() (int, error, *[]dto.Overduedata) {
 	ts := 10
 	Data := make([]dto.Overduedata, ts)
 	err, data := db.QueryOverdueDataTable()
+	if fmt.Sprint(err) == "record not found" {
+		log.Println("QueryOverdueData err == `record not found`:", err)
+		return types.StatusSuccessfully, nil, &Data
+	}
 	if err != nil {
 		return types.Statuszero, err, nil
 	}

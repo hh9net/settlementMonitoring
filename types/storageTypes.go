@@ -5,6 +5,9 @@ import "time"
 var RedisAddr string
 var HmdDBAddrconf string
 var Frequency int
+var KafkaIpa string
+var KafkaIpb string
+var KafkaIpc string
 var KafkaIp string
 var DdkafkaTopic string
 var ZdzkafkaTopic string

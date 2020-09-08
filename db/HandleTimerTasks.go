@@ -15,50 +15,44 @@ import (
 func HandleDayTasks() {
 	tiker := time.NewTicker(time.Hour * 24) //每15秒执行一下 一天一次的
 	//tiker := time.NewTicker(time.Minute * 20) //每15秒执行一下 一天一次的
-
 	for {
-		log.Println(utils.DateTimeFormat(<-tiker.C), "执行线程1，处理一天一次的定时任务11111111111111111111111111111111111111111111111111111111111111111")
+		log.Println("执行线程1，处理一天一次的定时任务11111111111111111111111111111111111111111111111111111111111111111")
 		//任务一
 		//查询省外结算总金额、总笔数
 		qerr := QuerTotalSettlementData()
 		if qerr != nil {
-			log.Println("查询省外结算总金额、总笔数定时任务:", qerr)
+			log.Println("+++++++++++++++++++++【1.1error】+++++++++++++++++=查询省外结算总金额、总笔数定时任务:", qerr)
 		}
 		//任务二
 		//查询省外已清分总金额、总笔数(不含坏账)
 		qcerr := QuerTotalClarify()
 		if qcerr != nil {
-			log.Println("查询省外已清分总金额、总笔数定时任务:", qcerr)
+			log.Println("+++++++++++++++++++++【1.2error】+++++++++++++++++=查询省外已清分总金额、总笔数定时任务:", qcerr)
 		}
 		//任务三
 		//查询停车场的总金额、总笔数
 		qterr := QueryTingccJieSuan()
 		if qterr != nil {
-			log.Println("查询停车场的总金额、总笔数定时任务:", qterr)
+			log.Println("+++++++++++++++++++++【1.3error】+++++++++++++++++=查询停车场的总金额、总笔数定时任务:", qterr)
 		}
 		//任务四
 		//查询清分包、争议包的包号、接收时间
 		qcderr := QueryClearlingAndDisputePackage()
 		if qcderr != nil {
-			log.Println("查询清分包、争议包的包号、接收时间定时任务:", qcderr)
+			log.Println("+++++++++++++++++++++【1.4error】+++++++++++++++++=查询清分包、争议包的包号、接收时间定时任务:", qcderr)
 		}
 		//任务五
 		//清分核对
 		cherr := StatisticalClearlingcheck()
-		if qcerr != nil {
-			log.Println("清分核对定时任务:", cherr)
+		if cherr != nil {
+			log.Println("+++++++++++++++++++++【1.5error】+++++++++++++++++=清分核对定时任务:", cherr)
 		}
-		//任务六
-		//数据分类查询
-		qdcerr := DataClassification()
-		if qdcerr != nil {
-			log.Println("数据分类查询定时任务 error:", qdcerr)
-		}
+
 		//任务七
 		//省外结算趋势
 		qserr := SettlementTrendbyDay()
 		if qserr != nil {
-			log.Println("查询省外结算趋势定时任务 error:", qserr)
+			log.Println("+++++++++++++++++++++【1.6error】+++++++++++++++++=查询省外结算趋势定时任务 error:", qserr)
 		}
 
 		//省内业务
@@ -66,62 +60,37 @@ func HandleDayTasks() {
 		//省内结算总金额、总条数监控
 		snjserr := ShengnJieSuanData()
 		if snjserr != nil {
-			log.Println("查询省内结算总金额、总条数-监控定时任务 error:", snjserr)
-		}
-
-		//任务 久
-		//省内发送结算数据金额、条数
-		snjsfserr := ShengnSendJieSuanData()
-		if snjserr != nil {
-			log.Println("查询省内发送结算数据金额、条数 定时任务 error:", snjsfserr)
-		}
-
-		//任务 十
-		//省内拒付数据金额、条数
-		snjferr := QueryShengnRefusePayData()
-		if snjferr != nil {
-			log.Println("查询省内拒付数据金额、条数 定时任务 error:", snjferr)
-		}
-
-		//任务 十一
-		//查询省内已请款数据金额、条数
-		qqingkerr := QueryShengnAlreadyPleaseData()
-		if qqingkerr != nil {
-			log.Println("查询省内已请款数据金额、条数 定时任务 error:", qqingkerr)
-		}
-
-		//任务 十二
-		//查询省内结算分类
-		qjsflerr := QuerySNDataClassificationData()
-		if qjsflerr != nil {
-			log.Println("查询省内结算分类 定时任务 error:", qjsflerr)
+			log.Println("+++++++++++++++++++++【1.7error】+++++++++++++++++=查询省内结算总金额、总条数-监控定时任务 error:", snjserr)
 		}
 
 		//任务十三
 		//省内结算趋势
 		qsnqserr := QueryShengNSettlementTrenddata()
 		if qsnqserr != nil {
-			log.Println("查询省内结算分类 定时任务 error:", qsnqserr)
+			log.Println("+++++++++++++++++++++【1.8error】+++++++++++++++++=查询省内结算分类 定时任务 error:", qsnqserr)
 		}
 
 		//任务 十四
 		//逾期数据
 		yuqierr := Overduedata()
 		if yuqierr != nil {
-			log.Println("查询逾期数据 定时任务 error:", yuqierr)
+			log.Println("+++++++++++++++++++++【1.9error】+++++++++++++++++=查询逾期数据 定时任务 error:", yuqierr)
 		}
 
 		//任务 十五
 		//省外停车场结算趋势
 		qwqserr := SWSettlementTrendbyDay()
 		if qwqserr != nil {
-			log.Println("查询省外停车场结算趋势 定时任务 error:", qwqserr)
+			log.Println("+++++++++++++++++++++【1.10error】+++++++++++++++++=查询省外停车场结算趋势 定时任务 error:", qwqserr)
 		}
 		//1.16 省内停车场结算趋势
 		snqserr := SNSettlementTrendbyDay()
 		if snqserr != nil {
-			log.Println("查询省内停车场结算趋势 定时任务 error:", snqserr)
+			log.Println("+++++++++++++++++++++【1.11error】+++++++++++++++++=查询省内停车场结算趋势 定时任务 error:", snqserr)
 		}
+
+		log.Println(utils.DateTimeFormat(<-tiker.C), "执行线程1，处理一天一次的定时任务11111111111111111111111111111111111111111111111111111111111111111")
+
 	}
 }
 
@@ -160,6 +129,27 @@ func HandleHourTasks() {
 		if yctoperr != nil {
 			log.Println("查询异常数据top10定时任务 error:", yctoperr)
 		}
+
+		//任务六
+		//数据分类查询
+		qdcerr := DataClassification()
+		if qdcerr != nil {
+			log.Println("+++++++++++++++++++++【2.6error】+++++++++++++++++=数据分类查询定时任务 error:", qdcerr)
+		}
+
+		//任务 十二
+		//查询省内结算分类
+		qjsflerr := QuerySNDataClassificationData()
+		if qjsflerr != nil {
+			log.Println("+++++++++++++++++++++【2.7error】+++++++++++++++++=查询省内结算分类 定时任务 error:", qjsflerr)
+		}
+
+		//任务 十
+		//省内拒付数据金额、条数
+		snjferr := QueryShengnRefusePayData()
+		if snjferr != nil {
+			log.Println("+++++++++++++++++++++【2.8error】+++++++++++++++++=查询省内拒付数据金额、条数 定时任务 error:", snjferr)
+		}
 	}
 
 }
@@ -186,6 +176,21 @@ func HandleMinutesTasks() {
 		if snsserr != nil {
 			log.Println("省内实时数据监控 定时任务 error:", snsserr)
 		}
+
+		//任务 四
+		//查询省内已请款数据金额、条数
+		qqingkerr := QueryShengnAlreadyPleaseData()
+		if qqingkerr != nil {
+			log.Println("+++++++++++++++++++++【3.4error】+++++++++++++++++=f查询省内已请款数据金额、条数 定时任务 error:", qqingkerr)
+		}
+
+		//任务 五
+		//省内发送结算数据金额、条数
+		snjsfserr := ShengnSendJieSuanData()
+		if snjsfserr != nil {
+			log.Println("+++++++++++++++++++++【3.5error】+++++++++++++++++=查询省内发送结算数据金额、条数 定时任务 error:", snjsfserr)
+		}
+
 	}
 
 }
@@ -267,7 +272,7 @@ func QuerTotalClarify() error {
 	count, amount := QueryShengwClearingJieSuan()
 	if count == 0 || amount == 0 {
 		log.Println("查询省外已清分总金额、总笔数   error!", count, amount)
-		return nil //不用返回前端
+		return errors.New("询省外已清分总金额、总笔数为0值") //不用返回前端
 	}
 	//4、查询坏账
 	badcount, badamount := QueryShengwBadDebtsJieSuan()
@@ -394,6 +399,7 @@ func QueryClearlingAndDisputePackage() error {
 		return dishmseterr
 	}
 	log.Println("获取争议包-【RedisHSet】 v:=disput 成功 【++++++++++++[1.4]++++++++++++++++++】")
+	log.Println("  【++++++++++++【1.4 是 ok的】++++++++++++++++++】")
 
 	return nil
 }
@@ -558,7 +564,7 @@ func DataClassification() error {
 	if uperr != nil {
 		return uperr
 	}
-	log.Println("更新 最新的省外结算数据分类 记录 成功+++++++++++++++++++++++[1.6]+++++++++++++++++++++++")
+	log.Println("更新 最新的省外结算数据分类 记录 成功+++++++++++++++++++++++[2.6]+++++++++++++++++++++++")
 
 	return nil
 }
@@ -652,7 +658,7 @@ func SettlementTrendbyDay() error {
 
 	}
 
-	log.Println("更新之前30天 省外结算趋势表数据 记录 成功+++++++【1.7】++++++++++")
+	log.Println("更新之前30天 省外结算趋势表数据 记录 成功+++++++【1.6】++++++++++")
 
 	return nil
 }
@@ -728,7 +734,7 @@ func ShengnJieSuanData() error {
 	if rseterr != nil {
 		return rseterr
 	}
-	log.Println("更新省内结算总金额、总笔数到redis 成功+++++++++++++【1.8】+++++++")
+	log.Println("更新省内结算总金额、总笔数到redis 成功+++++++++++++【1.7】+++++++")
 	return nil
 }
 
@@ -759,7 +765,7 @@ func ShengnSendJieSuanData() error {
 	if uperr != nil {
 		return uperr
 	}
-	log.Println("插入省内发送结算数据金额、条数成功+++++++++++++++++++++【1.9】++++++++++")
+	log.Println("插入省内发送结算数据金额、条数成功+++++++++++++++++++++【3.5】++++++++++")
 	return nil
 }
 
@@ -789,7 +795,7 @@ func QueryShengnRefusePayData() error {
 	if uperr != nil {
 		return uperr
 	}
-	log.Println("更新拒付数据金额、条数成功+++++++++++++++[1.10]+++++++++++++++++")
+	log.Println("更新拒付数据金额、条数成功+++++++++++++++[2.8]+++++++++++++++++")
 	return nil
 }
 
@@ -819,7 +825,7 @@ func QueryShengnAlreadyPleaseData() error {
 	if uperr != nil {
 		return uperr
 	}
-	log.Println("更新省内已请款金额、条数成功+++++++++++++++++++[1.11]+++++++++++++++++++")
+	log.Println("更新省内已请款金额、条数成功+++++++++++++++++++【3.4]+++++++++++++++++++")
 	return nil
 }
 
@@ -852,7 +858,7 @@ func QuerySNDataClassificationData() error {
 	if uperr != nil {
 		return uperr
 	}
-	log.Println("更新省内结算分类成功++++++++++++++++++++++[1.12]+++++++++++++++++++")
+	log.Println("更新省内结算分类成功++++++++++++++++++++++[2.7]+++++++++++++++++++")
 	return nil
 }
 
@@ -961,7 +967,7 @@ func QueryShengNSettlementTrenddata() error {
 		}
 		log.Printf("更新第%d天省内结算趋势成功+++++++++++++", i+1)
 	}
-	log.Println("更新省内之前30天结算趋势成功+++++++++++++++++++++++++【1.13】+++++++++++++++++++++++++")
+	log.Println("更新省内之前30天结算趋势成功+++++++++++++++++++++++++【1.8】+++++++++++++++++++++++++")
 
 	return nil
 }
@@ -1068,6 +1074,10 @@ func QueryAbnormalDataOfParkingdata() error {
 func Overduedata() error {
 	//逾期数据
 	shujus := QueryOverdueData()
+	if len(*shujus) == 0 {
+		log.Printf("查询逾期数据成功，没有逾期数据+++++++++++++++++++++++++++[1.9]++++++++++++++++++++++++++++")
+		return nil
+	}
 	for _, yqdata := range *shujus {
 		//1、新增逾期数据
 		inerr := InsertOverdueDataTable()
@@ -1093,7 +1103,7 @@ func Overduedata() error {
 		}
 		log.Printf("插入逾期数据成功+++++++++++")
 	}
-	log.Printf("更新逾期数据成功+++++++++++++++++++++++++++[1.14]++++++++++++++++++++++++++++")
+	log.Printf("更新逾期数据成功+++++++++++++++++++++++++++[1.9]++++++++++++++++++++++++++++")
 	return nil
 }
 
@@ -1128,7 +1138,7 @@ func SWSettlementTrendbyDay() error {
 			return uperr
 		}
 	}
-	log.Printf("更新省外停车场结算趋势+++++++++++++++++++++++++++[1.15]++++++++++++++++++++++++++++")
+	log.Printf("更新省外停车场结算趋势+++++++++++++++++++++++++++[1.10]++++++++++++++++++++++++++++")
 	return nil
 }
 
@@ -1165,7 +1175,7 @@ func SNSettlementTrendbyDay() error {
 		}
 	}
 
-	log.Printf("更新省内停车场结算趋势+++++++++++++++++++++++++++[1.16]++++++++++++++++++++++++++++")
+	log.Printf("更新省内停车场结算趋势+++++++++++++++++++++++++++[1.11]++++++++++++++++++++++++++++")
 	return nil
 }
 

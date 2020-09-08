@@ -23,6 +23,7 @@ func main() {
 	//黑名单数据库：	"root:Microvideo_1@tcp(122.51.24.189:3307)/blacklist?charset=utf8&parseTime=true&loc=Local"
 	types.HmdDBAddrconf = conf.HMUserName + ":" + conf.HMPass + "@tcp(" + conf.HMHostname + ":" + conf.HMPort + ")/" + conf.HMdatabasename + "?charset=utf8&parseTime=true&loc=Local"
 	log.Println("HmdDBAddrconf:=", types.HmdDBAddrconf)
+	db.HmdDBInit() //初始化黑名单数据库
 
 	//结算监控数据库 "root:Microvideo_1@tcp(122.51.24.189:3307)/blacklist?charset=utf8&parseTime=true&loc=Local"
 	mstr := conf.MUserName + ":" + conf.MPass + "@tcp(" + conf.MHostname + ":" + conf.MPort + ")/" + conf.Mdatabasename + "?charset=utf8&parseTime=true&loc=Local"
@@ -32,10 +33,12 @@ func main() {
 	types.Frequency = conf.Frequency
 	log.Println("10分钟快照的频率 的条数：", types.Frequency)
 	//kafkaip
-	types.KafkaIp = conf.KafkaIp
+	types.KafkaIpa = conf.KafkaIpa
+	types.KafkaIpb = conf.KafkaIpb
+	types.KafkaIpc = conf.KafkaIpc
 	types.DdkafkaTopic = conf.DdkafkaTopic
 	types.ZdzkafkaTopic = conf.ZdzkafkaTopic
-	log.Println("KafkaIp:", types.KafkaIp, "DdkafkaTopic:", types.DdkafkaTopic, "zdzkafkaTopic:", types.ZdzkafkaTopic)
+	log.Println("KafkaIp:", types.KafkaIpa, types.KafkaIpb, types.KafkaIpc, "DdkafkaTopic:", types.DdkafkaTopic, "zdzkafkaTopic:", types.ZdzkafkaTopic)
 
 	types.RedisAddr = conf.RedisAddr
 	log.Println("RedisAddrConf:=", conf.RedisAddr)

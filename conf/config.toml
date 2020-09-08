@@ -1,9 +1,9 @@
 
 ; [mysql]
-mysql_hostname     =122.51.24.189
-mysql_port         = 3307
-mysql_user         = root
-mysql_pass         = Microvideo_1
+mysql_hostname     =172.18.70.251
+mysql_port         = 3306
+mysql_user         = jstxb
+mysql_pass         = JStxb0408@
 mysql_databasename = payflow
 
 ;日志配置
@@ -15,29 +15,28 @@ log_FileName     = "settlementMonitoring.log"
 
 ;黑名单mysql配置 "root:"+pwd+"@tcp(122.51.24.189:3307)/blacklist?charset=utf8"
 ;"root:Microvideo_1@tcp(122.51.24.189:3307)/blacklist?charset=utf8&parseTime=true&loc=Local"
-;[hmysql]
-hmysql_hostname     = 122.51.24.189
-hmysql_port         = 3307
-hmysql_user         = root
-hmysql_pass         = Microvideo_1
+;[hmysql]122.51.24.189
+hmysql_hostname     = 172.18.70.251
+hmysql_port         = 3306
+hmysql_user         = jstxb
+hmysql_pass         = JStxb0408@
 hmysql_databasename = blacklist
 
 ;[redis]
-;redis_addr         = "192.168.200.201:6379"
-redis_addr         = "172.18.70.21:6379"
+redis_addr         = "172.18.70.252:6379"
 
-redis_pass         = Microvideo_1
-redis_databasename = "3"
 
 ;[ip_address]
-ip_address          =172.18.70.22:6089
+ip_address          =172.18.70.13:6089
 
 
 ;[frequency]
-frequency          =60
+frequency          =144
 
 ;[kafka_ip]
-kafka_ip          ="172.18.70.21:9092"
+kafka_ipa          ="172.18.70.8:9092"
+kafka_ipb          ="172.18.70.17:9092"
+kafka_ipc          ="172.18.70.18:9092"
 ddkafka_topic      ="billExitDataCollectTopic"
 zdzkafka_topic     ="zdzBillExitDataCollectTopic"
 

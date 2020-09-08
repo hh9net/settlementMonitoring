@@ -143,7 +143,7 @@ func NewKafka() *Kafka {
 }
 
 var brokers = []string{"172.18.70.21:9092"}
-var topics = []string{"billDataCollectTopic", "zdzBillExitDataCollectTopic"}
+var topics = []string{types.DdkafkaTopic, types.ZdzkafkaTopic}
 var group = "39"
 
 func (p *Kafka) Init() func() {
@@ -255,7 +255,7 @@ func (h consumerGroupHandler) ConsumeClaim(sess sarama.ConsumerGroupSession, cla
 	for msg := range claim.Messages() {
 		log.Printf("++++++++++++++%s group Message topic:%q partition:%d offset:%d  value:%s\n", h.name, msg.Topic, msg.Partition, msg.Offset, string(msg.Value))
 		//消息处理
-		log.Println("消息已接受，正处理中+++++++++++++++++++++++++++++++消息已接受，正处理中++++++++++++++++++++++++++++++++++++++++++++")
+		log.Println("消息已接受，正处理中+++++++++++++++++++++++++++++++消息已接受，正处理中+++++++++++")
 		err := ProcessMessage(msg.Topic, msg.Value)
 		if err != nil {
 			log.Println("+++++++++++++++++++++++【ProcessMessage  error】++++++++++++++++++++++")
@@ -269,30 +269,31 @@ func (h consumerGroupHandler) ConsumeClaim(sess sarama.ConsumerGroupSession, cla
 
 //处理消息
 func ProcessMessage(topic string, msg []byte) error {
-	log.Println("++++++++++++++++++++++++【topic,msg的值】++++++++++++++++++++topic,msg :", topic, string(msg))
+	log.Println("++++++++++++++++++++++++【topic,msg的值】 :", topic, string(msg[1:10]))
 	var (
 		Totalstr     string
 		Parkingid    string
 		Card_network string
 	)
 	switch topic {
-	case "billDataCollectTopic":
+	case types.DdkafkaTopic:
 		data := new(types.KafKaMsg)
 		err := json.Unmarshal(msg, &data)
 		if err != nil {
-			log.Println("dd +++++++++++++++++++++++++++++++++++++json.Unmarshal error:", err)
+			log.Println("dd +++++++++++++++++json.Unmarshal error:", err)
 			return err
 		}
+
 		Totalstr = data.Data.Money
 		Parkingid = data.Data.Parking_id
 		Card_network = data.Data.Card_network
 		log.Println(data.Head.Source_type)
-	case "zdzBillExitDataCollectTopic":
+	case types.ZdzkafkaTopic:
 
 		data := new(types.KafkaMessage)
 		err := json.Unmarshal(msg, &data)
 		if err != nil {
-			log.Println("zdz ++++++++++++++++++++++++++++++++++++++++json.Unmarshal error:", err)
+			log.Println("zdz +++++++++++++++++++json.Unmarshal error:", err)
 			return err
 		}
 		Totalstr = data.Data.Money
@@ -306,22 +307,24 @@ func ProcessMessage(topic string, msg []byte) error {
 		log.Println("++++++ topic:sun 获取的值：", string(msg))
 		return nil
 	}
-	log.Println("+++++++++++++++++++++++++++Totalstr:", Totalstr, "+++++++++++++++++++++++++Parkingid:", Parkingid)
+	log.Println("+++++++++结算金额Totalstr:", Totalstr, "+++++++停车场id——Parkingid:", Parkingid, "++++++卡网络号Card_network：", Card_network)
 	//把数据更新到redis
 	conn := RedisInit() //初始化redis
 	//1、获取redis中数据
 	rhgeterr, value := RedisHGet(conn, "jiesstatistical", Parkingid)
 	if rhgeterr != nil {
+		log.Println("+++++++++++++++++++++++【rhgeterr】：", rhgeterr)
 		return rhgeterr
 	}
 	//该停车场为第一次出现
 	if value == nil {
+		log.Println("+++++++++++++++++++【该停车场为第一次出现】++++++++++++++++")
+
 		rhseterr := RedisHSet(conn, "jiesstatistical", Parkingid, Totalstr+"|"+strconv.Itoa(1))
 		if rhseterr != nil {
-			log.Println(rhseterr)
+			log.Println("+++++++++++++++++++【该停车场为第一次出现】++++++++++++++++++++【RedisHSet error】：", rhseterr)
 			return rhseterr
 		}
-		return nil
 	}
 	vstr := string(value.([]uint8))
 	log.Println("The hget value is ：", vstr)
@@ -338,7 +341,7 @@ func ProcessMessage(topic string, msg []byte) error {
 	total, _ := strconv.Atoi(Totalstr)
 	zts = zts + 1
 	zje = zje + total
-	log.Println("zje:", zje, "total:", total, "zje + total:", zje)
+	log.Println("zje:", zje, "total:", total, "zje + total:", zje, "zts", zts)
 	//根据消息 更新redis
 	//3、hset redis
 
@@ -347,6 +350,7 @@ func ProcessMessage(topic string, msg []byte) error {
 	if rhseterr != nil {
 		log.Println("++++++++++++++++++++++++++++++++++rhseterr+++++++++++++++++++++++:", rhseterr)
 	}
+
 	log.Println("++++++++++++++++++++停车场总金额、总笔数更新到redis 成功！+++++++++++++++++++++")
 	switch Card_network {
 	//省内结算总金额
@@ -355,16 +359,15 @@ func ProcessMessage(topic string, msg []byte) error {
 		geterr, getvalue := RedisGet(conn, "snjiesuantotal")
 		if geterr != nil {
 			log.Println(geterr, "geterr++++++++++++++++++++")
-			return errors.New("+++++++++++++++[kafka  370 hang  error ] ++++++++++++++++++++++++")
+			return errors.New("+++++++++++++++[kafka  362 hang  error ] ++++++++++++++++++++++++")
 		}
 		if getvalue == nil {
 			log.Println("结算总金额、总笔数 get redis  属于第一次")
 			setRedis := RedisSet(conn, "snjiesuantotal", Totalstr+"|"+strconv.Itoa(1))
 			if setRedis != nil {
 				log.Println(setRedis, "setRedis++++++++++++++++++++")
-
+				return errors.New("+++++++++++++++[kafka  369 hang  error ] ++++++++++++++++++++++++")
 			}
-			return nil
 		}
 
 		getvstr := string(getvalue.([]uint8))
@@ -372,7 +375,6 @@ func ProcessMessage(topic string, msg []byte) error {
 
 		if !StringExist(getvstr, "|") {
 			return errors.New("+++++++++++++++[kafka  370 hang  error ] ++++++++++++++++++++++++")
-
 		}
 		//\"3000|3\" 去掉 " 号
 		vst := strings.Split(getvstr, `"`)
@@ -389,7 +391,8 @@ func ProcessMessage(topic string, msg []byte) error {
 		//3、更新到redis
 		setredis := RedisSet(conn, "snjiesuantotal", strconv.Itoa(jszje)+"|"+strconv.Itoa(jszts))
 		if setredis != nil {
-			return setredis
+			log.Println("++++++++++++++++++++++++++++++++++The  set redis value is :", setredis)
+			return errors.New("+++++++++++++++[kafka  395 hang  error ] ++++++++++++++++++++++++")
 		}
 
 	default:
@@ -397,12 +400,14 @@ func ProcessMessage(topic string, msg []byte) error {
 		//1、查询数据getredis
 		geterr, getvalue := RedisGet(conn, "swjiesuantotal")
 		if geterr != nil {
+			log.Println("++++++++++++++++++++++++++++++++++The  get redis value is :", geterr)
 			return geterr
 		}
 		if getvalue == nil {
 			log.Println("结算总金额、总笔数 get redis  属于第一次")
 			setRedis := RedisSet(conn, "swjiesuantotal", Totalstr+"|"+strconv.Itoa(1))
 			if setRedis != nil {
+				log.Println("++++++++++++++++++++++++++++++++++The  set redis value is :", setRedis)
 				return setRedis
 			}
 		}
@@ -411,8 +416,7 @@ func ProcessMessage(topic string, msg []byte) error {
 		log.Println("The  get redis value is ", getvstr)
 
 		if !StringExist(getvstr, "|") {
-
-			return errors.New("+++++++++++++++[kafka 410  hang  error ] ++++++++++++++++++++++++")
+			return errors.New("+++++++++++++++[kafka 419  hang  error ] ++++++++++++++++++++++++")
 		}
 		//\"3000|3\" 去掉 " 号
 		vst := strings.Split(getvstr, `"`)
@@ -425,10 +429,11 @@ func ProcessMessage(topic string, msg []byte) error {
 		//2、处理数据
 		jszts = jszts + 1
 		jszje = jszje + total
-		log.Println("jszje:", getjsv[0], "total:", total, "jszje + total:", jszje)
+		log.Println("jszje:", getjsv[0], "total:", total, "jszje + total:", jszje, "jszts", jszts)
 		//3、更新到redis
 		setredis := RedisSet(conn, "swjiesuantotal", strconv.Itoa(jszje)+"|"+strconv.Itoa(jszts))
 		if setredis != nil {
+			log.Println("++++++++++++++++++++++++++++++++++The  set redis value is :", setredis)
 			return setredis
 		}
 	}
@@ -472,7 +477,7 @@ func ConsumerGroup() error {
 	config := sarama.NewConfig()
 	config.Consumer.Return.Errors = false
 	config.Version = sarama.V0_10_2_0
-	client, err := sarama.NewClient([]string{types.KafkaIp, "192.168.200.201:9092"}, config)
+	client, err := sarama.NewClient([]string{types.KafkaIpa, types.KafkaIpb, types.KafkaIpc, "192.168.200.201:9092"}, config)
 	defer client.Close()
 	if err != nil {
 		log.Println("++++++++++++++++++++++++++sarama.NewClient 执行出错: ", err)

@@ -86,7 +86,9 @@ type Config struct { //配置文件要通过tag来指定配置文件中的名称
 	Frequency int `ini:"frequency"`
 
 	//kafkaip
-	KafkaIp       string `ini:"kafka_ip"`
+	KafkaIpa      string `ini:"kafka_ipa"`
+	KafkaIpb      string `ini:"kafka_ipb"`
+	KafkaIpc      string `ini:"kafka_ipc"`
 	DdkafkaTopic  string `ini:"ddkafka_topic"`
 	ZdzkafkaTopic string `ini:"zdzkafka_topic"`
 }

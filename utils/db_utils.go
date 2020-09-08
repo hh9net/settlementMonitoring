@@ -56,9 +56,9 @@ func InitGormDB(dbConfig *DBConfig) *GormDB {
 
 // 本方法会给HmdGormClient赋值，多次调用HmdGormClient指向最后一次调用的GormDB
 func HmdInitGormDB(dbConfig *HmdDBConfig) *HmdGormDB {
-	logrus.Infoln("starting db")
+	logrus.Infoln("starting Hmd db")
 	if err := dbConfig.hmdcheck(); err != nil {
-		logrus.WithError(err).Errorln("error db config!")
+		logrus.WithError(err).Errorln("error Hmd db config!")
 		return nil
 	}
 	hmdmyDB := &HmdGormDB{
@@ -66,15 +66,15 @@ func HmdInitGormDB(dbConfig *HmdDBConfig) *HmdGormDB {
 	}
 	db, err := gorm.Open("mysql", dbConfig.HmdDBAddr)
 	if err != nil {
-		logrus.Fatalln("db initing fail", err)
+		logrus.Fatalln("Hmd db initing fail", err)
 		return nil
 	}
 	err = db.DB().Ping()
 	if err != nil {
-		logrus.Fatalln("db ping fail", err)
+		logrus.Fatalln("Hmd db ping fail", err)
 		return nil
 	}
-	logrus.WithField("addr", dbConfig.HmdDBAddr).Infoln("connecting db success!")
+	logrus.WithField("addr", dbConfig.HmdDBAddr).Infoln("Hmd connecting db success!")
 	hmdmyDB.HmdClient = db
 	hmdmyDB.initByDBConfigs()
 	hmdmyDB.autoCreateTable()

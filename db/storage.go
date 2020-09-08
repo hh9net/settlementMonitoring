@@ -525,7 +525,7 @@ func StatisticalClearlingcheck() error {
 		return qerr
 	}
 	if clear == nil {
-		log.Println("+++++++++++++++++++++++++++昨日没有清分包++++++++++++++++++++++")
+		log.Println("+++++++++++++++++++++++++++昨日没有清分包【1.5】++++++++++++++++++++++")
 		return errors.New("昨日没有清分包，需要检查清分包是否接收")
 	}
 
@@ -1805,7 +1805,7 @@ func QueryOverdueData() *[]types.Result {
 	var yuqiresult []types.Result
 	sqlstr := `select SUM(F_NB_JINE) as total,count(F_NB_JINE) as count ,F_VC_TINGCCBH  as  parkingid from b_zdz_chedckyssjlycb where F_VC_SHANCBJ = ? and F_VC_YICLX = ? and F_DT_CAIJSJ >= ? and F_DT_CAIJSJ <= ?  GROUP BY F_VC_TINGCCBH `
 	db.Raw(sqlstr, 0, 21, begin, end).Scan(&yuqiresult)
-	log.Println("yuqiresult:", yuqiresult)
+	log.Println("++++++++++++++++++++yuqiresult:", yuqiresult)
 	return &yuqiresult
 }
 

@@ -27,7 +27,7 @@ func QueryblacklistTable() error {
 //获取黑名单总数
 func QueryBlacklistcount() (error, int) {
 	//连接黑名单的数据库
-	HmdDBInit()
+	//	HmdDBInit()
 	var Count int
 	bs := 0
 	for _, b := range types.Blacklist {
