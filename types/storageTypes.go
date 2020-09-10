@@ -473,6 +473,7 @@ type Result struct {
 	Total     int64
 	Count     int
 	Parkingid string
+	//Date           string
 }
 
 type ClearlingAndDispute struct {
@@ -527,6 +528,7 @@ type ClearandJiesuanParkingdata struct {
 	JiesuanCount   int    //交易结算金额
 	JiesuanMoney   int64  //交易总金额
 	Parkingid      string //停车场id
+	Datetime       string
 }
 
 type PacketMonitoringdata struct {

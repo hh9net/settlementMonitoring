@@ -89,7 +89,7 @@ func HandleDayTasks() {
 			log.Println("+++++++++++++++++++++【1.11error】+++++++++++++++++=查询省内停车场结算趋势 定时任务 error:", snqserr)
 		}
 
-		log.Println(utils.DateTimeFormat(<-tiker.C), "执行线程1，处理一天一次的定时任务11111111111111111111111111111111111111111111111111111111111111111")
+		log.Println(utils.DateTimeFormat(<-tiker.C), "执行线程1，处理一天一次的定时任务【完成】11111111111111111111111111111111111111111111111111111111111111111")
 
 	}
 }
@@ -100,7 +100,8 @@ func HandleHourTasks() {
 	tiker := time.NewTicker(time.Minute * 60) //每15秒执行一下
 
 	for {
-		log.Println(utils.DateTimeFormat(<-tiker.C), "执行线程2，处理按小时的定时任务222222222222222222222222222222222222222222222222")
+		log.Println("执行线程2，处理按小时的定时任务222222222222222222222222222222222222222222222222")
+
 		//任务1 待处理争议数据
 		qderr := QueryShengwDisputedata()
 		if qderr != nil {
@@ -131,7 +132,7 @@ func HandleHourTasks() {
 		}
 
 		//任务六
-		//数据分类查询
+		//查询省外数据分类查询
 		qdcerr := DataClassification()
 		if qdcerr != nil {
 			log.Println("+++++++++++++++++++++【2.6error】+++++++++++++++++=数据分类查询定时任务 error:", qdcerr)
@@ -150,6 +151,9 @@ func HandleHourTasks() {
 		if snjferr != nil {
 			log.Println("+++++++++++++++++++++【2.8error】+++++++++++++++++=查询省内拒付数据金额、条数 定时任务 error:", snjferr)
 		}
+
+		log.Println(utils.DateTimeFormat(<-tiker.C), "执行线程2，处理按小时的定时任务【完成】222222222222222222222222222222222222222222222222")
+
 	}
 
 }
@@ -160,7 +164,7 @@ func HandleMinutesTasks() {
 	tiker := time.NewTicker(time.Minute * 10) //每15秒执行一下
 
 	for {
-		log.Println(utils.DateTimeFormat(<-tiker.C), "执行线程3，处理按分钟的定时任务333333333333333333333333333333333333333333333333333333333333333333")
+		log.Println("执行线程3，处理按分钟的定时任务333333333333333333333333333333333333333333333333333333333333333333")
 		//任务一 转结算24小时监控
 		dterr := DataTurnMonitor()
 		if dterr != nil {
@@ -171,7 +175,7 @@ func HandleMinutesTasks() {
 		if perr != nil {
 			log.Println("省外结算数据包监控定时任务 error:", perr)
 		}
-		//任务三 省内实时数据监控
+		//任务三 省内实时数据监控[统计全库数据，做差值]
 		snsserr := ShengNRealTimeSettlementData()
 		if snsserr != nil {
 			log.Println("省内实时数据监控 定时任务 error:", snsserr)
@@ -190,6 +194,8 @@ func HandleMinutesTasks() {
 		if snjsfserr != nil {
 			log.Println("+++++++++++++++++++++【3.5error】+++++++++++++++++=查询省内发送结算数据金额、条数 定时任务 error:", snjsfserr)
 		}
+
+		log.Println(utils.DateTimeFormat(<-tiker.C), "执行线程3，处理按分钟的定时任务【完成】333333333333333333333333333333333333333333333333333333333333333333")
 
 	}
 
@@ -272,7 +278,7 @@ func QuerTotalClarify() error {
 	count, amount := QueryShengwClearingJieSuan()
 	if count == 0 || amount == 0 {
 		log.Println("查询省外已清分总金额、总笔数   error!", count, amount)
-		return errors.New("询省外已清分总金额、总笔数为0值") //不用返回前端
+		return errors.New("查询省外已清分总金额、总笔数为0值") //不用返回前端
 	}
 	//4、查询坏账
 	badcount, badamount := QueryShengwBadDebtsJieSuan()
@@ -341,7 +347,8 @@ func QueryTingccJieSuan() error {
 func QueryClearlingAndDisputePackage() error {
 
 	//1、获取清分包、争议包数据
-	qcerr, clear := QueryClearlingdata(utils.Yesterdaydate())
+	Yesterday := utils.Yesterdaydate()
+	qcerr, clear := QueryClearlingdata(Yesterday)
 	if qcerr != nil {
 		return qcerr
 	}
@@ -1131,7 +1138,7 @@ func SWSettlementTrendbyDay() error {
 		qushijl.FNbJiaoyts = qsdata.JiesuanCount                      //   `F_NB_JIAOYTS` int DEFAULT NULL COMMENT '交易条数',
 		qushijl.FNbQingfts = qsdata.ClearlingCount                    //   `F_NB_QINGFTS` int DEFAULT NULL COMMENT '清分条数',
 		qushijl.FDtTongjwcsj = utils.StrTimeToNowtime()               //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
-		qushijl.FVcTongjrq = utils.DateNowFormat()                    //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
+		qushijl.FVcTongjrq = qsdata.Datetime                          //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
 
 		//4、更新数据
 		uperr := UpdateSWSettlementTrendTable(qushijl, qsOnedata.FNbId)
@@ -1143,7 +1150,7 @@ func SWSettlementTrendbyDay() error {
 	return nil
 }
 
-//1.16 省内停车场结算趋势
+//1.16 省内停车场昨日结算趋势
 func SNSettlementTrendbyDay() error {
 	qsdatas := QuerySNSettlementTrendOne()
 	for _, qsdata := range *qsdatas {
@@ -1167,7 +1174,7 @@ func SNSettlementTrendbyDay() error {
 		qushijl.FNbJiaoyts = qsdata.JiesuanCount                      //   `F_NB_JIAOYTS` int DEFAULT NULL COMMENT '交易条数',
 		qushijl.FNbQingkts = qsdata.ClearlingCount                    //   `F_NB_QINGFTS` int DEFAULT NULL COMMENT '清分条数',
 		qushijl.FDtTongjwcsj = utils.StrTimeToNowtime()               //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
-		qushijl.FVcKuaizsj = utils.DateNowFormat()                    //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
+		qushijl.FVcKuaizsj = qsdata.Datetime                          //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
 
 		//4、更新数据
 		uperr := UpdateSNSettlementTrendTable(qushijl, qsOnedata.FNbId)
