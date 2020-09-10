@@ -38,7 +38,7 @@ func QuerSNTotalSettlementData() (int, error, *dto.TotalSettlementData) {
 	v := strings.Split(vs[1], `|`)
 	zje, _ := strconv.Atoi(v[0])
 	zts, _ := strconv.Atoi(v[1])
-	log.Println("查询成功", "省内结算总金额: ", int64(zje), "省内结算总条数", zts)
+	log.Println("++++++++++++++++++++++++++【实时】查询成功", "【实时】省内结算总金额: ", int64(zje), "省内结算总条数", zts)
 	//返回数据赋值
 	return types.StatusSuccessfully, nil, &dto.TotalSettlementData{Amount: utils.Fen2Yuan(int64(zje)), Count: zts}
 }
@@ -59,6 +59,8 @@ func QuerySNSendTotalSettlemen() (int, error, *dto.TotalSettlementData) {
 		return types.StatusSuccessfully, nil, &dto.TotalSettlementData{Amount: utils.Fen2Yuan(Data.FNbZongje), Count: Data.FNbZongts}
 	}
 	//返回数据赋值
+	log.Println("查询成功", "省内已发送结算总金额: ", data.FNbZongje, "省内已发送结算总条数", data.FNbZongts)
+
 	return types.StatusSuccessfully, nil, &dto.TotalSettlementData{Amount: utils.Fen2Yuan(data.FNbZongje), Count: data.FNbZongts}
 }
 

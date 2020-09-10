@@ -3,7 +3,7 @@ package controller
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 	"settlementMonitoring/dto"
 	"settlementMonitoring/service"
@@ -26,7 +26,7 @@ func QuerySNTotalSettlementData(c *gin.Context) {
 	// 查询省外数据包监控
 	code, err, totaldata := service.QuerSNTotalSettlementData()
 	if err != nil {
-		logrus.Errorf("QuerSNTotalSettlementData err: %v", err.Error())
+		log.Println("QuerSNTotalSettlementData err: %v", err.Error())
 		respFailure.Code = code
 		respFailure.Message = fmt.Sprintf("QuerSNTotalSettlementData err: %v", err.Error())
 		c.JSON(http.StatusOK, respFailure)
@@ -55,7 +55,7 @@ func QuerySNSendTotalSettlementData(c *gin.Context) {
 	// 查询省内的已发送 总条数、总金额
 	code, err, totaldata := service.QuerySNSendTotalSettlemen()
 	if err != nil {
-		logrus.Errorf("QuerySNSendTotalSettlemen err: %v", err.Error())
+		log.Println("QuerySNSendTotalSettlemen err: %v", err.Error())
 		respFailure.Code = code
 		respFailure.Message = fmt.Sprintf("QuerySNSendTotalSettlemen err: %v", err.Error())
 		c.JSON(http.StatusOK, respFailure)
@@ -84,7 +84,7 @@ func QuerySNAlreadyPleaseData(c *gin.Context) {
 	// 查询省内已请款的数据总条数、总金额
 	code, err, totaldata := service.QuerySNAlreadyPleaseData()
 	if err != nil {
-		logrus.Errorf("QuerySNAlreadyPleaseData err: %v", err.Error())
+		log.Println("QuerySNAlreadyPleaseData err: %v", err.Error())
 		respFailure.Code = code
 		respFailure.Message = fmt.Sprintf("QuerySNAlreadyPleaseData err: %v", err.Error())
 		c.JSON(http.StatusOK, respFailure)
@@ -113,7 +113,7 @@ func QuerySNRefusePayData(c *gin.Context) {
 	// 查询坏账（拒付）数据 总条数、总金额
 	code, err, totaldata := service.QuerySNRefusePayData()
 	if err != nil {
-		logrus.Errorf("QuerySNRefusePayData err: %v", err.Error())
+		log.Println("QuerySNRefusePayData err: %v", err.Error())
 		respFailure.Code = code
 		respFailure.Message = fmt.Sprintf("QuerySNRefusePayData err: %v", err.Error())
 		c.JSON(http.StatusOK, respFailure)
@@ -141,7 +141,7 @@ func QuerySNRealTimeData(c *gin.Context) {
 	// 查询省内结算实时数据监控
 	code, err, totaldata := service.QuerySNRealTimeData()
 	if err != nil {
-		logrus.Errorf("QuerySNRealTimeData err: %v", err.Error())
+		log.Println("QuerySNRealTimeData err: %v", err.Error())
 		respFailure.Code = code
 		respFailure.Message = fmt.Sprintf("QuerySNRealTimeData err: %v", err.Error())
 		c.JSON(http.StatusOK, respFailure)
@@ -170,7 +170,7 @@ func QuerySNSettlementTrend(c *gin.Context) {
 	// 查询前30日省内结算趋势概览
 	code, err, totaldata := service.QuerySNSettlementTrend()
 	if err != nil {
-		logrus.Errorf("QuerySNSettlementTrend err: %v", err.Error())
+		log.Println("QuerySNSettlementTrend err: %v", err.Error())
 		respFailure.Code = code
 		respFailure.Message = fmt.Sprintf("QuerySNSettlementTrend err: %v", err.Error())
 		c.JSON(http.StatusOK, respFailure)
@@ -199,7 +199,7 @@ func QueryDataSync(c *gin.Context) {
 	// 查询海岭数据同步监控
 	code, err, totaldata := service.QueryDataSync()
 	if err != nil {
-		logrus.Errorf("QueryDataSyncerr: %v", err.Error())
+		log.Println("QueryDataSync err: %v", err.Error())
 		respFailure.Code = code
 		respFailure.Message = fmt.Sprintf("QueryDataSync err: %v", err.Error())
 		c.JSON(http.StatusOK, respFailure)
@@ -228,7 +228,7 @@ func QuerySNDataClassification(c *gin.Context) {
 	//  查询省内结算数据分类
 	code, err, totaldata := service.QuerySNDataClassification()
 	if err != nil {
-		logrus.Errorf("QuerySNDataClassification err: %v", err.Error())
+		log.Println("QuerySNDataClassification err: %v", err.Error())
 		respFailure.Code = code
 		respFailure.Message = fmt.Sprintf("QuerySNDataClassification err: %v", err.Error())
 		c.JSON(http.StatusOK, respFailure)
@@ -256,10 +256,10 @@ func QuerySNDataClassification(c *gin.Context) {
 func QueryAbnormalDataParking(c *gin.Context) {
 	respFailure := dto.ResponseFailure{}
 	//  查询异常数据停车场top10
-	logrus.Print("查询异常数据停车场top10")
+	log.Println("+++++++++++++++++++++++++++++++++++++++查询异常数据停车场top10")
 	code, err, totaldata := service.QueryAbnormalDataParking()
 	if err != nil {
-		logrus.Errorf("QueryAbnormalDataParking err: %v", err.Error())
+		log.Println("QueryAbnormalDataParking err: %v", err.Error())
 		respFailure.Code = code
 		respFailure.Message = fmt.Sprintf("QueryAbnormalDataParking err: %v", err.Error())
 		c.JSON(http.StatusOK, respFailure)
@@ -287,7 +287,7 @@ func QueryOverdueData(c *gin.Context) {
 	//查询逾期数据停车场top10
 	code, err, totaldata := service.QueryOverdueData()
 	if err != nil {
-		logrus.Errorf("QueryOverdueData err: %v", err.Error())
+		log.Println("QueryOverdueData err: %v", err.Error())
 		respFailure.Code = code
 		respFailure.Message = fmt.Sprintf("QueryOverdueData err: %v", err.Error())
 		c.JSON(http.StatusOK, respFailure)

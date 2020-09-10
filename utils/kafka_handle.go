@@ -477,7 +477,7 @@ func ConsumerGroup() error {
 	config := sarama.NewConfig()
 	config.Consumer.Return.Errors = false
 	config.Version = sarama.V0_10_2_0
-	client, err := sarama.NewClient([]string{types.KafkaIpa, types.KafkaIpb, types.KafkaIpc, "192.168.200.201:9092"}, config)
+	client, err := sarama.NewClient([]string{types.KafkaIpa, types.KafkaIpb, types.KafkaIpc, "172.18.70.21:9092"}, config)
 	defer client.Close()
 	if err != nil {
 		log.Println("++++++++++++++++++++++++++sarama.NewClient 执行出错: ", err)

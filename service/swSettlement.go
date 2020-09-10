@@ -239,7 +239,7 @@ func QueryClearlingAndDisputePackagedata() (int, error, *dto.ClearlAndDisputeDat
 	for i, da := range date {
 		data[i].Date = da
 	}
-	log.Println("查询清分包、争议包的接收时间、包号  成功。data数组长度:", len(data))
+	log.Println("++++++++++++++++++++++查询清分包、争议包的接收时间、包号  成功。data数组长度:", len(data))
 	//if len(data)!=
 	//返回数据赋值
 	return types.StatusSuccessfully, nil, &dto.ClearlAndDisputeData{data}
@@ -418,7 +418,7 @@ func Clarifydifference() (int, error, *[]dto.DifferAmount) {
 		Datas[i].Differamount = utils.Fen2Yuan(d.FNbQingfje - d.FNbTongjqfje)
 		Datas[i].DateTime = d.FVcTongjrq
 	}
-	log.Println("响应数据：", len(Datas))
+	log.Println("查询最近15天清分包数据差额 ; 响应数据len(Datas)：", len(Datas))
 	//返回数据
 	return types.StatusSuccessfully, nil, &Datas
 }

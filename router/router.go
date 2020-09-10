@@ -43,7 +43,7 @@ func AuthAPIInit(route *gin.RouterGroup) {
 	//用户登录
 	route.POST("/user/login", controller.Login)
 
-	//查询省外总交易额、总笔数 ok
+	//查询省外总交易额、总笔数[实时redis] ok
 	route.GET("/sw/totalsettlementdata", controller.QueryTotalSettlementData)
 	//查询省外已清分总交易额、总笔数 ok
 	route.GET("/sw/totalclarify", controller.QueryTotalClarify)
@@ -97,11 +97,11 @@ func AuthAPIInit(route *gin.RouterGroup) {
 	//导出清分核对记录为excel
 	route.POST("/sw/exportexcel", controller.ExportExcel)
 
+	//
 	//省外清分核对确认【待处理Clarify confirm】
 	route.POST("/sw/clarifyconfirm", controller.Clarifyconfirm)
 	//set redis 零值
 	route.GET("/sw/setredis", controller.SetRedis)
-	//
 
 }
 
