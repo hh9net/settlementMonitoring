@@ -15,7 +15,7 @@ import (
 //查询省内结算总金额、总笔数
 func QuerSNTotalSettlementData() (int, error, *dto.TotalSettlementData) {
 	//查询数据库获取总金额、总笔数
-	conn := utils.RedisInit() //初始化redis
+	conn := utils.RedisConn //初始化redis
 	// key:"jiestotal"  value："金额｜总条数"
 	rhgeterr, value := utils.RedisGet(conn, "snjiesuantotal")
 	if rhgeterr != nil {
@@ -138,7 +138,7 @@ func QuerySNSettlementTrend() (int, error, *[]dto.SNClearandJiesuan) {
 		Data[i].DiffMoney = utils.Fen2Yuan(d.FNbChae)
 		Data[i].JiesuanCount = d.FNbJiaoyts
 		Data[i].ClearlingCount = d.FNbQingkts
-		Data[i].DateTime = d.FDtTongjwcsj.Format("2006-01-02 15:04:05")
+		Data[i].DateTime = d.FVcKuaizsj
 	}
 	//返回数据赋值
 	return types.StatusSuccessfully, nil, &Data

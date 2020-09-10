@@ -242,7 +242,7 @@ func QuerTotalSettlementData() error {
 	}
 
 	//5、把数据更新到redis【覆盖】
-	conn := utils.RedisInit() //初始化redis
+	conn := utils.RedisConn //初始化redis
 	// key:"jiesuantotal"  value："金额｜总条数"
 	rhseterr := utils.RedisSet(conn, "swjiesuantotal", strconv.Itoa(int(zje))+"|"+strconv.Itoa(zts))
 	if rhseterr != nil {
@@ -326,7 +326,7 @@ func QueryTingccJieSuan() error {
 		}
 
 		//4、更新到redis中
-		conn := utils.RedisInit() //初始化redis
+		conn := utils.RedisConn //初始化redis
 		// key:"jiesstatistical"  item: 停车场id  value："金额｜总条数"
 		rhseterr := utils.RedisHSet(conn, "jiesstatistical", r.Parkingid, strconv.Itoa(int(r.Total))+"|"+strconv.Itoa(r.Count))
 		if rhseterr != nil {
@@ -365,7 +365,7 @@ func QueryClearlingAndDisputePackage() error {
 
 	m[utils.Yesterdaydate()] = Clear.PackageNo + "|" + Clear.DateTime
 	//2、把数据存储于redis  接收时间、包号
-	hmseterr := utils.RedisHMSet(utils.RedisInit(), Clear.DataType, m)
+	hmseterr := utils.RedisHMSet(utils.RedisConn, Clear.DataType, m)
 	if hmseterr != nil {
 		return hmseterr
 	}
@@ -394,7 +394,7 @@ func QueryClearlingAndDisputePackage() error {
 	//2、把数据存储于redis  接收时间、包号
 	m[utils.Yesterdaydate()] = Disput.PackageNo + "|" + Disput.DateTime
 
-	dishmseterr := utils.RedisHMSet(utils.RedisInit(), Disput.DataType, m)
+	dishmseterr := utils.RedisHMSet(utils.RedisConn, Disput.DataType, m)
 	if dishmseterr != nil {
 		return dishmseterr
 	}
@@ -524,6 +524,7 @@ func QueryblacklistCount() error {
 	//4、更新 更新最新的黑名单总记录统计记录
 	uperr := UpdateBlacklistlData(hmdtj, hmdjl.FNbId)
 	if uperr != nil {
+
 		return uperr
 	}
 	log.Println("插入最新的黑名单的数据记录成功+++++++++++++++++++++++++【2.3】+++++++++++++++++++++++ ")
@@ -648,7 +649,7 @@ func SettlementTrendbyDay() error {
 		qushijl.FNbJiaoyts = qsdata.JiesuanCount                      //   `F_NB_JIAOYTS` int DEFAULT NULL COMMENT '交易条数',
 		qushijl.FNbQingfts = qsdata.ClearlingCount                    //   `F_NB_QINGFTS` int DEFAULT NULL COMMENT '清分条数',
 		qushijl.FDtTongjwcsj = utils.StrTimeToNowtime()               //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
-		qushijl.FVcTongjrq = utils.DateNowFormat()                    //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
+		qushijl.FVcTongjrq = qsdata.Datetime                          //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
 
 		//4、更新数据
 		uperr := UpdateSettlementTrendbyDayTable(qushijl, qsOnedata.FNbId)
@@ -728,7 +729,7 @@ func ShengnJieSuanData() error {
 	}
 
 	//6、把数据更新到redis
-	conn := utils.RedisInit() //初始化redis
+	conn := utils.RedisConn //初始化redis
 	// key:"snjiesuantotal"  value："金额｜总条数"
 	rseterr := utils.RedisSet(conn, "snjiesuantotal", strconv.Itoa(int(amount))+"|"+strconv.Itoa(count))
 	if rseterr != nil {
@@ -875,7 +876,7 @@ func ShengNRealTimeSettlementData() error {
 		return qerr
 	}
 	//get redis
-	conn := utils.RedisInit() //初始化redis
+	conn := utils.RedisConn //初始化redis
 	// key:"snshishishuju"  value："金额｜总条数"
 	rhgeterr, value := utils.RedisGet(conn, "snshishishuju")
 	if rhgeterr != nil {
@@ -958,7 +959,7 @@ func QueryShengNSettlementTrenddata() error {
 		Data.FNbChae = qsshuju.JiesuanMoney - qsshuju.ClearlingMoney //   `F_NB_CHAE` bigint DEFAULT NULL COMMENT '差额',
 		Data.FNbJiaoyts = qsshuju.JiesuanCount                       //   `F_NB_JIAOYTS` int DEFAULT NULL COMMENT '交易条数',
 		Data.FNbQingkts = qsshuju.ClearlingCount                     //   `F_NB_QINGKTS` int DEFAULT NULL COMMENT '请款条数',
-		Data.FVcKuaizsj = utils.KuaizhaoTimeNowFormat()              //   `F_DT_KUAIZSJ` datetime DEFAULT NULL COMMENT '快照时间',
+		Data.FVcKuaizsj = qsshuju.Datetime                           //   `F_DT_KUAIZSJ` datetime DEFAULT NULL COMMENT '快照时间',
 		Data.FDtTongjwcsj = utils.StrTimeToNowtime()
 		//5、更新省内结算趋势
 		uperr := UpdateShengNSettlementTrendTable(Data, data.FNbId)
@@ -1175,7 +1176,7 @@ func SNSettlementTrendbyDay() error {
 		}
 	}
 
-	log.Printf("更新省内停车场结算趋势+++++++++++++++++++++++++++[1.11]++++++++++++++++++++++++++++")
+	log.Printf("更新省内停车场结算趋势ok+++++++++++++++++++++++++++【1.11】++++++++++++++++++++++++++++")
 	return nil
 }
 

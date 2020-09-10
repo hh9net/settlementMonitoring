@@ -101,6 +101,8 @@ func AuthAPIInit(route *gin.RouterGroup) {
 	route.POST("/sw/clarifyconfirm", controller.Clarifyconfirm)
 	//set redis 零值
 	route.GET("/sw/setredis", controller.SetRedis)
+	//
+
 }
 
 //以下为cors实现

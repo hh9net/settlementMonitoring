@@ -96,7 +96,7 @@ func TestQueryShengNSettlementTrenddata(t *testing.T) {
 //QueryDataSyncdata()
 func TestQueryDataSyncdata(t *testing.T) {
 	Newdb()
-	QueryDataSyncdata()
+	//QueryDataSyncdata()
 }
 
 //QueryAbnormalDataOfParkingdata()

@@ -309,7 +309,7 @@ func ProcessMessage(topic string, msg []byte) error {
 	}
 	log.Println("+++++++++结算金额Totalstr:", Totalstr, "+++++++停车场id——Parkingid:", Parkingid, "++++++卡网络号Card_network：", Card_network)
 	//把数据更新到redis
-	conn := RedisInit() //初始化redis
+	conn := RedisConn //初始化redis
 	//1、获取redis中数据
 	rhgeterr, value := RedisHGet(conn, "jiesstatistical", Parkingid)
 	if rhgeterr != nil {

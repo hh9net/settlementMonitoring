@@ -518,6 +518,7 @@ type ClearandJiesuan struct {
 	ClearlingMoney int64 //清分总金额
 	JiesuanCount   int   //交易结算金额
 	JiesuanMoney   int64 //交易总金额
+	Datetime       string
 }
 
 type ClearandJiesuanParkingdata struct {
@@ -552,6 +553,7 @@ type SNClearandJiesuan struct {
 	ClearlingMoney int64 //清分总金额
 	JiesuanCount   int   //交易结算金额
 	JiesuanMoney   int64 //交易总金额
+	Datetime       string
 }
 
 //hl:

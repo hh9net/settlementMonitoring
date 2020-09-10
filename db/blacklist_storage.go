@@ -69,7 +69,7 @@ func BlacklistDataInsert() error {
 
 	if err := db.Table("b_jsjk_heimdjk").Create(&yctj).Error; err != nil {
 		// 错误处理...
-		log.Println("Insert b_jsjk_heimdjk error", err)
+		log.Println("Insert b_jsjk_heimdjk error：", err)
 		return err
 	}
 	log.Println("新增黑名单总记录的统计开始记录成功！", yctj.FDtKaistjsj)
@@ -103,18 +103,18 @@ func QueryBlacklisttableByID(id int) (error, *types.BJsjkHeimdjk) {
 
 //4、更新最新的黑名单总记录统计记录
 func UpdateBlacklistlData(data *types.BJsjkHeimdjk, id int) error {
-	//Newdb()
 	db := utils.GormClient.Client
 	hmdtj := new(types.BJsjkHeimdjk)
+	log.Println("更新最新的黑名单的数据+++++++++++++++++++++++ ", "id:", id, "data:", data.FNbHeimdzs, data.FDtTongjwcsj)
 
 	hmdtj.FDtTongjwcsj = data.FDtTongjwcsj //统计完成时间
 	hmdtj.FVcKuaizsj = data.FVcKuaizsj     //快照时间
 	hmdtj.FNbHeimdzs = data.FNbHeimdzs     //黑名单总数
 	if err := db.Table("b_jsjk_heimdjk").Where("F_NB_ID=?", id).Updates(&hmdtj).Error; err != nil {
-		log.Println("最新的黑名单的数据记录 error", err)
+		log.Println("最新的黑名单的数据记录error+++++++++++++++++++++++++++++++++++++ error:", err)
 		return err
 	}
-	log.Println("更新最新的黑名单的数据记录成功+++++++++++++++++++++++ ")
+	log.Println("更新最新的黑名单的数据记录成功++++++++++++++++++++++++++++++++++++++++++ ")
 
 	return nil
 }

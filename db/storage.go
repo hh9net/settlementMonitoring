@@ -103,8 +103,9 @@ func QueryJieSuanTable() (int, int64) {
 func QueryTingccJieSuandata() *[]types.Result {
 	db := utils.GormClient.Client
 	var result []types.Result
-	sqlstr4 := `select SUM(F_NB_JINE) as total,count(F_NB_JINE) as count ,F_VC_TINGCCBH  as  parkingid from b_js_jiessj GROUP BY F_VC_TINGCCBH `
-	db.Raw(sqlstr4).Scan(&result)
+	begin := "2020-09-01 00:00:00"
+	sqlstr4 := `select SUM(F_NB_JINE) as total,count(F_NB_JINE) as count ,F_VC_TINGCCBH  as  parkingid from b_js_jiessj where F_DT_JIAOYSJ >= ? GROUP BY F_VC_TINGCCBH `
+	db.Raw(sqlstr4, begin).Scan(&result)
 	log.Println("result:", result)
 	return &result
 }
@@ -186,10 +187,11 @@ func QueryKawlhJieSuan(kawlh int) (int, int64) {
 func QueryShengnJieSuan() (int, int64) {
 	db := utils.GormClient.Client
 	count := 0
-	db.Table("b_js_jiessj").Where("F_VC_KAWLH = ?", 3201).Count(&count)
+	begin := "2020-09-01 00:00:00"
+	db.Table("b_js_jiessj").Where("F_DT_JIAOYSJ >= ?", begin).Where("F_VC_KAWLH = ?", 3201).Count(&count)
 	var total_money []int64
-	sqlstr := `select SUM(F_NB_JINE) as total_money from b_js_jiessj where F_VC_KAWLH = ?`
-	db.Raw(sqlstr, 3201).Pluck("SUM(F_NB_JINE) as total_money", &total_money)
+	sqlstr := `select SUM(F_NB_JINE) as total_money from b_js_jiessj where F_VC_KAWLH = ? and F_DT_JIAOYSJ >= ?`
+	db.Raw(sqlstr, 3201, begin).Pluck("SUM(F_NB_JINE) as total_money", &total_money)
 
 	log.Printf("查询卡网络号为%d，结算表总交易笔数%d，查询总金额为：%d", 3201, count, total_money)
 	return count, total_money[0]
@@ -199,7 +201,8 @@ func QueryShengnJieSuan() (int, int64) {
 func QueryShengwJieSuan() (int, int64) {
 	db := utils.GormClient.Client
 	count := 0
-	db.Table("b_js_jiessj").Not("F_VC_KAWLH = ?", 3201).Count(&count)
+	begin := "2020-09-09 10:30:00"
+	db.Table("b_js_jiessj").Where("F_DT_JIAOYSJ >= ?", begin).Not("F_VC_KAWLH = ?", 3201).Count(&count)
 	var total_money []int64 //
 	sqlstr := `select SUM(F_NB_JINE) as total_money from b_js_jiessj where  NOT (F_VC_KAWLH =?)`
 	db.Raw(sqlstr, 3201).Pluck("SUM(F_NB_JINE) as total_money", &total_money)
@@ -412,9 +415,12 @@ func QueryAbnormalData(lx int) (int, int64, error) {
 	var ddtotal_money []int64
 	if lx == 1 {
 		//出口异常表
-		db.Table("b_zdz_chedckyssjlycb").Count(&zdzcount)
+		db.Table("b_zdz_chedckyssjlycb").Where("F_VC_SHANCBJ = ?", 0).Count(&zdzcount)
+
 		zdzsqlstr := `select SUM(F_NB_JINE) as zdztotal_money from b_zdz_chedckyssjlycb where  F_VC_SHANCBJ = ?`
+
 		db.Raw(zdzsqlstr, 0).Pluck("SUM(F_NB_JINE) as zdztotal_money", &zdztotal_money)
+
 		log.Printf("查询总对总异常数据表 异常的交易笔数%d，查询异常的交易总金额为：%d", zdzcount, zdztotal_money)
 
 		return zdzcount, zdztotal_money[0], nil
@@ -422,7 +428,7 @@ func QueryAbnormalData(lx int) (int, int64, error) {
 
 	if lx == 2 {
 		//出口异常表
-		db.Table("b_dd_chedckyssjlycb").Count(&ddcount)
+		db.Table("b_dd_chedckyssjlycb").Where("F_VC_SHANCBJ = ?", 0).Count(&ddcount)
 		sqlstr := `select SUM(F_NB_JINE) as ddtotal_money from b_dd_chedckyssjlycb  where F_VC_SHANCBJ = ?`
 		db.Raw(sqlstr, 0).Pluck("SUM(F_NB_JINE) as ddtotal_money", &ddtotal_money)
 
@@ -671,43 +677,44 @@ func QueryCheckResultbyTs(ts int) (error, *[]types.BJsjkQingfhd) {
 func QuerySWDataClassification() *types.DataClassification {
 	db := utils.GormClient.Client
 	//省外总数据
+	begin := "2020-09-09 10:30:00"
 	swzcount := 0
-	db.Table("b_js_jiessj").Not("F_VC_KAWLH = ?", 3201).Count(&swzcount)
+	db.Table("b_js_jiessj").Where("F_DT_JIAOYSJ >= ?", begin).Not("F_VC_KAWLH = ?", 3201).Count(&swzcount)
 	log.Printf("查询省外结算交易，结算表总交易笔数:%d", swzcount)
 	//坏账       1:已清分 F_NB_ZHENGYCLJG 争议处理结果：坏账2
 	huaizcount := 0
-	db.Table("b_js_jiessj").Where("F_NB_QINGFJG = ?", 1).Where("F_NB_ZHENGYCLJG = ?", 2).Not("F_VC_KAWLH = ?", 3201).Count(&huaizcount)
+	db.Table("b_js_jiessj").Where("F_DT_JIAOYSJ >= ?", begin).Where("F_NB_QINGFJG = ?", 1).Where("F_NB_ZHENGYCLJG = ?", 2).Not("F_VC_KAWLH = ?", 3201).Count(&huaizcount)
 	log.Printf("查询结算表已清分的坏账交易笔数:%d ", huaizcount)
 
 	//已清分
 	yiqfcount := 0
-	db.Table("b_js_jiessj").Where("F_NB_QINGFJG = ?", 1).Not("F_VC_KAWLH = ?", 3201).Count(&yiqfcount)
+	db.Table("b_js_jiessj").Where("F_DT_JIAOYSJ >= ?", begin).Where("F_NB_QINGFJG = ?", 1).Not("F_VC_KAWLH = ?", 3201).Count(&yiqfcount)
 	log.Printf("查询结算表含坏账总清分的交易笔数:%d ", yiqfcount)
 	log.Printf("查询结算表不含坏账总清分的交易笔数:%d ", yiqfcount-huaizcount)
 
 	//结算表 已记账
 	jzcount := 0
-	db.Table("b_js_jiessj").Where("F_NB_JIZJG = ?", 1).Not("F_VC_KAWLH = ?", 3201).Count(&jzcount)
+	db.Table("b_js_jiessj").Where("F_DT_JIAOYSJ >= ?", begin).Where("F_NB_JIZJG = ?", 1).Not("F_VC_KAWLH = ?", 3201).Count(&jzcount)
 	log.Printf("查询结算表 已记账的交易笔数:%d ", jzcount)
 
 	//存在争议
 	zycount := 0
-	db.Table("b_js_jiessj").Where("F_NB_JIZJG = ?", 2).Where("F_NB_ZHENGYCLJG = ?", 0).Not("F_VC_KAWLH = ?", 3201).Count(&zycount)
+	db.Table("b_js_jiessj").Where("F_DT_JIAOYSJ >= ?", begin).Where("F_NB_JIZJG = ?", 2).Where("F_NB_ZHENGYCLJG = ?", 0).Not("F_VC_KAWLH = ?", 3201).Count(&zycount)
 	log.Printf("查询结算表 存在争议的交易笔数:%d ", zycount)
 
 	//未打包数据
 	weidbcount := 0
-	db.Table("b_js_jiessj").Where("F_NB_DABZT = ?", 0).Not("F_VC_KAWLH = ?", 3201).Count(&weidbcount)
+	db.Table("b_js_jiessj").Where("F_DT_JIAOYSJ >= ?", begin).Where("F_NB_DABZT = ?", 0).Not("F_VC_KAWLH = ?", 3201).Count(&weidbcount)
 	log.Printf("查询结算表 未打包数据的交易笔数:%d ", weidbcount)
 
 	//打包中数据
 	dabzcount := 0
-	db.Table("b_js_jiessj").Where("F_NB_DABZT = ?", 1).Not("F_VC_KAWLH = ?", 3201).Count(&dabzcount)
+	db.Table("b_js_jiessj").Where("F_DT_JIAOYSJ >= ?", begin).Where("F_NB_DABZT = ?", 1).Not("F_VC_KAWLH = ?", 3201).Count(&dabzcount)
 	log.Printf("查询结算表 打包中数据的交易笔数:%d ", dabzcount)
 
 	//已打包数据
 	yidbcount := 0
-	db.Table("b_js_jiessj").Where("F_NB_DABZT = ?", 2).Not("F_VC_KAWLH = ?", 3201).Count(&yidbcount)
+	db.Table("b_js_jiessj").Where("F_DT_JIAOYSJ >= ?", begin).Where("F_NB_DABZT = ?", 2).Not("F_VC_KAWLH = ?", 3201).Count(&yidbcount)
 	log.Printf("查询结算表 已打包数据的交易笔数:%d ", yidbcount)
 
 	//已fs数据
@@ -915,10 +922,14 @@ func QuerySettlementTrend(datetime string) *types.ClearandJiesuan {
 	db.Raw(qfsqlstr, begin, end, 1, 2, 3201).Pluck("SUM(F_NB_JINE) as qftotal_money", &qftotal_money)
 	log.Println("昨日清分金额qftotal_money :", qftotal_money[0])
 	log.Println("查询日期 datetime:", datetime)
-	return &types.ClearandJiesuan{ClearlingCount: qfzcount,
+	return &types.ClearandJiesuan{
+		ClearlingCount: qfzcount,
 		ClearlingMoney: qftotal_money[0],
 		JiesuanCount:   jszcount,
-		JiesuanMoney:   total_money[0]}
+		JiesuanMoney:   total_money[0],
+		Datetime:       datetime,
+	}
+
 }
 
 //获取30天的交易金额、条数、清分金额、条数   从小到大
@@ -1350,8 +1361,9 @@ func UpdateShengnAlreadyPleaseTable(data *types.BJsjkShengnqktj, id int) error {
 func QuerySNDataClassification() *types.ShengNDataClassification {
 	db := utils.GormClient.Client
 	//省内结算总数据
+	begin := "2020-08-25 00:00:00"
 	snzcount := 0
-	db.Table("b_js_jiessj").Where("F_VC_KAWLH = ?", 3201).Count(&snzcount)
+	db.Table("b_js_jiessj").Where("F_DT_JIAOYSJ >= ?", begin).Where("F_VC_KAWLH = ?", 3201).Count(&snzcount)
 	log.Printf("查询省内结算交易，结算表总交易笔数:%d", snzcount)
 
 	//已请款数据
@@ -1578,6 +1590,7 @@ func QueryShengNSettlementTrendData(datetime string) *types.SNClearandJiesuan {
 		ClearlingCount: qkcount,
 		JiesuanCount:   count,
 		JiesuanMoney:   total_money[0],
+		Datetime:       datetime,
 	}
 }
 

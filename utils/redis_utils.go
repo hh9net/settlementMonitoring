@@ -33,6 +33,7 @@ func NewRedis() {
 	})
 }
 */
+var RedisConn *redis.Conn
 
 //redis 工具箱
 //1、redis 初始化

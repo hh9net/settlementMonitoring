@@ -17,7 +17,7 @@ import (
 //查询省外结算总金额、总笔数
 func QuerTotalSettlementData() (int, error, *dto.TotalSettlementData) {
 	//查询数据库获取总金额、总笔数
-	conn := utils.RedisInit() //初始化redis
+	conn := utils.RedisConn //初始化redis
 	// key:"jiestotal"  value："金额｜总条数"
 	rhgeterr, value := utils.RedisGet(conn, "swjiesuantotal")
 	if rhgeterr != nil {
@@ -109,28 +109,35 @@ func Queryblacklistdata() (int, error, *dto.TotalBlacklistData) {
 	//查询黑名单总数、较2小时前变化值[最新的数据]
 	qerr, hmdjl := db.QueryBlacklisttable()
 	if qerr != nil {
-		log.Println(qerr)
+		log.Println("+++++++++++++++++【db.QueryBlacklisttable error】++++++++++++++++++：", qerr)
 		return types.Statuszero, qerr, nil
 	}
+	log.Println("查询最新的黑名单数据的数据记录结果成功!++++++++++++hmdjl.FNbId:", hmdjl.FNbId, hmdjl.FDtTongjwcsj)
+
 	id := hmdjl.FNbId
 
 	if hmdjl.FNbHeimdzs == 0 {
 		id = id - 1
 		hmerr, hmdsj := db.QueryBlacklisttableByID(id)
 		if hmerr != nil {
-			log.Println(hmerr)
+			log.Println("+++++++++++++++++【db.QueryBlacklisttableByID error】++++++++++++++++++：", hmerr)
 			return types.Statuszero, hmerr, nil
 		}
+		log.Println("查询最新的黑名单数据的数据记录结果成功!++++++++++++hmdjl.FNbId:", hmdjl.FNbId, hmdjl.FDtTongjwcsj)
 
-		hmerr2, hmdsj2 := db.QueryBlacklisttableByID(id - 2)
+		//hmerr2, hmdsj2 := db.QueryBlacklisttableByID(id - 2)
+
+		hmerr2, hmdsj2 := db.QueryBlacklistTiaoshutable(id, 3)
 		if hmerr2 != nil {
-			log.Println(hmerr2)
+			log.Println("+++++++++++++++++【db.QueryBlacklisttableByID error】++++++++++++++++++：", hmerr2)
 			return types.Statuszero, hmerr2, nil
 		}
+		log.Println("查询最新的黑名单数据的数据记录结果成功!++++++++++++【两小时前的数据】hmdjl2.FNbId:", (*hmdsj2)[2].FNbId)
+
 		ts := 24 //需要查询条数
 		qdterr, hmdjls := db.QueryBlacklistTiaoshutable(id, ts)
 		if qdterr != nil {
-			log.Println(qdterr)
+			log.Println("+++++++++++++++++【QueryBlacklistTiaoshutable error】++++++++++++++++++：", qdterr)
 			return types.Statuszero, qdterr, nil
 		}
 		bs := make([]dto.BlackList, 24)
@@ -144,8 +151,8 @@ func Queryblacklistdata() (int, error, *dto.TotalBlacklistData) {
 				bs12 = append(bs12, blist)
 			}
 		}
-		changecount := hmdsj.FNbHeimdzs - hmdsj2.FNbHeimdzs
-		log.Println("查询黑名单总数、较2小时前变化值  成功")
+		changecount := hmdsj.FNbHeimdzs - (*hmdsj2)[2].FNbHeimdzs
+		log.Println("+++++++++++++++++++++++++++++++++++++++++++查询黑名单总数、较2小时前变化值  成功")
 		return types.StatusSuccessfully, nil, &dto.TotalBlacklistData{Blacklistcount: hmdsj.FNbHeimdzs,
 			ChangeCount: changecount,
 			DateTime:    hmdsj.FDtTongjwcsj.Format("2006-01-02 15:04:05"),
@@ -158,7 +165,7 @@ func Queryblacklistdata() (int, error, *dto.TotalBlacklistData) {
 		return types.Statuszero, hmerr, nil
 	}
 
-	hmerr2, hmdsj2 := db.QueryBlacklisttableByID(id - 2)
+	hmerr2, hmdsj2 := db.QueryBlacklistTiaoshutable(id, 3)
 	if hmerr2 != nil {
 		log.Println(hmerr2)
 		return types.Statuszero, hmerr2, nil
@@ -180,7 +187,7 @@ func Queryblacklistdata() (int, error, *dto.TotalBlacklistData) {
 			bs12 = append(bs12, blist)
 		}
 	}
-	changecount := hmdsj.FNbHeimdzs - hmdsj2.FNbHeimdzs
+	changecount := hmdsj.FNbHeimdzs - (*hmdsj2)[2].FNbHeimdzs
 	log.Println("查询黑名单总数、较2小时前变化值  成功")
 	//返回数据赋值
 	return types.StatusSuccessfully, nil, &dto.TotalBlacklistData{Blacklistcount: hmdsj.FNbHeimdzs,
@@ -194,12 +201,12 @@ func QueryClearlingAndDisputePackagedata() (int, error, *dto.ClearlAndDisputeDat
 
 	//查询清分包、争议包的接收时间、包号[最新的数据]前14天数据[1天]
 	date := utils.OldData(14)
-	chmgeterr, cleardata := utils.RedisHMGet(utils.RedisInit(), "clear", date)
+	chmgeterr, cleardata := utils.RedisHMGet(utils.RedisConn, "clear", date)
 	if chmgeterr != nil {
 		return types.Statuszero, chmgeterr, nil
 	}
 
-	dhmgeterr, disputdata := utils.RedisHMGet(utils.RedisInit(), "disput", date)
+	dhmgeterr, disputdata := utils.RedisHMGet(utils.RedisConn, "disput", date)
 	if dhmgeterr != nil {
 		return types.Statuszero, dhmgeterr, nil
 	}
@@ -359,7 +366,7 @@ func QuerySettlementTrend() (int, error, *[]dto.SettlementTrend) {
 		Datas[i].DifferAmount = utils.Fen2Yuan(d.FNbChae)
 		Datas[i].JiesuanCount = d.FNbJiaoyts
 		Datas[i].QingfCount = d.FNbQingfts
-		Datas[i].DateTime = d.FDtTongjwcsj.Format("2006-01-02 15:04:05")
+		Datas[i].DateTime = d.FVcTongjrq
 	}
 
 	log.Println("响应数据：", len(Datas))

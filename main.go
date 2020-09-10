@@ -41,8 +41,10 @@ func main() {
 	log.Println("KafkaIp:", types.KafkaIpa, types.KafkaIpb, types.KafkaIpc, "DdkafkaTopic:", types.DdkafkaTopic, "zdzkafkaTopic:", types.ZdzkafkaTopic)
 
 	types.RedisAddr = conf.RedisAddr
+
 	log.Println("RedisAddrConf:=", conf.RedisAddr)
-	utils.RedisInit() //初始化redis
+
+	utils.RedisConn = utils.RedisInit() //初始化redis
 
 	//goroutine1
 	go db.HandleDayTasks()

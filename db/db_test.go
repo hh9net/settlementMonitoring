@@ -186,7 +186,7 @@ func TestQueryBlacklistcount(t *testing.T) {
 //QueryBlacklistTiaoshutable
 func TestQueryBlacklistTiaoshutable(t *testing.T) {
 	Newdb()
-	QueryBlacklistTiaoshutable(7, 3)
+	QueryBlacklistTiaoshutable(296, 3)
 }
 
 func TestQueryTingccJieSuandata(t *testing.T) {
@@ -426,7 +426,7 @@ func TestSNSettlementTrendbyDay(t *testing.T) {
 //QueryDataSync
 func TestQueryDataSync(t *testing.T) {
 	Newdb()
-	QueryDataSync()
+	//QueryDataSync()
 }
 
 //QuerySNRealTimeSettlementData
