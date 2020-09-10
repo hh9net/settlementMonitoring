@@ -33,10 +33,13 @@ func NewRedis() {
 	})
 }
 */
+
+var Pool *redis.Pool
 var RedisConn *redis.Conn
 
 //redis 工具箱
 //1、redis 初始化
+
 func RedisInit() *redis.Conn {
 	log.Infoln("starting redis")
 	//连接数据库

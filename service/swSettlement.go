@@ -17,9 +17,11 @@ import (
 //查询省外结算总金额、总笔数
 func QuerTotalSettlementData() (int, error, *dto.TotalSettlementData) {
 	//查询数据库获取总金额、总笔数
-	conn := utils.RedisConn //初始化redis
+	//conn := utils.RedisConn //初始化redis
+	conn := utils.Pool.Get()
+	defer conn.Close()
 	// key:"jiestotal"  value："金额｜总条数"
-	rhgeterr, value := utils.RedisGet(conn, "swjiesuantotal")
+	rhgeterr, value := utils.RedisGet(&conn, "swjiesuantotal")
 	if rhgeterr != nil {
 		return types.Statuszero, rhgeterr, nil
 	}
@@ -201,12 +203,14 @@ func QueryClearlingAndDisputePackagedata() (int, error, *dto.ClearlAndDisputeDat
 
 	//查询清分包、争议包的接收时间、包号[最新的数据]前14天数据[1天]
 	date := utils.OldData(14)
-	chmgeterr, cleardata := utils.RedisHMGet(utils.RedisConn, "clear", date)
+	conn := utils.Pool.Get()
+	defer conn.Close()
+	chmgeterr, cleardata := utils.RedisHMGet(&conn, "clear", date)
 	if chmgeterr != nil {
 		return types.Statuszero, chmgeterr, nil
 	}
 
-	dhmgeterr, disputdata := utils.RedisHMGet(utils.RedisConn, "disput", date)
+	dhmgeterr, disputdata := utils.RedisHMGet(&conn, "disput", date)
 	if dhmgeterr != nil {
 		return types.Statuszero, dhmgeterr, nil
 	}

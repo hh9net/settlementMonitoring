@@ -118,17 +118,16 @@ func HandleHourTasks() {
 			log.Println("查询黑名单统计总数定时任务 error:", qhmderr)
 		}
 
-		////任务4 海玲数据同步
-		//tberr := QueryDataSyncdata()
-		//if tberr != nil {
-		//	log.Println("查询海玲数据同步定时任务 error:", tberr)
-		//}
-		log.Println("插入 oracle 海玲数据同步定时任务 成功+++++++++++++++++++++++++++【2.4】+++++++++++++++++++++++++++++++")
+		//任务4 海玲数据同步
+		tberr := QueryDataSyncdata()
+		if tberr != nil {
+			log.Println("+++++++++++++++++++++【2.4error】+++++++++++++++++查询海玲数据同步定时任务 error:", tberr)
+		}
 
 		//任务5 异常数据top10
 		yctoperr := QueryAbnormalDataOfParkingdata()
 		if yctoperr != nil {
-			log.Println("查询异常数据top10定时任务 error:", yctoperr)
+			log.Println("+++++++++++++++++++++【2.5error】+++++++++++++++++查询异常数据top10定时任务 error:", yctoperr)
 		}
 
 		//任务六
@@ -248,13 +247,14 @@ func QuerTotalSettlementData() error {
 	}
 
 	//5、把数据更新到redis【覆盖】
-	conn := utils.RedisConn //初始化redis
+	conn := utils.Pool.Get()
+	//	conn := utils.RedisConn //初始化redis
 	// key:"jiesuantotal"  value："金额｜总条数"
-	rhseterr := utils.RedisSet(conn, "swjiesuantotal", strconv.Itoa(int(zje))+"|"+strconv.Itoa(zts))
+	rhseterr := utils.RedisSet(&conn, "swjiesuantotal", strconv.Itoa(int(zje))+"|"+strconv.Itoa(zts))
 	if rhseterr != nil {
 		return rhseterr
 	}
-
+	conn.Close()
 	log.Println("更新省外结算统计最新统计记录成功++++++++++++++++++++++++++++[1.1]++++++++++++++++++++++++++++++++++")
 	//返回数据赋值
 	return nil
@@ -332,14 +332,17 @@ func QueryTingccJieSuan() error {
 		}
 
 		//4、更新到redis中
-		conn := utils.RedisConn //初始化redis
+		//	conn := utils.RedisConn //初始化redis
+		conn := utils.Pool.Get()
+		defer conn.Close()
 		// key:"jiesstatistical"  item: 停车场id  value："金额｜总条数"
-		rhseterr := utils.RedisHSet(conn, "jiesstatistical", r.Parkingid, strconv.Itoa(int(r.Total))+"|"+strconv.Itoa(r.Count))
+		rhseterr := utils.RedisHSet(&conn, "jiesstatistical", r.Parkingid, strconv.Itoa(int(r.Total))+"|"+strconv.Itoa(r.Count))
 		if rhseterr != nil {
 			return rhseterr
 		}
 		log.Println("按停车场获取-停车场总金额、总笔数 -【RedisHSet】jiesstatistical 成功 【++++++++++++[1.3]++++++++++++++++++】")
 	}
+
 	return nil
 }
 
@@ -372,7 +375,9 @@ func QueryClearlingAndDisputePackage() error {
 
 	m[utils.Yesterdaydate()] = Clear.PackageNo + "|" + Clear.DateTime
 	//2、把数据存储于redis  接收时间、包号
-	hmseterr := utils.RedisHMSet(utils.RedisConn, Clear.DataType, m)
+	conn := utils.Pool.Get()
+	defer conn.Close()
+	hmseterr := utils.RedisHMSet(&conn, Clear.DataType, m)
 	if hmseterr != nil {
 		return hmseterr
 	}
@@ -401,7 +406,7 @@ func QueryClearlingAndDisputePackage() error {
 	//2、把数据存储于redis  接收时间、包号
 	m[utils.Yesterdaydate()] = Disput.PackageNo + "|" + Disput.DateTime
 
-	dishmseterr := utils.RedisHMSet(utils.RedisConn, Disput.DataType, m)
+	dishmseterr := utils.RedisHMSet(&conn, Disput.DataType, m)
 	if dishmseterr != nil {
 		return dishmseterr
 	}
@@ -736,9 +741,11 @@ func ShengnJieSuanData() error {
 	}
 
 	//6、把数据更新到redis
-	conn := utils.RedisConn //初始化redis
+	//conn := utils.RedisConn //初始化redis
+	conn := utils.Pool.Get()
+	defer conn.Close()
 	// key:"snjiesuantotal"  value："金额｜总条数"
-	rseterr := utils.RedisSet(conn, "snjiesuantotal", strconv.Itoa(int(amount))+"|"+strconv.Itoa(count))
+	rseterr := utils.RedisSet(&conn, "snjiesuantotal", strconv.Itoa(int(amount))+"|"+strconv.Itoa(count))
 	if rseterr != nil {
 		return rseterr
 	}
@@ -883,9 +890,11 @@ func ShengNRealTimeSettlementData() error {
 		return qerr
 	}
 	//get redis
-	conn := utils.RedisConn //初始化redis
+	//conn := utils.RedisConn //初始化redis
+	conn := utils.Pool.Get()
+	defer conn.Close()
 	// key:"snshishishuju"  value："金额｜总条数"
-	rhgeterr, value := utils.RedisGet(conn, "snshishishuju")
+	rhgeterr, value := utils.RedisGet(&conn, "snshishishuju")
 	if rhgeterr != nil {
 		return rhgeterr
 	}
@@ -934,7 +943,7 @@ func ShengNRealTimeSettlementData() error {
 
 	//redis set新值
 	s := strconv.Itoa(int(data.Shengnjsjine)) + "|" + strconv.Itoa(data.Shengnjssl) + "|" + strconv.Itoa(int(data.Fasjine)) + "|" + strconv.Itoa(data.Fassl) + "|" + strconv.Itoa(int(data.Jizjine)) + "|" + strconv.Itoa(data.Jizsl)
-	rseterr := utils.RedisSet(conn, "snshishishuju", s)
+	rseterr := utils.RedisSet(&conn, "snshishishuju", s)
 	if rseterr != nil {
 		return rseterr
 	}
@@ -981,35 +990,36 @@ func QueryShengNSettlementTrenddata() error {
 }
 
 //2.4 海玲数据同步
-//func QueryDataSyncdata() error {
-//	// 查询海玲数据同步
-//	hlnum, tongbcount := QueryDataSync()
-//
-//	//1、新增海玲数据同步
-//	inerr := InsertDataSyncTable()
-//	if inerr != nil {
-//		return inerr
-//	}
-//	//2、查询最新一条海玲数据同步
-//	qerr, data := QueryDataSyncTable()
-//	if qerr != nil {
-//		return qerr
-//	}
-//	//4、赋值
-//	Data := new(types.BJsjkShujtbjk)
-//	Data.FNbJiessjzl = hlnum                     //   `F_NB_JIESJZL` int DEFAULT NULL COMMENT '结算数据总量',F_NB_JIESSJZL
-//	Data.FNbYitbsjl = tongbcount                 //   `F_NB_YITBSJL` int DEFAULT NULL COMMENT '已同步数据量',
-//	Data.FDtTongjwcsj = utils.StrTimeToNowtime() //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
-//	Data.FVcTongjrq = utils.DateNowFormat()      //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
-//
-//	//5、更新最新一条海玲数据同步记录
-//	uperr := UpdateDataSyncTable(Data, data.FNbId)
-//	if uperr != nil {
-//		return uperr
-//	}
-//	log.Printf("更新最新一条海玲数据同步成功")
-//	return nil
-//}
+func QueryDataSyncdata() error {
+	// 查询海玲数据同步
+	hlnum, tongbcount := QueryDataSync()
+
+	//1、新增海玲数据同步
+	inerr := InsertDataSyncTable()
+	if inerr != nil {
+		return inerr
+	}
+	//2、查询最新一条海玲数据同步
+	qerr, data := QueryDataSyncTable()
+	if qerr != nil {
+		return qerr
+	}
+	//4、赋值
+	Data := new(types.BJsjkShujtbjk)
+	Data.FNbJiessjzl = hlnum                     //   `F_NB_JIESJZL` int DEFAULT NULL COMMENT '结算数据总量',F_NB_JIESSJZL
+	Data.FNbYitbsjl = tongbcount                 //   `F_NB_YITBSJL` int DEFAULT NULL COMMENT '已同步数据量',
+	Data.FDtTongjwcsj = utils.StrTimeToNowtime() //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
+	Data.FVcTongjrq = utils.DateNowFormat()      //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
+
+	//5、更新最新一条海玲数据同步记录
+	uperr := UpdateDataSyncTable(Data, data.FNbId)
+	if uperr != nil {
+		return uperr
+	}
+	log.Printf("更新最新一条海玲数据同步成功")
+	log.Println("插入 oracle 海玲数据同步定时任务 成功+++++++++++++++++++++++++++【2.4】+++++++++++++++++++++++++++++++")
+	return nil
+}
 
 //AbnormalDataOfParking
 //2.5 异常数据top10

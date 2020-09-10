@@ -15,9 +15,11 @@ import (
 //查询省内结算总金额、总笔数
 func QuerSNTotalSettlementData() (int, error, *dto.TotalSettlementData) {
 	//查询数据库获取总金额、总笔数
-	conn := utils.RedisConn //初始化redis
+	//conn := utils.RedisConn //初始化redis
+	conn := utils.Pool.Get()
+	defer conn.Close()
 	// key:"jiestotal"  value："金额｜总条数"
-	rhgeterr, value := utils.RedisGet(conn, "snjiesuantotal")
+	rhgeterr, value := utils.RedisGet(&conn, "snjiesuantotal")
 	if rhgeterr != nil {
 		return types.Statuszero, rhgeterr, nil
 	}

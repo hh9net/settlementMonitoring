@@ -309,9 +309,11 @@ func ProcessMessage(topic string, msg []byte) error {
 	}
 	log.Println("+++++++++结算金额Totalstr:", Totalstr, "+++++++停车场id——Parkingid:", Parkingid, "++++++卡网络号Card_network：", Card_network)
 	//把数据更新到redis
-	conn := RedisConn //初始化redis
+	//conn := RedisConn //初始化redis
+	conn := Pool.Get()
+	defer conn.Close()
 	//1、获取redis中数据
-	rhgeterr, value := RedisHGet(conn, "jiesstatistical", Parkingid)
+	rhgeterr, value := RedisHGet(&conn, "jiesstatistical", Parkingid)
 	if rhgeterr != nil {
 		log.Println("+++++++++++++++++++++++【rhgeterr】：", rhgeterr)
 		return rhgeterr
@@ -320,7 +322,7 @@ func ProcessMessage(topic string, msg []byte) error {
 	if value == nil {
 		log.Println("+++++++++++++++++++【该停车场为第一次出现】++++++++++++++++")
 
-		rhseterr := RedisHSet(conn, "jiesstatistical", Parkingid, Totalstr+"|"+strconv.Itoa(1))
+		rhseterr := RedisHSet(&conn, "jiesstatistical", Parkingid, Totalstr+"|"+strconv.Itoa(1))
 		if rhseterr != nil {
 			log.Println("+++++++++++++++++++【该停车场为第一次出现】++++++++++++++++++++【RedisHSet error】：", rhseterr)
 			return rhseterr
@@ -346,7 +348,7 @@ func ProcessMessage(topic string, msg []byte) error {
 	//3、hset redis
 
 	// key:"jiesstatistical"  item: 停车场id  value："金额｜总条数"
-	rhseterr := RedisHSet(conn, "jiesstatistical", Parkingid, strconv.Itoa(zje)+"|"+strconv.Itoa(zts))
+	rhseterr := RedisHSet(&conn, "jiesstatistical", Parkingid, strconv.Itoa(zje)+"|"+strconv.Itoa(zts))
 	if rhseterr != nil {
 		log.Println("++++++++++++++++++++++++++++++++++rhseterr+++++++++++++++++++++++:", rhseterr)
 	}
@@ -356,14 +358,14 @@ func ProcessMessage(topic string, msg []byte) error {
 	//省内结算总金额
 	case "3201":
 		//1、查询数据getredis
-		geterr, getvalue := RedisGet(conn, "snjiesuantotal")
+		geterr, getvalue := RedisGet(&conn, "snjiesuantotal")
 		if geterr != nil {
 			log.Println(geterr, "geterr++++++++++++++++++++")
 			return errors.New("+++++++++++++++[kafka  362 hang  error ] ++++++++++++++++++++++++")
 		}
 		if getvalue == nil {
 			log.Println("结算总金额、总笔数 get redis  属于第一次")
-			setRedis := RedisSet(conn, "snjiesuantotal", Totalstr+"|"+strconv.Itoa(1))
+			setRedis := RedisSet(&conn, "snjiesuantotal", Totalstr+"|"+strconv.Itoa(1))
 			if setRedis != nil {
 				log.Println(setRedis, "setRedis++++++++++++++++++++")
 				return errors.New("+++++++++++++++[kafka  369 hang  error ] ++++++++++++++++++++++++")
@@ -389,7 +391,7 @@ func ProcessMessage(topic string, msg []byte) error {
 		jszje = jszje + total
 		log.Println("jszje:", getjsv[0], "total:", total, "jszje + total:", jszje)
 		//3、更新到redis
-		setredis := RedisSet(conn, "snjiesuantotal", strconv.Itoa(jszje)+"|"+strconv.Itoa(jszts))
+		setredis := RedisSet(&conn, "snjiesuantotal", strconv.Itoa(jszje)+"|"+strconv.Itoa(jszts))
 		if setredis != nil {
 			log.Println("++++++++++++++++++++++++++++++++++The  set redis value is :", setredis)
 			return errors.New("+++++++++++++++[kafka  395 hang  error ] ++++++++++++++++++++++++")
@@ -398,14 +400,14 @@ func ProcessMessage(topic string, msg []byte) error {
 	default:
 		//省外结算总金额
 		//1、查询数据getredis
-		geterr, getvalue := RedisGet(conn, "swjiesuantotal")
+		geterr, getvalue := RedisGet(&conn, "swjiesuantotal")
 		if geterr != nil {
 			log.Println("++++++++++++++++++++++++++++++++++The  get redis value is :", geterr)
 			return geterr
 		}
 		if getvalue == nil {
 			log.Println("结算总金额、总笔数 get redis  属于第一次")
-			setRedis := RedisSet(conn, "swjiesuantotal", Totalstr+"|"+strconv.Itoa(1))
+			setRedis := RedisSet(&conn, "swjiesuantotal", Totalstr+"|"+strconv.Itoa(1))
 			if setRedis != nil {
 				log.Println("++++++++++++++++++++++++++++++++++The  set redis value is :", setRedis)
 				return setRedis
@@ -431,7 +433,7 @@ func ProcessMessage(topic string, msg []byte) error {
 		jszje = jszje + total
 		log.Println("jszje:", getjsv[0], "total:", total, "jszje + total:", jszje, "jszts", jszts)
 		//3、更新到redis
-		setredis := RedisSet(conn, "swjiesuantotal", strconv.Itoa(jszje)+"|"+strconv.Itoa(jszts))
+		setredis := RedisSet(&conn, "swjiesuantotal", strconv.Itoa(jszje)+"|"+strconv.Itoa(jszts))
 		if setredis != nil {
 			log.Println("++++++++++++++++++++++++++++++++++The  set redis value is :", setredis)
 			return setredis

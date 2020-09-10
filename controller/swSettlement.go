@@ -501,38 +501,39 @@ func ExportExcel(c *gin.Context) {
 //@Failure 404 object dto.ResponseFailure 查询失败
 //@Router /sw/exportexcel [post]
 func SetRedis(c *gin.Context) {
-	conn := utils.RedisConn //初始化redis
+
+	conn := utils.Pool.Get() //初始化redis
 	//redis set新值
 	s := strconv.Itoa(int(1)) + "|" + strconv.Itoa(1) + "|" + strconv.Itoa(int(1)) + "|" + strconv.Itoa(1) + "|" + strconv.Itoa(int(1)) + "|" + strconv.Itoa(1)
-	rseterr := utils.RedisSet(conn, "snshishishuju", s)
+	rseterr := utils.RedisSet(&conn, "snshishishuju", s)
 	if rseterr != nil {
 		log.Print("set redis snshishishuju 零值error", rseterr)
 	}
 	//redis set新值
-	rhseterr := utils.RedisSet(conn, "swjiesuantotal", strconv.Itoa(int(1))+"|"+strconv.Itoa(1))
+	rhseterr := utils.RedisSet(&conn, "swjiesuantotal", strconv.Itoa(int(1))+"|"+strconv.Itoa(1))
 	if rhseterr != nil {
 		log.Print("set redis swjiesuantotal 零值error", rhseterr)
 	}
 	//redis set新值
-	rsnseterr := utils.RedisSet(conn, "snjiesuantotal", strconv.Itoa(int(1))+"|"+strconv.Itoa(1))
+	rsnseterr := utils.RedisSet(&conn, "snjiesuantotal", strconv.Itoa(int(1))+"|"+strconv.Itoa(1))
 	if rsnseterr != nil {
 		log.Print("set redis snjiesuantotal 零值error", rsnseterr)
 	}
 
 	m := make(map[string]string, 0)
 	m["2020-09-00"] = "999990" + "|" + "2020-09-00 11:11:11"
-	hmseterr := utils.RedisHMSet(utils.RedisConn, "clear", m)
+	hmseterr := utils.RedisHMSet(&conn, "clear", m)
 	if hmseterr != nil {
 		log.Print("set redis clear 零值error", rsnseterr)
 	}
 
 	m["2020-09-00"] = "999990" + "|" + "2020-09-00 11:11:11"
 	//2、把数据存储于redis  接收时间、包号
-	chmseterr := utils.RedisHMSet(utils.RedisConn, "disput", m)
+	chmseterr := utils.RedisHMSet(&conn, "disput", m)
 	if chmseterr != nil {
 		log.Print("set redis  disput 零值error", chmseterr)
 	}
-
+	conn.Close()
 	log.Println("set redis 成功 ", s, strconv.Itoa(int(1))+"|"+strconv.Itoa(1), strconv.Itoa(int(1))+"|"+strconv.Itoa(1))
 	c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "set redis ok", Message: "set redis   零值 ok "})
 

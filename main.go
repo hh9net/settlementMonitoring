@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/garyburd/redigo/redis"
 	log "github.com/sirupsen/logrus"
 	"settlementMonitoring/config"
 	"settlementMonitoring/db"
@@ -15,6 +16,11 @@ import (
 // @version 1.0
 // @description Gin swagger 结算数据监控平台
 // @host 127.0.0.1:8088
+
+func init() {
+
+}
+
 func main() {
 	conf := config.ConfigInit() //初始化配置
 	log.Println("配置文件信息：", *conf)
@@ -41,10 +47,19 @@ func main() {
 	log.Println("KafkaIp:", types.KafkaIpa, types.KafkaIpb, types.KafkaIpc, "DdkafkaTopic:", types.DdkafkaTopic, "zdzkafkaTopic:", types.ZdzkafkaTopic)
 
 	types.RedisAddr = conf.RedisAddr
-
 	log.Println("RedisAddrConf:=", conf.RedisAddr)
 
-	utils.RedisConn = utils.RedisInit() //初始化redis
+	utils.Pool = &redis.Pool{
+		MaxIdle:     16,  //最大空闲连接数
+		MaxActive:   0,   //最大活跃连接数  0为没有限制
+		IdleTimeout: 300, //空闲连接超时时间
+		//连接方法
+		Dial: func() (redis.Conn, error) {
+			return redis.Dial("tcp", conf.RedisAddr)
+		},
+	}
+	defer utils.Pool.Close()
+	//utils.RedisConn = utils.RedisInit() //初始化redis
 
 	//goroutine1
 	go db.HandleDayTasks()
