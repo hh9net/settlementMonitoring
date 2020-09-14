@@ -47,7 +47,7 @@ func InsertTabledata(lx int) error {
 		log.Println("Insert b_jsjk_jiestj error", err)
 		return err
 	}
-	log.Println("结算统计表插入成功！", Jiestj.FDtKaistjsj)
+	log.Println("省外-结算统计表插入成功！", "开始统计时间:=", Jiestj.FDtKaistjsj)
 	return nil
 }
 
@@ -61,7 +61,7 @@ func QueryTabledata(lx int) (error, *types.BJsjkJiestj) {
 		log.Println("查询 结算监控统计表最新数据时 QueryTabledata error :", err)
 		return err, nil
 	}
-	log.Println("查询结果:", Jiestjs)
+	log.Println("查询结算监控统计表最新数据结果:", Jiestjs)
 	return nil, Jiestjs
 }
 
@@ -104,8 +104,8 @@ func QueryTingccJieSuandata() *[]types.Result {
 	db := utils.GormClient.Client
 	var result []types.Result
 
-	sqlstr4 := `select SUM(F_NB_JINE) as total,count(F_NB_JINE) as count ,F_VC_TINGCCBH  as  parkingid from b_js_jiessj   not F_NB_DABZT =?  GROUP BY F_VC_TINGCCBH `
-	db.Raw(sqlstr4, 4).Scan(&result)
+	sqlstr4 := `select SUM(F_NB_JINE) as total,count(F_NB_JINE) as count ,F_VC_TINGCCBH  as  parkingid from b_js_jiessj where F_NB_DABZT  not in (4)  GROUP BY F_VC_TINGCCBH `
+	db.Raw(sqlstr4).Scan(&result)
 	log.Println("按照停车场id 查询总金额、总条数 result:", result)
 	return &result
 }
@@ -188,10 +188,11 @@ func QueryShengnJieSuan() (int, int64) {
 	db := utils.GormClient.Client
 	count := 0
 	//不统计历史数据
-	db.Table("b_js_jiessj").Not("F_NB_DABZT =?", 4).Where("F_VC_KAWLH = ?", 3201).Count(&count)
+	db.Table("b_js_jiessj").Where("F_VC_KAWLH = ?", 3201).Not("F_NB_DABZT = ?", 4).Not("F_NB_DABZT = ?", 5).Count(&count)
 	var total_money []int64
-	sqlstr := `select SUM(F_NB_JINE) as total_money from b_js_jiessj where F_VC_KAWLH = ? and not F_NB_DABZT =?`
-	db.Raw(sqlstr, 3201, 4).Pluck("SUM(F_NB_JINE) as total_money", &total_money)
+
+	sqlstr := `select SUM(F_NB_JINE) as total_money from b_js_jiessj where F_VC_KAWLH = ? and not F_NB_DABZT =? and not F_NB_DABZT =?`
+	db.Raw(sqlstr, 3201, 4, 5).Pluck("SUM(F_NB_JINE) as total_money", &total_money)
 
 	log.Printf("查询卡网络号为%d，结算表总交易笔数%d，查询总金额为：%d", 3201, count, total_money)
 	return count, total_money[0]
@@ -202,7 +203,7 @@ func QueryShengwJieSuan() (int, int64) {
 	db := utils.GormClient.Client
 	count := 0
 
-	db.Table("b_js_jiessj").Not("F_NB_DABZT =?", 4).Not("F_VC_KAWLH = ?", 3201).Count(&count)
+	db.Table("b_js_jiessj").Not("F_NB_DABZT = ?", 4).Not("F_VC_KAWLH = ?", 3201).Count(&count)
 	var total_money []int64 //
 	sqlstr := `select SUM(F_NB_JINE) as total_money from b_js_jiessj where  NOT (F_VC_KAWLH =?) and not F_NB_DABZT =?`
 	db.Raw(sqlstr, 3201, 4).Pluck("SUM(F_NB_JINE) as total_money", &total_money)
@@ -296,6 +297,7 @@ func QueryShengwClearingdata() (error, *types.BJsjkShengwqftj) {
 		log.Println("查询 省外清分统计表最新数据时 QueryShengwClearingdata error :", err)
 		return err, nil
 	}
+
 	log.Println("查询省外清分统计表最新数据结果:", Jiestj)
 	return nil, Jiestj
 }
@@ -317,6 +319,19 @@ func UpdateShengwClearingdata(data *types.BJsjkShengwqftj, id int) error {
 		return err
 	}
 	return nil
+}
+
+func QueryShengwClearingdataById(id int) (error, *types.BJsjkShengwqftj) {
+	db := utils.GormClient.Client
+	Jiestj := new(types.BJsjkShengwqftj)
+	//赋值
+	if err := db.Table("b_jsjk_shengwqftj").Where("F_NB_ID=?", id).Last(&Jiestj).Error; err != nil {
+		log.Println("查询 省外清分统计表最新数据时 QueryShengwClearingdata error :", err)
+		return err, nil
+	}
+
+	log.Println("查询省外清分统计表最新数据结果:", Jiestj)
+	return nil, Jiestj
 }
 
 // 查询 已清分的坏账 Bad debts
@@ -488,11 +503,11 @@ func UpdateAbnormalData(data *types.BJsjkYicsjtj, id int) error {
 
 //4.1.10	清分、争议包更新状态监控
 //1、查询清分包数据
-func QueryClearlingdata(yesterday string) (error, *types.BJsQingftjxx) {
+func QueryClearlingdata(yesterday string) (error, *[]types.BJsQingftjxx) {
 	db := utils.GormClient.Client
-	qingftjsj := new(types.BJsQingftjxx)
+	qingftjsjs := make([]types.BJsQingftjxx, 0)
 	//赋值
-	if err := db.Table("b_js_qingftjxx").Where("F_DT_JIESSJ>=?", yesterday+" 00:00:00").Where("F_DT_JIESSJ<=?", yesterday+" 23:59:59").Last(&qingftjsj).Error; err != nil {
+	if err := db.Table("b_js_qingftjxx").Where("F_DT_JIESSJ>=?", yesterday+" 00:00:00").Where("F_DT_JIESSJ<=?", yesterday+" 23:59:59").Find(&qingftjsjs).Error; err != nil {
 		if fmt.Sprint(err) == "record not found" {
 			log.Println("QueryClearlingdata err== `record not found`:", err)
 			return nil, nil
@@ -500,8 +515,8 @@ func QueryClearlingdata(yesterday string) (error, *types.BJsQingftjxx) {
 		log.Println("查询清分包数据 最新数据时 QueryClearlingdata error :", err)
 		return err, nil
 	}
-	log.Println("查询清分包数据表结果:", qingftjsj)
-	return nil, qingftjsj
+	log.Println("查询清分包数据表结果:", qingftjsjs)
+	return nil, &qingftjsjs
 }
 
 //2、查询争议处理包数据
@@ -509,7 +524,7 @@ func QueryDisputedata(yesterday string) (error, *types.BJsZhengyjyclxx) {
 	db := utils.GormClient.Client
 	zytjsj := new(types.BJsZhengyjyclxx)
 
-	if err := db.Table("b_js_zhengyjyclxx").Where("F_DT_JIESSJ>=?", yesterday+" 00:00:00").Where("F_DT_JIESSJ<=?", yesterday+" 23:59:59").Last(&zytjsj).Error; err != nil {
+	if err := db.Table("b_js_zhengyjyclxx").Where("F_DT_ZHENGYCLSJ>=?", yesterday+" 00:00:00").Where("F_DT_ZHENGYCLSJ<=?", yesterday+" 23:59:59").Last(&zytjsj).Error; err != nil {
 
 		if fmt.Sprint(err) == "record not found" {
 			log.Println("QueryDisputedata err == `record not found`:", err)
@@ -526,50 +541,58 @@ func QueryDisputedata(yesterday string) (error, *types.BJsZhengyjyclxx) {
 //1、统计清分数据
 func StatisticalClearlingcheck() error {
 	//1、获取昨日的清分包数据
-	qerr, clear := QueryClearlingdata(utils.Yesterdaydate())
+	qerr, clears := QueryClearlingdata(utils.Yesterdaydate())
 	if qerr != nil {
 		return qerr
 	}
-	if clear == nil {
+	if clears == nil {
 		log.Println("+++++++++++++++++++++++++++昨日没有清分包【1.5】++++++++++++++++++++++")
 		return errors.New("昨日没有清分包，需要检查清分包是否接收")
 	}
+	for _, clear := range *clears {
+		//2、统计昨日记账包总金额
+		keepAccount, keepAccountCount := StatisticalkeepAccount(clear.FVcQingfmbr)
+		//统计存在争议数据
+		disputerr, Disput, zyfgsl := DisputedDataCanClearling(clear.FNbXiaoxxh)
+		if disputerr != nil {
+			return disputerr
+		}
+		log.Println("清分包清分总金额：", clear.FNbQingfzje)
+		var zhengyclje int64
+		if Disput == nil {
+			zhengyclje = 0
+		} else {
+			zhengyclje = Disput.FNbQuerxyjzdzje
+		}
 
-	//2、统计昨日记账包总金额
-	keepAccount, keepAccountCount := StatisticalkeepAccount()
-	//统计存在争议数据
-	disputerr, Disput, zyfgsl := DisputedDataCanClearling(clear.FNbXiaoxxh)
-	if disputerr != nil {
-		return disputerr
-	}
-	log.Println("清分包清分总金额：", clear.FNbQingfzje)
-	log.Println("今日核对清分结果的总金额：", keepAccount+Disput.FNbQuerxyjzdzje)
+		log.Println("今日核对清分结果的总金额：", keepAccount+zhengyclje)
 
-	var is int
-	if (clear.FNbQingfzje == keepAccount+Disput.FNbQuerxyjzdzje) && (clear.FNbQingfsl == keepAccountCount+zyfgsl) {
-		is = 1
-		log.Println("清分金额核对正确++++++++++++++")
-	} else {
-		is = 2
-		log.Println("清分金额核对不正确++++++++++++++++")
+		var is int
+		if (clear.FNbQingfzje == keepAccount+zhengyclje) && (clear.FNbQingfsl == keepAccountCount+zyfgsl) {
+			is = 1
+			log.Println("清分金额核对正确++++++++++++++")
+		} else {
+			is = 2
+			log.Println("清分金额核对不正确++++++++++++++++")
+		}
+		//把清分核对结果存数据库
+		data := new(types.BJsjkQingfhd)
+		//赋值
+		data.FNbQingfqrzt = 0                          // `F_NB_QINGFQRZT` int DEFAULT NULL COMMENT '清分确认状态',
+		data.FNbQingfts = clear.FNbQingfsl             //`F_NB_QINGFTS` int DEFAULT NULL COMMENT '清分条数',
+		data.FNbTongjqfts = keepAccountCount + zyfgsl  //`F_NB_TONGJQFTS` int DEFAULT NULL COMMENT '统计清分条数',
+		data.FDtQingfbjssj = clear.FDtJiessj           //`F_VC_QINGFBJSSJ` int DEFAULT NULL COMMENT '清分包接收时间',
+		data.FNbQingfbxh = clear.FNbXiaoxxh            //   `F_NB_QINGFBXH` bigint DEFAULT NULL COMMENT '清分包序号',
+		data.FNbQingfje = clear.FNbQingfzje            //   `F_NB_QINGFJE` bigint DEFAULT NULL COMMENT '清分金额',
+		data.FNbTongjqfje = keepAccount + (zhengyclje) //   `F_NB_TONGJQFJE` bigint DEFAULT NULL COMMENT '统计清分金额',
+		data.FNbHedjg = is                             //   `F_NB_HEDJG` int DEFAULT NULL COMMENT '核对结果 是否一致,1:一致，2:不一致',
+		data.FVcTongjrq = clear.FVcQingfmbr            //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',【清分包的清分目标日】
+		cherr := CheckResult(data)
+		if cherr != nil {
+			return cherr
+		}
+		log.Println("清分金额核对完成++++++++++++++++++++【1.5】+++++++++++++")
 	}
-	//把清分核对结果存数据库
-	data := new(types.BJsjkQingfhd)
-	//赋值
-	data.FNbQingfqrzt = 0                                    // `F_NB_QINGFQRZT` int DEFAULT NULL COMMENT '清分确认状态',
-	data.FNbQingfts = clear.FNbQingfsl                       //`F_NB_QINGFTS` int DEFAULT NULL COMMENT '清分条数',
-	data.FNbTongjqfts = keepAccountCount + zyfgsl            //`F_NB_TONGJQFTS` int DEFAULT NULL COMMENT '统计清分条数',
-	data.FDtQingfbjssj = clear.FDtJiessj                     //`F_VC_QINGFBJSSJ` int DEFAULT NULL COMMENT '清分包接收时间',
-	data.FNbQingfbxh = clear.FNbXiaoxxh                      //   `F_NB_QINGFBXH` bigint DEFAULT NULL COMMENT '清分包序号',
-	data.FNbQingfje = clear.FNbQingfzje                      //   `F_NB_QINGFJE` bigint DEFAULT NULL COMMENT '清分金额',
-	data.FNbTongjqfje = keepAccount + Disput.FNbQuerxyjzdzje //   `F_NB_TONGJQFJE` bigint DEFAULT NULL COMMENT '统计清分金额',
-	data.FNbHedjg = is                                       //   `F_NB_HEDJG` int DEFAULT NULL COMMENT '核对结果 是否一致,1:一致，2:不一致',
-	data.FVcTongjrq = utils.DateNowFormat()                  //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
-	cherr := CheckResult(data)
-	if cherr != nil {
-		return cherr
-	}
-	log.Println("清分金额核对完成++++++++++++++++++++【1.5】+++++++++++++")
 
 	return nil
 }
@@ -577,17 +600,17 @@ func StatisticalClearlingcheck() error {
 //记帐处理结果仅返回有争议（可疑）的交易记录明细。未包含在争议交易记录明细中的交易，均默认为发行方已确认可以付款。
 //Amount：确认记帐总金额
 //2、统计记账包总金额、
-func StatisticalkeepAccount() (int64, int) {
+func StatisticalkeepAccount(Yesterdaydate string) (int64, int) {
 	db := utils.GormClient.Client
 	var total_money []int64
 	//时间范围
-	begin := utils.Yesterdaydate() + " 00:00:00"
-	end := utils.Yesterdaydate() + " 23:59:59"
-	sqlstr := `select SUM(F_NB_ZONGJE) as total_money from b_js_jizclxx  where F_DT_JIESSJ>=? and F_DT_JIESSJ<=?`
+	begin := Yesterdaydate + " 00:00:00"
+	end := Yesterdaydate + " 23:59:59"
+	sqlstr := `select SUM(F_NB_ZONGJE) as total_money from b_js_jizclxx  where F_DT_CHULSJ>=? and F_DT_CHULSJ<=?`
 	db.Raw(sqlstr, begin, end).Pluck("SUM(F_NB_ZONGJE) as total_money", &total_money)
 	log.Printf("统计记账包总金额为：%d", total_money)
 	var totalcount []int
-	sqlstr1 := `select SUM(F_NB_JILSL) as totalcount from b_js_jizclxx  where F_DT_JIESSJ>=? and F_DT_JIESSJ<=?`
+	sqlstr1 := `select SUM(F_NB_JILSL) as totalcount from b_js_jizclxx  where F_DT_CHULSJ>=? and F_DT_CHULSJ<=?`
 	db.Raw(sqlstr1, begin, end).Pluck("SUM(F_NB_JILSL) as totalcount", &totalcount)
 	log.Printf("统计记账包总条数为：%d", totalcount)
 
@@ -598,7 +621,7 @@ func StatisticalkeepAccount() (int64, int) {
 }
 
 //3、统计清分包中可以清分的争议数据的金额
-func DisputedDataCanClearling(qingfxiaoxiid int64) (error, *types.BJsZhengyjyclxx, int) {
+func DisputedDataCanClearling(qingfxiaoxiid int64) (error, *(types.BJsZhengyjyclxx), int) {
 	db := utils.GormClient.Client
 	zytjsj := new(types.BJsZhengyjyclxx)
 	qingfmxsj := new(types.BJsQingftjmx)
@@ -607,22 +630,30 @@ func DisputedDataCanClearling(qingfxiaoxiid int64) (error, *types.BJsZhengyjyclx
 		if fmt.Sprint(err) == "record not found" {
 			log.Println("QueryClearlingdata err== `record not found`:", err)
 			return nil, nil, 0
+		} else {
+			log.Println("查询 b_js_qingftjmx 表 最新数据时  error :", err)
+			return err, nil, 0
 		}
-		log.Println("查询清分包数据 最新数据时 QueryClearlingdata error :", err)
-		return err, nil, 0
 	}
 	log.Println("查询清分包数据表结果:", qingfmxsj)
-	//争议处理消息
-	if err := db.Table("b_js_zhengyjyclxx").Where("F_VC_ZHENGYJGWJID=?", qingfmxsj.FNbZhengycljgwjid).Last(&zytjsj).Error; err != nil {
-		if fmt.Sprint(err) == "record not found" {
-			log.Println("QueryDisputedata err == `record not found`:", err)
-			return nil, nil, 0
+	if qingfmxsj.FNbZhengycljgwjid == 0 {
+		log.Println("查询清分包 没有争议处理数据，全部可以记账清分++++++++++++++++++++++++++++++++++++++++ ")
+		return nil, nil, 0
+	} else {
+		//争议处理消息
+		if err := db.Table("b_js_zhengyjyclxx").Where("F_VC_ZHENGYJGWJID=?", qingfmxsj.FNbZhengycljgwjid).Last(&zytjsj).Error; err != nil {
+			if fmt.Sprint(err) == "record not found" {
+				log.Println("QueryDisputedata err == `record not found`:", err)
+				//return nil, nil, 0
+			} else {
+				log.Println("查询争议处理包数据表最新数据时 QueryDisputedata error :", err)
+				return err, nil, 0
+			}
 		}
-		log.Println("查询争议处理包数据表最新数据时 QueryDisputedata error :", err)
-		return err, nil, 0
 	}
-	log.Println("查询争议处理包数据表结果:", zytjsj)
 
+	log.Println("查询争议处理包数据表结果:", zytjsj)
+	//	查询争议放过的数量
 	zyfgerr, zyfgsl := QueryDisputedData(zytjsj)
 	if zyfgerr != nil {
 		return zyfgerr, nil, 0
@@ -679,42 +710,42 @@ func QuerySWDataClassification() *types.DataClassification {
 	//省外总数据
 
 	swzcount := 0
-	db.Table("b_js_jiessj").Not("F_NB_DABZT =?", 4).Not("F_VC_KAWLH = ?", 3201).Count(&swzcount)
+	db.Table("b_js_jiessj").Not("F_NB_DABZT = ?", 4).Not("F_VC_KAWLH = ?", 3201).Count(&swzcount)
 	log.Printf("查询省外结算交易，结算表总交易笔数:%d", swzcount)
 	//坏账       1:已清分 F_NB_ZHENGYCLJG 争议处理结果：坏账2
 	huaizcount := 0
-	db.Table("b_js_jiessj").Not("F_NB_DABZT =?", 4).Where("F_NB_QINGFJG = ?", 1).Where("F_NB_ZHENGYCLJG = ?", 2).Not("F_VC_KAWLH = ?", 3201).Count(&huaizcount)
+	db.Table("b_js_jiessj").Not("F_NB_DABZT = ?", 4).Where("F_NB_QINGFJG = ?", 1).Where("F_NB_ZHENGYCLJG = ?", 2).Not("F_VC_KAWLH = ?", 3201).Count(&huaizcount)
 	log.Printf("查询结算表已清分的坏账交易笔数:%d ", huaizcount)
 
 	//已清分
 	yiqfcount := 0
-	db.Table("b_js_jiessj").Not("F_NB_DABZT =?", 4).Where("F_NB_QINGFJG = ?", 1).Not("F_VC_KAWLH = ?", 3201).Count(&yiqfcount)
+	db.Table("b_js_jiessj").Not("F_NB_DABZT = ?", 4).Where("F_NB_QINGFJG = ?", 1).Not("F_VC_KAWLH = ?", 3201).Count(&yiqfcount)
 	log.Printf("查询结算表含坏账总清分的交易笔数:%d ", yiqfcount)
 	log.Printf("查询结算表不含坏账总清分的交易笔数:%d ", yiqfcount-huaizcount)
 
 	//结算表 已记账
 	jzcount := 0
-	db.Table("b_js_jiessj").Not("F_NB_DABZT =?", 4).Where("F_NB_JIZJG = ?", 1).Not("F_VC_KAWLH = ?", 3201).Count(&jzcount)
+	db.Table("b_js_jiessj").Not("F_NB_DABZT = ?", 4).Where("F_NB_JIZJG = ?", 1).Not("F_VC_KAWLH = ?", 3201).Count(&jzcount)
 	log.Printf("查询结算表 已记账的交易笔数:%d ", jzcount)
 
 	//存在争议
 	zycount := 0
-	db.Table("b_js_jiessj").Not("F_NB_DABZT =?", 4).Where("F_NB_JIZJG = ?", 2).Where("F_NB_ZHENGYCLJG = ?", 0).Not("F_VC_KAWLH = ?", 3201).Count(&zycount)
+	db.Table("b_js_jiessj").Not("F_NB_DABZT = ?", 4).Where("F_NB_JIZJG = ?", 2).Where("F_NB_ZHENGYCLJG = ?", 0).Not("F_VC_KAWLH = ?", 3201).Count(&zycount)
 	log.Printf("查询结算表 存在争议的交易笔数:%d ", zycount)
 
 	//未打包数据
 	weidbcount := 0
-	db.Table("b_js_jiessj").Not("F_NB_DABZT =?", 4).Where("F_NB_DABZT = ?", 0).Not("F_VC_KAWLH = ?", 3201).Count(&weidbcount)
+	db.Table("b_js_jiessj").Not("F_NB_DABZT = ?", 4).Where("F_NB_DABZT = ?", 0).Not("F_VC_KAWLH = ?", 3201).Count(&weidbcount)
 	log.Printf("查询结算表 未打包数据的交易笔数:%d ", weidbcount)
 
 	//打包中数据
 	dabzcount := 0
-	db.Table("b_js_jiessj").Not("F_NB_DABZT =?", 4).Where("F_NB_DABZT = ?", 1).Not("F_VC_KAWLH = ?", 3201).Count(&dabzcount)
+	db.Table("b_js_jiessj").Not("F_NB_DABZT = ?", 4).Where("F_NB_DABZT = ?", 1).Not("F_VC_KAWLH = ?", 3201).Count(&dabzcount)
 	log.Printf("查询结算表 打包中数据的交易笔数:%d ", dabzcount)
 
 	//已打包数据
 	yidbcount := 0
-	db.Table("b_js_jiessj").Not("F_NB_DABZT =?", 4).Where("F_NB_DABZT = ?", 2).Not("F_VC_KAWLH = ?", 3201).Count(&yidbcount)
+	db.Table("b_js_jiessj").Not("F_NB_DABZT = ?", 4).Where("F_NB_DABZT = ?", 2).Not("F_VC_KAWLH = ?", 3201).Count(&yidbcount)
 	log.Printf("查询结算表 已打包数据的交易笔数:%d ", yidbcount)
 
 	//已fs数据
@@ -802,18 +833,18 @@ func QuerySWDataClassificationTableByID(id int) (error, *types.BJsjkShengwjssjfl
 //4.1.9	全天24小时转结算数监控
 func QueryDataTurnMonitor() *types.TurnData {
 	db := utils.GormClient.Client
-	//1、查处出 b_dd_chedckyssj，b_zdz_chedckyssj 数据量
+	//1、查处出 b_dd_chedckyssj，b_zdz_chedckyssj 数据量  F_NB_JIAOYZT=1：转结算ok
 	ddckzcount := 0
-	db.Table("b_dd_chedckyssj").Not("F_VC_KAWLH = ?", 3201).Count(&ddckzcount)
+	db.Table("b_dd_chedckyssj").Count(&ddckzcount)
 	log.Printf("查询单点出口表总交易笔数ddckzcount:%d", ddckzcount)
 
 	zdzckzcount := 0
-	db.Table("b_zdz_chedckyssj").Not("F_VC_KAWLH = ?", 3201).Count(&zdzckzcount)
+	db.Table("b_zdz_chedckyssj").Count(&zdzckzcount)
 	log.Printf("查询总对总出口表总交易笔数zdzckzcount:%d", zdzckzcount)
 
 	//2、查处b_js_jiessj  数据量
 	jszcount := 0
-	db.Table("b_js_jiessj").Not("F_VC_KAWLH = ?", 3201).Count(&jszcount)
+	db.Table("b_js_jiessj").Count(&jszcount)
 	log.Printf("查询结算表总交易笔数jszcount:%d", jszcount)
 	turndata := new(types.TurnData)
 	turndata.DDzcount = ddckzcount
@@ -834,7 +865,7 @@ func InsertDataTurnMonitor(lx int) error {
 		log.Println("新增转结算记录Insert b_jsjk_zhuanjssjjk  error", err)
 		return err
 	}
-	log.Println("新增转结算记录成功！")
+	log.Println("3333333333333333-------新增转结算记录成功！")
 	return nil
 }
 
@@ -1166,11 +1197,11 @@ func UpdateShengnJieSuanTable(data *types.BJsjkJiestj, id int) error {
 func QueryShengnSendjiessj() (int, int64) {
 	db := utils.GormClient.Client
 	count := 0
-	//"F_NB_DABZT =?",2 已发送用打包状态表示
-	db.Table("b_js_jiessj").Where("F_VC_KAWLH = ?", 3201).Where("F_NB_DABZT =?", 2).Count(&count)
+	//"F_NB_DABZT = ?",2 已发送用打包状态表示
+	db.Table("b_js_jiessj").Where("F_VC_KAWLH = ?", 3201).Where("F_NB_DABZT = ?", 2).Not("F_NB_DABZT = ?", 4).Not("F_NB_DABZT = ?", 5).Count(&count)
 	var total_money []int64
-	sqlstr := `select SUM(F_NB_JINE) as total_money from b_js_jiessj where F_VC_KAWLH = ? and F_NB_DABZT =?`
-	db.Raw(sqlstr, 3201, 2).Pluck("SUM(F_NB_JINE) as total_money", &total_money)
+	sqlstr := `select SUM(F_NB_JINE) as total_money from b_js_jiessj where F_VC_KAWLH = ? and F_NB_DABZT = ? and not F_NB_DABZT = ? and not F_NB_DABZT = ?`
+	db.Raw(sqlstr, 3201, 2, 4, 5).Pluck("SUM(F_NB_JINE) as total_money", &total_money)
 
 	log.Printf("查询卡网络号为%d，结算表已发送笔数%d，查询总金额为：%d", 3201, count, total_money)
 	return count, total_money[0]
@@ -1297,10 +1328,10 @@ func QueryAlreadyPlease() (int, int64) {
 	db := utils.GormClient.Client
 	count := 0
 	//"F_NB_ZHENGYCLJG =?",
-	db.Table("b_js_jiessj").Where("F_VC_KAWLH = ?", 3201).Where("F_NB_QINGFJG =?", 1).Not("F_NB_ZHENGYCLJG = ?", 2).Not("F_NB_DABZT = ?", 4).Count(&count)
+	db.Table("b_js_jiessj").Where("F_VC_KAWLH = ?", 3201).Where("F_NB_QINGFJG =?", 1).Not("F_NB_ZHENGYCLJG = ?", 2).Not("F_NB_DABZT = ?", 4).Not("F_NB_DABZT = ?", 5).Count(&count)
 	var total_money []int64
-	sqlstr := `select SUM(F_NB_JINE) as total_money from b_js_jiessj where F_VC_KAWLH = ? and F_NB_QINGFJG = ?  and not F_NB_ZHENGYCLJG =? and not F_NB_DABZT =?`
-	db.Raw(sqlstr, 3201, 1, 2, 4).Pluck("SUM(F_NB_JINE) as total_money", &total_money)
+	sqlstr := `select SUM(F_NB_JINE) as total_money from b_js_jiessj where F_VC_KAWLH = ? and F_NB_QINGFJG = ?  and not F_NB_ZHENGYCLJG =? and not F_NB_DABZT =? and not F_NB_DABZT =?`
+	db.Raw(sqlstr, 3201, 1, 2, 4, 5).Pluck("SUM(F_NB_JINE) as total_money", &total_money)
 
 	log.Printf("查询卡网络号为%d，省内已请款数据笔数%d，查询省内已请款数据总金额为：%d", 3201, count, total_money)
 	return count, total_money[0]
@@ -1363,24 +1394,24 @@ func QuerySNDataClassification() *types.ShengNDataClassification {
 	//省内结算总数据
 
 	snzcount := 0
-	db.Table("b_js_jiessj").Where("F_VC_KAWLH = ?", 3201).Not("F_NB_DABZT =?", 4).Count(&snzcount)
+	db.Table("b_js_jiessj").Where("F_VC_KAWLH = ?", 3201).Not("F_NB_DABZT = ?", 4).Count(&snzcount)
 	log.Printf("查询省内结算交易，结算表总交易笔数:%d", snzcount)
 
 	//已请款数据
 	qkcount := 0
 	//"F_NB_ZHENGYCLJG =?",
-	db.Table("b_js_jiessj").Where("F_VC_KAWLH = ?", 3201).Where("F_NB_QINGFJG =?", 1).Not("F_NB_DABZT =?", 4).Not("F_NB_ZHENGYCLJG = ?", 2).Count(&qkcount)
+	db.Table("b_js_jiessj").Where("F_VC_KAWLH = ?", 3201).Where("F_NB_QINGFJG =?", 1).Not("F_NB_DABZT = ?", 4).Not("F_NB_ZHENGYCLJG = ?", 2).Count(&qkcount)
 	log.Printf("查询省内结算表 已请款的交易笔数:%d ", qkcount)
 
-	//未发送数据 "F_NB_DABZT =?", 0
+	//未发送数据 "F_NB_DABZT = ?", 0
 	wfscount := 0
-	db.Table("b_js_jiessj").Where("F_VC_KAWLH = ?", 3201).Where("F_NB_DABZT =?", 0).Count(&wfscount)
+	db.Table("b_js_jiessj").Where("F_VC_KAWLH = ?", 3201).Where("F_NB_DABZT = ?", 0).Count(&wfscount)
 	log.Printf("查询省内结算表 未发送的交易笔数:%d ", wfscount)
 
 	//已发送数据
 	fscount := 0
-	//"F_NB_DABZT =?",2 已发送用打包状态表示
-	db.Table("b_js_jiessj").Where("F_VC_KAWLH = ?", 3201).Where("F_NB_DABZT =?", 2).Count(&fscount)
+	//"F_NB_DABZT = ?",2 已发送用打包状态表示
+	db.Table("b_js_jiessj").Where("F_VC_KAWLH = ?", 3201).Where("F_NB_DABZT = ?", 2).Count(&fscount)
 	log.Printf("查询省内结算表 已发送的交易笔数:%d ", fscount)
 
 	//拒付数据
@@ -1463,7 +1494,7 @@ func QueryRealTimeSettlementData() *types.RealTimeSettlementData {
 
 	//省内发送的数据金额、条数 2 已发送用打包状态表示
 	fscount := 0
-	db.Table("b_js_jiessj").Where("F_VC_KAWLH = ?", 3201).Where("F_NB_DABZT =?", 2).Count(&fscount)
+	db.Table("b_js_jiessj").Where("F_VC_KAWLH = ?", 3201).Where("F_NB_DABZT = ?", 2).Count(&fscount)
 	var fstotal_money []int64
 	fssqlstr := `select SUM(F_NB_JINE) as fstotal_money from b_js_jiessj where F_VC_KAWLH = ? and F_NB_DABZT =?`
 	db.Raw(fssqlstr, 3201, 2).Pluck("SUM(F_NB_JINE) as fstotal_money", &fstotal_money)
@@ -2115,14 +2146,14 @@ func UpdateSNSettlementTrendTable(data *types.BJsjkShengntccjsqs, id int) error 
 //查询省外清分核对记录
 func QuerySettlementclearlingcheck(ts int) (error, *[]types.BJsjkQingfhd) {
 	db := utils.GormClient.Client
-	hmdtjs := make([]types.BJsjkQingfhd, 0)
+	hds := make([]types.BJsjkQingfhd, 0)
 	//赋值Order("created_at desc")
-	if err := db.Table("b_jsjk_qingfhd").Order("F_NB_ID desc").Limit(ts).Find(&hmdtjs).Error; err != nil {
+	if err := db.Table("b_jsjk_qingfhd").Order("F_NB_ID desc").Limit(ts).Find(&hds).Error; err != nil {
 		log.Println("查询最新的ts条省外清分核对数据时，QuerySettlementclearlingcheck error :", err)
 		return err, nil
 	}
-	log.Println("查询最新的ts条省外清分核对结果:", hmdtjs)
-	return nil, &hmdtjs
+	log.Println("查询最新的ts条省外清分核对结果:", hds)
+	return nil, &hds
 }
 
 //查询 清分核对结果

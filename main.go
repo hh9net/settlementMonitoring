@@ -16,11 +16,6 @@ import (
 // @version 1.0
 // @description Gin swagger 结算数据监控平台
 // @host 127.0.0.1:8088
-
-func init() {
-
-}
-
 func main() {
 	conf := config.ConfigInit() //初始化配置
 	log.Println("配置文件信息：", *conf)
@@ -59,7 +54,6 @@ func main() {
 		},
 	}
 	defer utils.Pool.Close()
-	//utils.RedisConn = utils.RedisInit() //初始化redis
 
 	//goroutine1
 	go db.HandleDayTasks()

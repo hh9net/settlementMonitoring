@@ -25,18 +25,18 @@ func Register(c *gin.Context) {
 	respFailure := dto.ResponseFailure{}
 
 	if err := c.Bind(&req); err != nil {
-		logrus.Errorf("ReqRegister json unmarshal err: %v", err.Error())
+		logrus.Errorf("ReqRegister json unmarshal err: %v", err)
 		respFailure.Code = -1
-		respFailure.Message = fmt.Sprintf("json unmarshal err: %v", err.Error())
+		respFailure.Message = fmt.Sprintf("json unmarshal err: %v", err)
 		c.JSON(http.StatusOK, respFailure)
 		return
 	}
 	//注册处理
 	code, err := service.Register(req)
 	if err != nil {
-		logrus.Errorf("Register  err: %v", err.Error())
+		logrus.Errorf("Register  err: %v", err)
 		respFailure.Code = code
-		respFailure.Message = fmt.Sprintf("Register err: %v", err.Error())
+		respFailure.Message = fmt.Sprintf("Register err: %v", err)
 		c.JSON(http.StatusOK, respFailure)
 		return
 	}
@@ -64,18 +64,18 @@ func Login(c *gin.Context) {
 	respFailure := dto.ResponseFailure{}
 
 	if err := c.Bind(&req); err != nil {
-		logrus.Errorf("Login json unmarshal err: %v", err.Error())
+		logrus.Errorf("Login json unmarshal err: %v", err)
 		respFailure.Code = -1
-		respFailure.Message = fmt.Sprintf("json unmarshal err: %v", err.Error())
+		respFailure.Message = fmt.Sprintf("json unmarshal err: %v", err)
 		c.JSON(http.StatusOK, respFailure)
 		return
 	}
 	//登录处理
 	code, err := service.Login(req)
 	if err != nil {
-		logrus.Errorf("Login  err: %v", err.Error())
+		logrus.Errorf("Login  err: %v", err)
 		respFailure.Code = code
-		respFailure.Message = fmt.Sprintf("Login err: %v", err.Error())
+		respFailure.Message = fmt.Sprintf("Login err: %v", err)
 		c.JSON(http.StatusOK, respFailure)
 		return
 	}

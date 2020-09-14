@@ -36,7 +36,7 @@ func HandleDayTasks() {
 			log.Println("+++++++++++++++++++++【1.3error】+++++++++++++++++=查询停车场的总金额、总笔数定时任务:", qterr)
 		}
 		//任务四
-		//查询清分包、争议包的包号、接收时间
+		//查询清分包、争议包的包号、接收时间  使用redis记录的
 		qcderr := QueryClearlingAndDisputePackage()
 		if qcderr != nil {
 			log.Println("+++++++++++++++++++++【1.4error】+++++++++++++++++=查询清分包、争议包的包号、接收时间定时任务:", qcderr)
@@ -56,13 +56,6 @@ func HandleDayTasks() {
 		}
 
 		//省内业务
-		//任务 八
-		//省内结算总金额、总条数监控
-		snjserr := ShengnJieSuanData()
-		if snjserr != nil {
-			log.Println("+++++++++++++++++++++【1.7error】+++++++++++++++++=查询省内结算总金额、总条数-监控定时任务 error:", snjserr)
-		}
-
 		//任务十三
 		//省内结算趋势
 		qsnqserr := QueryShengNSettlementTrenddata()
@@ -137,6 +130,13 @@ func HandleHourTasks() {
 			log.Println("+++++++++++++++++++++【2.6error】+++++++++++++++++=数据分类查询定时任务 error:", qdcerr)
 		}
 
+		//任务 八
+		//省内结算总金额、总条数监控
+		snjserr := ShengnJieSuanData()
+		if snjserr != nil {
+			log.Println("+++++++++++++++++++++【1.7error】+++++++++++++++++=查询省内结算总金额、总条数-监控定时任务 error:", snjserr)
+		}
+
 		//任务 十二
 		//查询省内结算分类
 		qjsflerr := QuerySNDataClassificationData()
@@ -149,6 +149,12 @@ func HandleHourTasks() {
 		snjferr := QueryShengnRefusePayData()
 		if snjferr != nil {
 			log.Println("+++++++++++++++++++++【2.8error】+++++++++++++++++=查询省内拒付数据金额、条数 定时任务 error:", snjferr)
+		}
+
+		//任务一 转结算24小时监控
+		dterr := DataTurnMonitor()
+		if dterr != nil {
+			log.Println("省外之前24小时转结算定时任务 error:", dterr)
 		}
 
 		log.Println(utils.DateTimeFormat(<-tiker.C), "执行线程2，处理按小时的定时任务【完成】222222222222222222222222222222222222222222222222")
@@ -164,11 +170,7 @@ func HandleMinutesTasks() {
 
 	for {
 		log.Println("执行线程3，处理按分钟的定时任务333333333333333333333333333333333333333333333333333333333333333333")
-		//任务一 转结算24小时监控
-		dterr := DataTurnMonitor()
-		if dterr != nil {
-			log.Println("省外之前24小时转结算定时任务 error:", dterr)
-		}
+
 		//任务二 数据包监控
 		perr := PacketMonitoring()
 		if perr != nil {
@@ -216,6 +218,18 @@ func HandleKafka() {
 
 //1任务1
 func QuerTotalSettlementData() error {
+	//0、查询最新记录[插入之前先做校验该天是否有新增数据数据]
+	qerr, sj := QueryTabledata(10000)
+	if qerr != nil {
+		log.Println("查询省外结算总金额、总笔数,查询最新的省外结算统计记录  error!", qerr)
+		return qerr //不用返回前端
+	}
+	s1 := utils.DateNowFormat()
+	if sj.FVcTongjrq == s1 {
+		log.Println("这一天已经插入数据了，不需要重复统计")
+		return nil
+	}
+
 	//1、新增开始统计记录
 	inerr := InsertTabledata(10000)
 	if inerr != nil {
@@ -223,7 +237,7 @@ func QuerTotalSettlementData() error {
 		return inerr //不用返回前端
 	}
 	//2、查询最新记录
-	qerr, sj := QueryTabledata(10000)
+	qerr, sj = QueryTabledata(10000)
 	if qerr != nil {
 		log.Println("查询省外结算总金额、总笔数,查询最新的省外结算统计记录  error!", qerr)
 		return qerr //不用返回前端
@@ -262,6 +276,18 @@ func QuerTotalSettlementData() error {
 
 //1任务2
 func QuerTotalClarify() error {
+	//0、查询最新记录[插入之前先做校验该天是否有新增数据数据]
+	qerr, sj := QueryShengwClearingdata()
+	if qerr != nil {
+		log.Println("查查询省外已清分总金额、总笔数,查询最新数据时  error!", qerr)
+		return qerr //不用返回前端
+	}
+	s1 := utils.DateNowFormat()
+	if sj.FVcTongjrq == s1 {
+		log.Println("这一天已经插入数据了，不需要重复统计")
+		return nil
+	}
+
 	//1、新增清分监控，开始统计记录
 	inerr := ShengwClearingInsert()
 	if inerr != nil {
@@ -304,6 +330,15 @@ func QuerTotalClarify() error {
 
 //1任务3 获取停车场总金额、总笔数
 func QueryTingccJieSuan() error {
+	qterr, sj := QueryTingjiesuan()
+	if qterr != nil {
+		return qterr
+	}
+	s1 := utils.DateNowFormat()
+	if sj.FVcTongjrq == s1 {
+		log.Println("这一天已经插入数据了，不需要重复统计")
+		return nil
+	}
 	//获取停车场总金额、总笔数
 	result := QueryTingccJieSuandata()
 	for _, r := range *result {
@@ -348,40 +383,44 @@ func QueryTingccJieSuan() error {
 
 //1任务4 查询清分、争议处理包
 func QueryClearlingAndDisputePackage() error {
-
+	conn := utils.Pool.Get()
+	defer conn.Close()
+	m := make(map[string]string, 0)
 	//1、获取清分包、争议包数据
 	Yesterday := utils.Yesterdaydate()
-	qcerr, clear := QueryClearlingdata(Yesterday)
+	qcerr, clears := QueryClearlingdata(Yesterday)
 	if qcerr != nil {
 		return qcerr
 	}
+	//Clears:=make( []types.ClearlingAndDispute,0)
 	var Clear types.ClearlingAndDispute
-	if clear == nil {
+	if clears == nil {
 		Clear = types.ClearlingAndDispute{
 			DataType:  "clear",
 			PackageNo: "",
 			DateTime:  "",
 		}
 	} else {
-		Clear = types.ClearlingAndDispute{
-			DataType:  "clear",
-			PackageNo: strconv.Itoa(int(clear.FNbXiaoxxh)),
-			DateTime:  utils.DateTimeFormat(clear.FDtJiessj),
+		for _, clear := range *clears {
+			Clear = types.ClearlingAndDispute{
+				DataType:  "clear",
+				PackageNo: strconv.Itoa(int(clear.FNbXiaoxxh)),
+				DateTime:  clear.FVcQingfmbr,
+			}
+			//Clears= append(Clears, Clear)
+
+			// key:日期    value:"包号"｜"时间"
+
+			m[clear.FVcQingfmbr] = Clear.PackageNo + "|" + Clear.DateTime
+			//2、把数据存储于redis  接收时间、包号
+
+			hmseterr := utils.RedisHMSet(&conn, Clear.DataType, m)
+			if hmseterr != nil {
+				return hmseterr
+			}
+			log.Println("获取清分包-【RedisHSet】 v:=clear 成功 【++++++++++++[1.4]++++++++++++++++++】")
 		}
 	}
-
-	m := make(map[string]string, 0)
-	// key:日期    value:"包号"｜"时间"
-
-	m[utils.Yesterdaydate()] = Clear.PackageNo + "|" + Clear.DateTime
-	//2、把数据存储于redis  接收时间、包号
-	conn := utils.Pool.Get()
-	defer conn.Close()
-	hmseterr := utils.RedisHMSet(&conn, Clear.DataType, m)
-	if hmseterr != nil {
-		return hmseterr
-	}
-	log.Println("获取清分包-【RedisHSet】 v:=clear 成功 【++++++++++++[1.4]++++++++++++++++++】")
 
 	//1查询争议处理数据
 	qderr, dispute := QueryDisputedata(utils.Yesterdaydate())
@@ -399,7 +438,7 @@ func QueryClearlingAndDisputePackage() error {
 		Disput = types.ClearlingAndDispute{
 			DataType:  "disput",
 			PackageNo: strconv.Itoa(int(dispute.FNbXiaoxxh)),
-			DateTime:  utils.DateTimeFormat(dispute.FDtJiessj),
+			DateTime:  utils.DateTimeFormat(dispute.FDtZhengyclsj),
 		}
 	}
 
@@ -640,6 +679,17 @@ func DataTurnMonitor() error {
 
 //1.7 省外结算趋势
 func SettlementTrendbyDay() error {
+	qsjerr, sj := QuerySettlementTrendbyDayTable()
+	if qsjerr != nil {
+		return qsjerr
+	}
+	s1 := utils.DateNowFormat()
+	s2 := sj.FDtTongjwcsj.Format("2006-01-02")
+	if s2 == s1 {
+		log.Println("这一天已经插入数据了，不需要重复统计")
+		return nil
+	}
+
 	qsdatas := QuerySettlementTrendbyDay()
 	for _, qsdata := range *qsdatas {
 		//1、新增省外结算趋势
@@ -715,6 +765,7 @@ func PacketMonitoring() error {
 
 // 1.8 省内结算总金额、总笔数监控
 func ShengnJieSuanData() error {
+
 	//1、新增省内结算监控记录
 	inerr := InsertShengnJieSuanTable()
 	if inerr != nil {
@@ -955,6 +1006,17 @@ func ShengNRealTimeSettlementData() error {
 
 //1.13 省内结算趋势
 func QueryShengNSettlementTrenddata() error {
+	qsjerr, sj := QueryShengNSettlementTrendTable()
+	if qsjerr != nil {
+		return qsjerr
+	}
+	s1 := utils.DateNowFormat()
+	s2 := sj.FDtTongjwcsj.Format("2006-01-02")
+	if s2 == s1 {
+		log.Println("这一天已经插入数据了，不需要重复统计")
+		return nil
+	}
+
 	// 查询省内结算趋势
 	qsshujus := QueryShengNSettlementTrend()
 	for i, qsshuju := range *qsshujus {

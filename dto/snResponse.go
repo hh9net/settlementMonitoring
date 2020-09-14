@@ -35,12 +35,14 @@ type DataSync struct {
 }
 
 type ShengNDataClassification struct {
-	Shengnzcount int `json:"count"  example:"123"`             //结算总数据
-	Yiqkcount    int `json:"clear_count"  example:"123"`       //已清分总条数（不含坏账）
-	Weifscount   int `json:"no_send_count"  example:"123"`     //未打包
-	Yifscount    int `json:"send_count"  example:"123"`        //已发送
-	Jufuzcount   int `json:"bad_debts_count"  example:"123"`   //坏账
-	Jizcount     int `json:"keepaccount_count"  example:"123"` //已记账
+	Shengnzcount int    `json:"count"  example:"123"`             //结算总数据
+	Yiqkcount    int    `json:"clear_count"  example:"123"`       //已清分总条数（不含坏账）
+	Weifscount   int    `json:"no_send_count"  example:"123"`     //未打包
+	Yifscount    int    `json:"send_count"  example:"123"`        //已发送
+	Jufuzcount   int    `json:"bad_debts_count"  example:"123"`   //坏账
+	Jizcount     int    `json:"keepaccount_count"  example:"123"` //已记账
+	DateTime     string `json:"datetime"  example:"2020-08-18"`   //完成时间
+
 }
 
 type Overduedata struct {

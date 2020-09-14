@@ -236,7 +236,7 @@ func TestQueryClearlingdata(t *testing.T) {
 //StatisticalkeepAccount
 func TestStatisticalkeepAccount(t *testing.T) {
 	Newdb()
-	StatisticalkeepAccount() //41400 【30日】
+	StatisticalkeepAccount("") //41400 【30日】
 }
 
 //QueryDisputedata

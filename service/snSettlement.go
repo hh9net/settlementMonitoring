@@ -185,6 +185,7 @@ func QuerySNDataClassification() (int, error, *dto.ShengNDataClassification) {
 			Data.FNbFassjl,
 			Data.FNbjufsjl,
 			Data.FNbQingksl,
+			Data.FDtTongjwcsj.Format("2006-01-02 15:04:05"),
 		}
 	}
 	//返回数据赋值
@@ -195,6 +196,7 @@ func QuerySNDataClassification() (int, error, *dto.ShengNDataClassification) {
 		data.FNbFassjl,
 		data.FNbjufsjl,
 		data.FNbQingksl,
+		data.FDtTongjwcsj.Format("2006-01-02 15:04:05"),
 	}
 }
 

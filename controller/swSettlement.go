@@ -27,9 +27,9 @@ func QueryTotalSettlementData(c *gin.Context) {
 	// 查询结算总金额、总笔数 处理
 	code, err, totaldata := service.QuerTotalSettlementData()
 	if err != nil {
-		log.Println("QuerTotalSettlementData  err: %v", err.Error())
+		log.Println("QuerTotalSettlementData  err: %v", err)
 		respFailure.Code = code
-		respFailure.Message = fmt.Sprintf("QuerTotalSettlementData err: %v", err.Error())
+		respFailure.Message = fmt.Sprintf("QuerTotalSettlementData err: %v", err)
 		c.JSON(http.StatusOK, respFailure)
 		return
 	}
@@ -55,9 +55,9 @@ func QueryTotalClarify(c *gin.Context) {
 	// 查询省外已清分总金额、总笔数 处理
 	code, err, totaldata := service.QuerTotalClarify()
 	if err != nil {
-		log.Println("QuerTotalClarify  err: %v", err.Error())
+		log.Println("QuerTotalClarify  err: %v", err)
 		respFailure.Code = code
-		respFailure.Message = fmt.Sprintf("QuerTotalClarify err: %v", err.Error())
+		respFailure.Message = fmt.Sprintf("QuerTotalClarify err: %v", err)
 		c.JSON(http.StatusOK, respFailure)
 		return
 	}
@@ -83,9 +83,9 @@ func QueryTotalBaddebts(c *gin.Context) {
 	// 查询坏账 处理
 	code, err, totaldata := service.QuerTotalBaddebts()
 	if err != nil {
-		log.Println("QueryTotalBaddebts  err: %v", err.Error())
+		log.Println("QueryTotalBaddebts  err: %v", err)
 		respFailure.Code = code
-		respFailure.Message = fmt.Sprintf("QueryTotalBaddebts err: %v", err.Error())
+		respFailure.Message = fmt.Sprintf("QueryTotalBaddebts err: %v", err)
 		c.JSON(http.StatusOK, respFailure)
 		return
 	}
@@ -112,9 +112,9 @@ func QueryShengwDisputedata(c *gin.Context) {
 	// 查询存在争议 处理
 	code, err, totaldata := service.QueryDisputedata()
 	if err != nil {
-		log.Println("QueryDisputedata  err: %v", err.Error())
+		log.Println("QueryDisputedata  err: %v", err)
 		respFailure.Code = code
-		respFailure.Message = fmt.Sprintf("QueryDisputedata err: %v", err.Error())
+		respFailure.Message = fmt.Sprintf("QueryDisputedata err: %v", err)
 		c.JSON(http.StatusOK, respFailure)
 		return
 	}
@@ -140,9 +140,9 @@ func QueryAbnormaldata(c *gin.Context) {
 	// 查询异常数据总金额、总笔数 处理
 	code, err, totaldata := service.QueryAbnormaldata()
 	if err != nil {
-		log.Println("QueryAbnormaldata  err: %v", err.Error())
+		log.Println("QueryAbnormaldata  err: %v", err)
 		respFailure.Code = code
-		respFailure.Message = fmt.Sprintf("QueryAbnormaldata err: %v", err.Error())
+		respFailure.Message = fmt.Sprintf("QueryAbnormaldata err: %v", err)
 		c.JSON(http.StatusOK, respFailure)
 		return
 	}
@@ -168,9 +168,9 @@ func Queryblacklistdata(c *gin.Context) {
 	// 查询黑名单总数、较2小时前变化值
 	code, err, totaldata := service.Queryblacklistdata()
 	if err != nil {
-		log.Println("Queryblacklistdata  err: %v", err.Error())
+		log.Println("Queryblacklistdata  err: %v", err)
 		respFailure.Code = code
-		respFailure.Message = fmt.Sprintf("Queryblacklistdata err: %v", err.Error())
+		respFailure.Message = fmt.Sprintf("Queryblacklistdata err: %v", err)
 		c.JSON(http.StatusOK, respFailure)
 		return
 	}
@@ -196,9 +196,9 @@ func QueryClearlingAndDisputePackage(c *gin.Context) {
 	// 查询清分包、争议包的接收时间、包号
 	code, err, totaldata := service.QueryClearlingAndDisputePackagedata()
 	if err != nil {
-		log.Println("QueryClearlingAndDisputePackagedata  err: %v", err.Error())
+		log.Println("QueryClearlingAndDisputePackagedata  err: %v", err)
 		respFailure.Code = code
-		respFailure.Message = fmt.Sprintf("QueryClearlingAndDisputePackagedata err: %v", err.Error())
+		respFailure.Message = fmt.Sprintf("QueryClearlingAndDisputePackagedata err: %v", err)
 		c.JSON(http.StatusOK, respFailure)
 		return
 	}
@@ -224,9 +224,9 @@ func Clearlingcheck(c *gin.Context) {
 	// 查询全部清分核对
 	code, err, totaldata := service.StatisticalClearlingcheck()
 	if err != nil {
-		log.Println("StatisticalClearlingcheck  err: %v", err.Error())
+		log.Println("StatisticalClearlingcheck  err: %v", err)
 		respFailure.Code = code
-		respFailure.Message = fmt.Sprintf("StatisticalClearlingcheck err: %v", err.Error())
+		respFailure.Message = fmt.Sprintf("StatisticalClearlingcheck err: %v", err)
 		c.JSON(http.StatusOK, respFailure)
 		return
 	}
@@ -252,9 +252,9 @@ func Dataclassification(c *gin.Context) {
 	// 查询省外数据分类
 	code, err, totaldata := service.Dataclassification()
 	if err != nil {
-		log.Println("QueryDataclassification  err: %v", err.Error())
+		log.Println("QueryDataclassification  err: %v", err)
 		respFailure.Code = code
-		respFailure.Message = fmt.Sprintf("QueryDataclassification err: %v", err.Error())
+		respFailure.Message = fmt.Sprintf("QueryDataclassification err: %v", err)
 		c.JSON(http.StatusOK, respFailure)
 		return
 	}
@@ -280,9 +280,9 @@ func QueryDataTurnMonitor(c *gin.Context) {
 	// 查询省外转结算
 	code, err, totaldata := service.QueryDataTurnMonitordata()
 	if err != nil {
-		log.Println("QueryDataTurnMonitordata err: %v", err.Error())
+		log.Println("QueryDataTurnMonitordata err: %v", err)
 		respFailure.Code = code
-		respFailure.Message = fmt.Sprintf("QueryDataTurnMonitordata err: %v", err.Error())
+		respFailure.Message = fmt.Sprintf("QueryDataTurnMonitordata err: %v", err)
 		c.JSON(http.StatusOK, respFailure)
 		return
 	}
@@ -308,9 +308,9 @@ func QuerySettlementTrendbyDay(c *gin.Context) {
 	// 查询省外结算趋势
 	code, err, totaldata := service.QuerySettlementTrend()
 	if err != nil {
-		log.Println("QuerySettlementTrend err: %v", err.Error())
+		log.Println("QuerySettlementTrend err: %v", err)
 		respFailure.Code = code
-		respFailure.Message = fmt.Sprintf("QuerySettlementTrend err: %v", err.Error())
+		respFailure.Message = fmt.Sprintf("QuerySettlementTrend err: %v", err)
 		c.JSON(http.StatusOK, respFailure)
 		return
 	}
@@ -336,9 +336,9 @@ func PacketMonitoring(c *gin.Context) {
 	// 查询省外数据包监控
 	code, err, totaldata := service.QueryPacketMonitoring()
 	if err != nil {
-		log.Println("QueryPacketMonitoring err: %v", err.Error())
+		log.Println("QueryPacketMonitoring err: %v", err)
 		respFailure.Code = code
-		respFailure.Message = fmt.Sprintf("QueryPacketMonitoring err: %v", err.Error())
+		respFailure.Message = fmt.Sprintf("QueryPacketMonitoring err: %v", err)
 		c.JSON(http.StatusOK, respFailure)
 		return
 	}
@@ -366,9 +366,9 @@ func Clarifydifference(c *gin.Context) {
 	//查询最近15天清分包数据差额
 	code, err, totaldata := service.Clarifydifference()
 	if err != nil {
-		log.Println("Clarifydifference err: %v", err.Error())
+		log.Println("Clarifydifference err: %v", err)
 		respFailure.Code = code
-		respFailure.Message = fmt.Sprintf("QueryClarifydifference err: %v", err.Error())
+		respFailure.Message = fmt.Sprintf("QueryClarifydifference err: %v", err)
 		c.JSON(http.StatusOK, respFailure)
 		return
 	}
@@ -395,18 +395,18 @@ func ClarifyQuery(c *gin.Context) {
 	respFailure := dto.ResponseFailure{}
 
 	if err := c.Bind(&req); err != nil {
-		log.Println("ReqQueryClarify json unmarshal err: %v", err.Error())
+		log.Println("ReqQueryClarify json unmarshal err: %v", err)
 		respFailure.Code = -1
-		respFailure.Message = fmt.Sprintf("json unmarshal err: %v", err.Error())
+		respFailure.Message = fmt.Sprintf("json unmarshal err: %v", err)
 		c.JSON(http.StatusOK, respFailure)
 		return
 	}
 	//查询清分核对
 	code, err, totaldata := service.ClarifyQuery(req)
 	if err != nil {
-		log.Println("QueryClarify err: %v", err.Error())
+		log.Println("QueryClarify err: %v", err)
 		respFailure.Code = code
-		respFailure.Message = fmt.Sprintf("QueryClarify err: %v", err.Error())
+		respFailure.Message = fmt.Sprintf("QueryClarify err: %v", err)
 		c.JSON(http.StatusOK, respFailure)
 		return
 	}
@@ -432,9 +432,9 @@ func Clarifyconfirm(c *gin.Context) {
 	// 省外清分核对确认
 	code, err, totaldata := service.Clarifyconfirm()
 	if err != nil {
-		log.Println("Clarifyconfirmerr: %v", err.Error())
+		log.Println("Clarifyconfirmerr: %v", err)
 		respFailure.Code = code
-		respFailure.Message = fmt.Sprintf("Clarifyconfirm err: %v", err.Error())
+		respFailure.Message = fmt.Sprintf("Clarifyconfirm err: %v", err)
 		c.JSON(http.StatusOK, respFailure)
 		return
 	}
@@ -462,18 +462,18 @@ func ExportExcel(c *gin.Context) {
 	respFailure := dto.ResponseFailure{}
 
 	if err := c.Bind(&req); err != nil {
-		log.Println("ReqQueryClarify json unmarshal err: %v", err.Error())
+		log.Println("ReqQueryClarify json unmarshal err: %v", err)
 		respFailure.Code = -1
-		respFailure.Message = fmt.Sprintf("json unmarshal err: %v", err.Error())
+		respFailure.Message = fmt.Sprintf("json unmarshal err: %v", err)
 		c.JSON(http.StatusOK, respFailure)
 		return
 	}
 	//导出清分核对记录为excel
 	code, err, totaldata, fileName := service.ExportExcel(req)
 	if err != nil {
-		log.Println("QueryClarify err: %v", err.Error())
+		log.Println("QueryClarify err: %v", err)
 		respFailure.Code = code
-		respFailure.Message = fmt.Sprintf("QueryClarify err: %v", err.Error())
+		respFailure.Message = fmt.Sprintf("QueryClarify err: %v", err)
 		c.JSON(http.StatusOK, respFailure)
 		return
 	}

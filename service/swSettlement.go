@@ -55,6 +55,13 @@ func QuerTotalClarify() (int, error, *dto.TotalClarifyData) {
 		log.Println("查询省外已清分总金额、总笔数,查询最新数据时  error!", qerr)
 		return types.Statuszero, qerr, nil //不用返回前端
 	}
+	if qingfjg.FNbZongje == 0 {
+		qerr, qingfjg = db.QueryShengwClearingdataById(qingfjg.FNbId - 1)
+		if qerr != nil {
+			log.Println("查询省外已清分总金额、总笔数,查询最新数据时  error!", qerr)
+			return types.Statuszero, qerr, nil //不用返回前端
+		}
+	}
 	log.Println("查询省外已清分总金额、总笔数 (包含坏账的)成功")
 	//返回数据赋值
 	return types.StatusSuccessfully, nil, &dto.TotalClarifyData{Amount: utils.Fen2Yuan(qingfjg.FNbZongje), Count: qingfjg.FNbZongts}
@@ -348,7 +355,7 @@ func QueryDataTurnMonitordata() (int, error, *[]dto.TurnDataResponse) {
 		TurndataResps[i].DifferCount = TurndataResps[i].YuansCount - r.Jieszcount
 		TurndataResps[i].DateTime = r.DateTime
 	}
-	log.Println("响应数据：", TurndataResps)
+	log.Println("转结算，响应数据：", TurndataResps)
 	//返回数据
 	return types.StatusSuccessfully, nil, &TurndataResps
 }
