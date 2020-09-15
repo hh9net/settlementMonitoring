@@ -1394,13 +1394,13 @@ func QuerySNDataClassification() *types.ShengNDataClassification {
 	//省内结算总数据
 
 	snzcount := 0
-	db.Table("b_js_jiessj").Where("F_VC_KAWLH = ?", 3201).Not("F_NB_DABZT = ?", 4).Count(&snzcount)
+	db.Table("b_js_jiessj").Where("F_VC_KAWLH = ?", 3201).Not("F_NB_DABZT = ?", 4).Not("F_NB_DABZT = ?", 5).Count(&snzcount)
 	log.Printf("查询省内结算交易，结算表总交易笔数:%d", snzcount)
 
 	//已请款数据
 	qkcount := 0
 	//"F_NB_ZHENGYCLJG =?",
-	db.Table("b_js_jiessj").Where("F_VC_KAWLH = ?", 3201).Where("F_NB_QINGFJG =?", 1).Not("F_NB_DABZT = ?", 4).Not("F_NB_ZHENGYCLJG = ?", 2).Count(&qkcount)
+	db.Table("b_js_jiessj").Where("F_VC_KAWLH = ?", 3201).Where("F_NB_QINGFJG =?", 1).Not("F_NB_DABZT = ?", 4).Not("F_NB_DABZT = ?", 5).Not("F_NB_ZHENGYCLJG = ?", 2).Count(&qkcount)
 	log.Printf("查询省内结算表 已请款的交易笔数:%d ", qkcount)
 
 	//未发送数据 "F_NB_DABZT = ?", 0
