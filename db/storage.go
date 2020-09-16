@@ -13,6 +13,7 @@ import (
 	"settlementMonitoring/dto"
 	"settlementMonitoring/types"
 	"settlementMonitoring/utils"
+	"strings"
 	"time"
 )
 
@@ -555,13 +556,14 @@ func StatisticalClearlingcheck() error {
 	}
 	for _, clear := range *clears {
 		//2、统计昨日记账包总金额
-		keepAccount, keepAccountCount := StatisticalkeepAccount(clear.FVcQingfmbr)
+		s1 := strings.Split(clear.FVcQingfmbr, "T")
+		keepAccount, keepAccountCount := StatisticalkeepAccount(s1[0])
 		//统计存在争议数据
 		disputerr, Disput, zyfgsl := DisputedDataCanClearling(clear.FNbXiaoxxh)
 		if disputerr != nil {
 			return disputerr
 		}
-		log.Println("清分包清分总金额：", clear.FNbQingfzje)
+
 		var zhengyclje int64
 		if Disput == nil {
 			zhengyclje = 0
@@ -570,14 +572,14 @@ func StatisticalClearlingcheck() error {
 		}
 
 		log.Println("今日核对清分结果的总金额：", keepAccount+zhengyclje)
-
+		log.Println("清分包清分总金额：", clear.FNbQingfzje)
 		var is int
 		if (clear.FNbQingfzje == keepAccount+zhengyclje) && (clear.FNbQingfsl == keepAccountCount+zyfgsl) {
 			is = 1
 			log.Println("清分金额核对正确++++++++++++++")
 		} else {
 			is = 2
-			log.Println("清分金额核对不正确++++++++++++++++")
+			log.Println("清分金额核对不正确++++++++++++++++++++++++++++++++")
 		}
 		//把清分核对结果存数据库
 		data := new(types.BJsjkQingfhd)
@@ -590,7 +592,9 @@ func StatisticalClearlingcheck() error {
 		data.FNbQingfje = clear.FNbQingfzje            //   `F_NB_QINGFJE` bigint DEFAULT NULL COMMENT '清分金额',
 		data.FNbTongjqfje = keepAccount + (zhengyclje) //   `F_NB_TONGJQFJE` bigint DEFAULT NULL COMMENT '统计清分金额',
 		data.FNbHedjg = is                             //   `F_NB_HEDJG` int DEFAULT NULL COMMENT '核对结果 是否一致,1:一致，2:不一致',
-		data.FVcTongjrq = clear.FVcQingfmbr            //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',【清分包的清分目标日】
+
+		s := strings.Split(clear.FVcQingfmbr, "T")
+		data.FVcTongjrq = s[0] //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',【清分包的清分目标日】
 		cherr := CheckResult(data)
 		if cherr != nil {
 			return cherr
@@ -618,9 +622,10 @@ func StatisticalkeepAccount(Yesterdaydate string) (int64, int) {
 	db.Raw(sqlstr1, begin, end).Pluck("SUM(F_NB_JILSL) as totalcount", &totalcount)
 	log.Printf("统计记账包总条数为：%d", totalcount)
 
-	if total_money == nil {
-		return 0, 0
-	}
+	//if total_money == nil {
+	//	log.Printf("total_money == nil" )
+	//	return 0, 0
+	//}
 	return total_money[0], totalcount[0]
 }
 
@@ -1705,6 +1710,7 @@ func QueryDataSync() (int, int) {
 	num := 0
 	//num = oracledb.OrclQuerydata()
 	//log.Println("oracle num:", num)
+
 	sr := postWithJson()
 	num = sr.SyncData.Count
 
@@ -1713,8 +1719,8 @@ func QueryDataSync() (int, int) {
 	//	Parkingid:= []int{3208260001,3201000001,3202110001,3212830001,3203110001,3201000009,3201000002,3205830001,3201000003,3201000004,3201000005,3201000007,3201000006,3201000008,3206120001,3101130001,3205820001}
 	var result types.Result
 
-	sqlstr := `select  count(F_NB_JINE) as count from b_js_jiessj where F_VC_TINGCCBH in ( 3208260001,3201000001,3202110001,3212830001,3203110001,3201000009,3201000002,3205830001,3201000003,3201000004,3201000005,3201000007,3201000006,3201000008,3206120001,3101130001,3205820001) and F_VC_KAWLH = ?  and not F_NB_DABZT =? `
-	db.Raw(sqlstr, 3201, 4).Scan(&result)
+	sqlstr := `select  count(F_NB_JINE) as count from b_js_jiessj where F_VC_TINGCCBH in ( 3208260001,3201000001,3202110001,3212830001,3203110001,3201000009,3201000002,3205830001,3201000003,3201000004,3201000005,3201000007,3201000006,3201000008,3206120001,3101130001,3205820001) and F_DT_JIAOYSJ >='2020-09-01 00:00:00'  and   F_NB_DABZT <> 4 and   F_NB_DABZT <> 5`
+	db.Raw(sqlstr).Scan(&result)
 	log.Printf("查询海玲数据库数据量:%d，结算表数据同步数据量:=%v", num, result.Count)
 	return num, result.Count
 }

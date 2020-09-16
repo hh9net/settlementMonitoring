@@ -163,6 +163,10 @@ type ReqQueryClarify struct {
 	Orderstatus   int    `json:"order_status" example:"1"`
 }
 
+type ReqQuery struct {
+	BeginTime string `json:"begin_time" example:"2020-08-13 13:13:13"`
+}
+
 type ReqClarifyExportExcel struct {
 	BeginTime   string `json:"begin_time" example:"2020-08-13 13:13:13"`
 	EndTime     string `json:"end_time" example:"2020-08-13 13:13:13"`

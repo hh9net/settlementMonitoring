@@ -48,7 +48,7 @@ func main() {
 	log.Println("RedisAddrConf:=", conf.RedisAddr)
 
 	types.HlsyncAddr = conf.HlsyncAddr
-	log.Println("HlsyncAddrConf:=", conf.RedisAddr)
+	log.Println("HlsyncAddrConf:=", conf.HlsyncAddr)
 
 	utils.Pool = &redis.Pool{
 		MaxIdle:     16,  //最大空闲连接数

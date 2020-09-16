@@ -236,7 +236,7 @@ func TestQueryClearlingdata(t *testing.T) {
 //StatisticalkeepAccount
 func TestStatisticalkeepAccount(t *testing.T) {
 	Newdb()
-	StatisticalkeepAccount("") //41400 【30日】
+	log.Println(StatisticalkeepAccount("2020-09-15")) //41400 【30日】
 }
 
 //QueryDisputedata
@@ -444,5 +444,12 @@ func TestQueryOverdueDatatable(t *testing.T) {
 func TestQueryHSDZData(t *testing.T) {
 	NewHSZDDB()
 	QueryHSDZData()
+
+}
+
+//QueryDataSync()
+func TestQueryDataSync1(t *testing.T) {
+	Newdb()
+	log.Println(QueryDataSync())
 
 }

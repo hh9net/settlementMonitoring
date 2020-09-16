@@ -438,7 +438,7 @@ func QueryClearlingAndDisputePackage() error {
 	}
 
 	//1查询争议处理数据
-	qderr, dispute := QueryDisputedata(utils.Yesterdaydate())
+	qderr, dispute := QueryDisputedata(Yesterday)
 	if qderr != nil {
 		return qderr
 	}
@@ -458,7 +458,7 @@ func QueryClearlingAndDisputePackage() error {
 	}
 
 	//2、把数据存储于redis  接收时间、包号
-	m[utils.Yesterdaydate()] = Disput.PackageNo + "|" + Disput.DateTime
+	m[Yesterday] = Disput.PackageNo + "|" + Disput.DateTime
 
 	dishmseterr := utils.RedisHMSet(&conn, Disput.DataType, m)
 	if dishmseterr != nil {

@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
+	"strings"
 
 	"net/http"
+	"settlementMonitoring/db"
 	"settlementMonitoring/dto"
 	"settlementMonitoring/service"
 	"settlementMonitoring/types"
@@ -30,8 +32,7 @@ func QueryTotalSettlementData(c *gin.Context) {
 		log.Println("QuerTotalSettlementData  err: %v", err)
 		respFailure.Code = types.StatusQueryTotalSettlementDataError
 		respFailure.Message = fmt.Sprintf("QuerTotalSettlementData err: %v", err)
-		c.JSON(types.StatusQueryTotalSettlementDataError, respFailure)
-		return
+
 	}
 	if code == types.StatusQuerySWTotalSettlementDataSuccessfully {
 		c.JSON(http.StatusOK, dto.QuerResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "查询结算总金额、总笔数 成功"})
@@ -58,8 +59,7 @@ func QueryTotalClarify(c *gin.Context) {
 		log.Println("QuerTotalClarify  err: %v", err)
 		respFailure.Code = types.StatusQueryTotalSettlementDataError
 		respFailure.Message = fmt.Sprintf("QuerTotalClarify err: %v", err)
-		c.JSON(types.StatusQueryTotalSettlementDataError, respFailure)
-		return
+
 	}
 	if code == types.StatusSuccessfully {
 		c.JSON(http.StatusOK, dto.QuerResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "查询已清分总金额、总笔数 成功"})
@@ -536,5 +536,81 @@ func SetRedis(c *gin.Context) {
 	conn.Close()
 	log.Println("set redis 成功 ", s, strconv.Itoa(int(1))+"|"+strconv.Itoa(1), strconv.Itoa(int(1))+"|"+strconv.Itoa(1))
 	c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "set redis ok", Message: "set redis   零值 ok "})
+
+}
+
+//Clearcalibration清分核对校准
+func Clearcalibration(c *gin.Context) {
+	conn := utils.Pool.Get() //初始化redis
+	defer conn.Close()
+	req := dto.ReqQuery{}
+	respFailure := dto.ResponseFailure{}
+
+	if err := c.Bind(&req); err != nil {
+		log.Println("ReqQueryClarify json unmarshal err: %v", err)
+		respFailure.Code = -1
+		respFailure.Message = fmt.Sprintf("json unmarshal err: %v", err)
+		c.JSON(types.StatusQueryClarifyError, respFailure)
+		return
+	}
+
+	//1、获取昨日的清分包数据
+	qerr, clears := db.QueryClearlingdata(req.BeginTime)
+	if qerr != nil {
+		//	return qerr
+	}
+	if clears == nil {
+		log.Println("+++++++++++++++++++++++++++昨日没有清分包【1.5】++++++++++++++++++++++")
+		//	return errors.New("昨日没有清分包，需要检查清分包是否接收")
+	}
+	for _, clear := range *clears {
+		//2、统计昨日记账包总金额
+		s1 := strings.Split(clear.FVcQingfmbr, "T")
+		keepAccount, keepAccountCount := db.StatisticalkeepAccount(s1[0])
+		//统计存在争议数据
+		disputerr, Disput, zyfgsl := db.DisputedDataCanClearling(clear.FNbXiaoxxh)
+		if disputerr != nil {
+			//return disputerr
+		}
+
+		var zhengyclje int64
+		if Disput == nil {
+			zhengyclje = 0
+		} else {
+			zhengyclje = Disput.FNbQuerxyjzdzje
+		}
+
+		log.Println("今日核对清分结果的总金额：", keepAccount+zhengyclje)
+		log.Println("清分包清分总金额：", clear.FNbQingfzje)
+		var is int
+		if (clear.FNbQingfzje == keepAccount+zhengyclje) && (clear.FNbQingfsl == keepAccountCount+zyfgsl) {
+			is = 1
+			log.Println("清分金额核对正确++++++++++++++")
+		} else {
+			is = 2
+			log.Println("清分金额核对不正确++++++++++++++++++++++++++++++++")
+		}
+		//把清分核对结果存数据库
+		data := new(types.BJsjkQingfhd)
+		//赋值
+		data.FNbQingfqrzt = 0                          // `F_NB_QINGFQRZT` int DEFAULT NULL COMMENT '清分确认状态',
+		data.FNbQingfts = clear.FNbQingfsl             //`F_NB_QINGFTS` int DEFAULT NULL COMMENT '清分条数',
+		data.FNbTongjqfts = keepAccountCount + zyfgsl  //`F_NB_TONGJQFTS` int DEFAULT NULL COMMENT '统计清分条数',
+		data.FDtQingfbjssj = clear.FDtJiessj           //`F_VC_QINGFBJSSJ` int DEFAULT NULL COMMENT '清分包接收时间',
+		data.FNbQingfbxh = clear.FNbXiaoxxh            //   `F_NB_QINGFBXH` bigint DEFAULT NULL COMMENT '清分包序号',
+		data.FNbQingfje = clear.FNbQingfzje            //   `F_NB_QINGFJE` bigint DEFAULT NULL COMMENT '清分金额',
+		data.FNbTongjqfje = keepAccount + (zhengyclje) //   `F_NB_TONGJQFJE` bigint DEFAULT NULL COMMENT '统计清分金额',
+		data.FNbHedjg = is                             //   `F_NB_HEDJG` int DEFAULT NULL COMMENT '核对结果 是否一致,1:一致，2:不一致',
+
+		s := strings.Split(clear.FVcQingfmbr, "T")
+		data.FVcTongjrq = s[0] //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',【清分包的清分目标日】
+		cherr := db.CheckResult(data)
+		if cherr != nil {
+			//	return cherr
+		}
+		log.Println("清分金额核对完成++++++++++++++++++++【1.5】+++++++++++++")
+	}
+
+	c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "清分核对校准 ok", Message: "清分核对校准 ok "})
 
 }

@@ -476,7 +476,7 @@ func ClarifyQuery(req dto.ReqQueryClarify) (int, error, *dto.Clearlingcheckdata)
 		ZongTS:         zongjls,
 		ZongYS:         zongys,
 	}
-	log.Println("响应数据：", len(Datas))
+	log.Println("响应数据条数：", len(Datas))
 	//返回数据
 	return types.StatusSuccessfully, nil, &Data
 }

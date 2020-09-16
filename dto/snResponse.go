@@ -64,18 +64,21 @@ type SyncRequest struct {
 }
 
 type SyncResponse struct {
-	Code      int       `json:"code"  example:"123"`  //	"code": 0,
-	Desc      string    `json:"desc"  example:"123"`  //	"desc": "SUCCESS",
-	SyncData  SyncData  `json:"data"  example:"123"`  // "data": {
-	SyncParam SyncParam `json:"param"  example:"123"` //"param": {
+	Code     int      `json:"code"  example:"123"` //	"code": 0,
+	Desc     string   `json:"desc"  example:"123"` //	"desc": "SUCCESS",
+	SyncData SyncData `json:"data"  example:"123"` // "data": {
 
 }
 type SyncData struct {
-	Count int   `json:"count"  example:"123"` // "count": 5130,
-	Sum   int64 `json:"sum"  example:"123"`   // "sum": 7007310,
+	Count     int       `json:"count"  example:"123"` // "count": 5130,
+	Sum       int64     `json:"sum"  example:"123"`   // "sum": 7007310,
+	SyncParam SyncParam `json:"param"  example:"123"` //"param": {
 }
 
 type SyncParam struct {
 	TradeTimeStart string `json:"tradeTimeStart"  example:"123"`
 	SyncStatus     int    `json:"syncStatus"  example:"123"`
+	ParkNo         int64  `json:"parkNo"  example:"123"`     //停车场编号
+	ExitlaneNo     int    `json:"exitlaneNo"  example:"123"` //车道编号
+	TradeTimeEnd   string `json:"tradeTimeEnd"  example:"123"`
 }
