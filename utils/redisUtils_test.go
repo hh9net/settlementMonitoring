@@ -20,12 +20,21 @@ func TestRedisExample(t *testing.T) {
 
 //RedisSet
 func TestRedisSet(t *testing.T) {
-	RedisSet(RedisInit(), "kabc123", "1234|523")
+	RedisSet(RedisInit(), "k1abc123", "1234")
 }
 
 //RedisGet
 func TestRedisGet(t *testing.T) {
-	RedisGet(RedisInit(), "kabc123")
+	RedisGet(RedisInit(), "k1abc123")
+}
+
+func TestRedisDelete(t *testing.T) {
+	RedisDelete(RedisInit(), "kabc123")
+}
+
+//RedisExpireSet
+func TestRedisExpireSet(t *testing.T) {
+	RedisExpireSet(RedisInit(), "k1abc123", 10)
 }
 
 //RedisHSet  覆盖set

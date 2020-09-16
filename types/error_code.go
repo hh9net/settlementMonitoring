@@ -9,6 +9,9 @@ const (
 
 	Statuszero = 10000 //error
 
+	StatusGETRedisError = 600 //getredis 错误
+	StatusSETRedisError = 601 //setredis 错误
+
 	StatusRegisteredSuccessfully                 = 200 //注册成功
 	StatusLoginSuccessfully                      = 201 //登录成功
 	StatusQuerySWTotalSettlementDataSuccessfully = 203 //查询结算总金额、总笔数 成功
@@ -40,6 +43,7 @@ const (
 	StatusRepeatedRegistration              = 4001 //注册重复
 	StatusPleaseRegister                    = 4002 //请先注册
 	StatusPasswordError                     = 4003 //密码错误,请重新输入
+	StatusNoVerificationcode                = 4019 //密码错误,请重新输入
 
 	StatusQueryTotalSettlementDataError    = 4004 //查询结算总金额、总笔数 失败
 	StatusQueryTotalClarifyError           = 4005 //查询已清分总金额、总笔数 失败
@@ -130,6 +134,9 @@ var statusText = map[int]string{
 	StatusQueryClarifyError:                      "Query Clarify Error",
 	StatusSuccessfully:                           "Query Success",
 	StatusExportExcelError:                       "Export Excel Error",
+	StatusGETRedisError:                          "GETRedis Error",
+	StatusSETRedisError:                          "SETRedis Error",
+	StatusNoVerificationcode:                     "No Verificationcode",
 }
 
 // StatusText returns a text for the HTTP status code. It returns the empty

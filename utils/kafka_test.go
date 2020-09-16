@@ -84,3 +84,8 @@ func TestConsumerGroups(t *testing.T) {
 "parking_id":"9801000016","trade_type":"9","obu_id":"621325aa","obu_status":"205"}}`)
 	ProcessMessage("zdzBillExitDataCollectTopic", zdzjsonData)
 }
+
+//GetRandStr
+func TestGetRandStr(t *testing.T) {
+	logrus.Print(GetRandStr(4))
+}

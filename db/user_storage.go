@@ -27,19 +27,16 @@ func QueryUsermsg(username string) (error, int) {
 		return nil, len(users)
 	}
 }
-func QueryUserLoginmsg(username string) (error, *[]types.BJsjkJiesjkptyhb) {
+func QueryUserLoginmsg(username string) (error, *types.BSysYongh) {
 	db := utils.GormClient.Client
-	users := make([]types.BJsjkJiesjkptyhb, 0)
-	if err := db.Table("b_jsjk_jiesjkptyhb").Where("F_NB_YONGHID = ?", username).First(&users).Error; err != nil {
+	user := new(types.BSysYongh)
+	if err := db.Table("b_sys_yongh").Where("F_VC_ZHANGH = ?", username).First(user).Error; err != nil {
 		logrus.Println("查询用户登录信息失败！")
 		return err, nil
 	}
-	if len(users) == 0 {
-		log.Print("Record not found")
-		return errors.New("Record not found"), nil
-	}
-	logrus.Println("查询数据：", users, (users[0]), &(users[0]))
-	return nil, &(users)
+	logrus.Println("查询用户登录信息 ok:", user.FVcMingc, user.FVcZhangh)
+
+	return nil, user
 
 }
 

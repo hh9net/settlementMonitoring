@@ -61,6 +61,7 @@ func main() {
 	}
 	defer utils.Pool.Close()
 	IpAddress := conf.IpAddress
+
 	//goroutine1
 	go db.HandleDayTasks()
 	//goroutine2

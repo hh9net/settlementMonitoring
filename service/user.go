@@ -3,9 +3,12 @@ package service
 import (
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
+	"log"
 	"settlementMonitoring/db"
 	"settlementMonitoring/dto"
 	"settlementMonitoring/types"
+	"settlementMonitoring/utils"
+	"strings"
 )
 
 //用户注册
@@ -43,10 +46,10 @@ func Register(req dto.ReqRegister) (int, error) {
 func Login(req dto.Reqlogin) (int, error) {
 	logrus.Print("登录请求参数：", req)
 	//获取请求数据
-	err, jgs := db.QueryUserLoginmsg(req.UserName)
+	err, jg := db.QueryUserLoginmsg(req.UserName)
 
 	//校验密码
-	if err != nil && jgs == nil {
+	if err == nil && jg == nil {
 		logrus.Println("请先注册")
 		return types.StatusPleaseRegister, nil
 	}
@@ -54,13 +57,39 @@ func Login(req dto.Reqlogin) (int, error) {
 		//查询用户是否被注册，查询失败
 		return types.StatusRegistError, err
 	}
-	for _, jg := range *jgs {
-		if jg.FVcYonghmm != req.Password {
-			logrus.Println("密码错误")
-			return types.StatusPasswordError, errors.New("密码错误,请重新输入")
-		}
+	psw := utils.GetMD5Encode(req.Password)
+	logrus.Println("md5 pwd:", psw)
+	logrus.Println("jg.FVcMim:", jg.FVcMim)
+	if jg.FVcMim != psw {
+		logrus.Println("密码错误")
+		return types.StatusPasswordError, errors.New("密码错误,请重新输入")
 	}
-	logrus.Println("密码正确，登录成功")
+
+	conn := utils.Pool.Get()
+	defer conn.Close()
+
+	rgeterr, code := utils.RedisGet(&conn, req.Verificationcode)
+	if rgeterr != nil {
+		logrus.Println("RedisGet错误")
+		return types.StatusGETRedisError, errors.New("RedisGet错误")
+	}
+	if code == nil {
+		log.Println("验证码不存在")
+		return types.StatusNoVerificationcode, errors.New("验证码不正确")
+	}
+	vstr := string(code.([]uint8))
+	c := strings.Split(vstr, `"`)
+	if c[1] == req.Verificationcode {
+		logrus.Println("验证码正确，登录成功")
+		//删除验证码
+		delerr := utils.RedisDelete(&conn, req.Verificationcode)
+		if delerr != nil {
+			logrus.Println("RedisDelete error")
+		}
+	} else {
+		return types.StatusNoVerificationcode, errors.New("验证码不正确")
+	}
+	logrus.Println("密码正确")
 	//返回数据
 	return types.StatusSuccessfully, nil
 }

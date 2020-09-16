@@ -20,6 +20,7 @@ type ReqRegister struct {
 }
 
 type Reqlogin struct {
-	UserName string `json:"username" example:"abc"`
-	Password string `json:"password" example:"abc123"`
+	UserName         string `json:"username" example:"abc"`
+	Password         string `json:"password" example:"abc123"`
+	Verificationcode string `json:"verificationcode" example:"abc123"`
 }

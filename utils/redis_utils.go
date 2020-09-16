@@ -7,32 +7,7 @@ import (
 	"github.com/garyburd/redigo/redis"
 	log "github.com/sirupsen/logrus"
 	"reflect"
-	"settlementMonitoring/types"
 )
-
-/*
-type RedisDB struct {
-	RedisdbConfig *RedisDBConfig
-	Lock          sync.RWMutex // lock
-	RedisClient   *redis.Conn  // mysql client
-}
-
-type RedisDBConfig struct {
-	RedisDBAddr   string
-	redisPwd      string
-	RedisDatabase uint8
-}
-
-var RedisConn *redis.Conn
-
-func NewRedis() {
-	RedisConn = Redisinit(&RedisDBConfig{
-		RedisDBAddr: config.Optional.RedisAddr,
-		redisPwd:config.Optional.RedisPwd,
-		RedisDatabase: config.Optional.RedisDB,
-	})
-}
-*/
 
 var Pool *redis.Pool
 var RedisConn *redis.Conn
@@ -43,9 +18,9 @@ var RedisConn *redis.Conn
 func RedisInit() *redis.Conn {
 	log.Infoln("starting redis")
 	//连接数据库
-	//address := "127.0.0.1:6379"
+	address := "127.0.0.1:6379"
 	//address := "192.168.200.170:6379"
-	address := types.RedisAddr
+	//address := types.RedisAddr
 	conn, err := redis.Dial("tcp", address /*,redis.DialPassword("123456")*/)
 	if err != nil {
 		panic(err)
@@ -75,7 +50,18 @@ func RedisSet(conn *redis.Conn, key string, value string) error {
 		}
 		fmt.Println("set result:", result, "set value:", value) //设置成功，ok
 	}
+	return nil
+}
 
+//设置过期时间
+func RedisExpireSet(conn *redis.Conn, key string, t int) error {
+	RedisSelectDB(conn)
+	result, err := (*conn).Do("EXPIRE", key, t)
+	if err != nil {
+		log.Print("err:", err)
+		return err
+	}
+	fmt.Println("设置过期时间 result:", result) //设置成功，ok
 	return nil
 }
 
@@ -91,6 +77,18 @@ func RedisGet(conn *redis.Conn, key string) (error, interface{}) {
 	/*	str := string(value)
 		logrus.Print(str)*/
 	return nil, value
+}
+
+func RedisDelete(conn *redis.Conn, key string) error {
+	RedisSelectDB(conn)
+	_, err := (*conn).Do("DEL", key)
+	if err != nil {
+		log.Print(err)
+		return err
+	}
+	fmt.Printf("delete key 成功")
+
+	return nil
 }
 
 //hset 设置值

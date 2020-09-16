@@ -6,6 +6,7 @@ import (
 	"settlementMonitoring/dto"
 	"settlementMonitoring/service"
 	"settlementMonitoring/types"
+	"settlementMonitoring/utils"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
@@ -94,7 +95,38 @@ func Login(c *gin.Context) {
 
 	if code == types.StatusSuccessfully {
 		logrus.Println("用户登录成功")
-		c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: types.StatusText(types.StatusSuccessfully), Message: "用户登录成功"})
+		c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: types.StatusText(types.StatusLoginSuccessfully), Message: "用户登录成功"})
 		return
 	}
+}
+
+/*  接口方法注释   */
+//@Summary 图片验证码api
+//@Tags 图片验证码
+//@version 1.0
+//@Accept application/json
+//@Param req body dto.Reqlogin true "请求参数"
+//@Success 200 object dto.Response 成功后返回值
+//@Failure 404 object dto.ResponseFailure 查询失败
+//@Router /user/login [post]
+func Imagecaptcha(c *gin.Context) {
+
+	//1.随机获取验证码文字
+	randStr := utils.GetRandStr(4)
+	logrus.Println("随机获取验证码文字:", randStr)
+	//2、验证码存redis
+	conn := utils.Pool.Get()
+	defer conn.Close()
+	rseterr := utils.RedisSet(&conn, randStr, randStr)
+	if rseterr != nil {
+		c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Message: "随机获取验证码文字 时，set redis error"})
+		return
+	}
+
+	rserr := utils.RedisExpireSet(&conn, randStr, 300)
+	if rserr != nil {
+		c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Message: "设置过期时间 时，RedisExpireSet  error"})
+		return
+	}
+	c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: randStr, Message: "随机获取验证码文字成功"})
 }

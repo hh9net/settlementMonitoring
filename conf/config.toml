@@ -37,14 +37,14 @@ hmysql_databasename = blacklist
 
 ;[redis]
 ;redis_addr         = "172.18.70.252:6379"
-redis_addr         = "192.168.200.170:6379"
+redis_addr         = "192.168.200.201:6379"
 
 
 
 ;[ip_address]
 ip_address          =192.168.200.201:6089
 ;[hl_address]
-hl_address          =192.168.200.201:8092
+hl_address          =192.168.200.41:8092
 
 
 ;[frequency]

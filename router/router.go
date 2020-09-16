@@ -41,6 +41,7 @@ func AuthAPIInit(route *gin.RouterGroup) {
 	//用户注册
 	route.POST("/user/register", controller.Register)
 	//用户登录
+	route.GET("/user/imagecaptcha", controller.Imagecaptcha)
 	route.POST("/user/login", controller.Login)
 
 	//查询省外总交易额、总笔数[实时redis] ok
