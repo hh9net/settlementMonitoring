@@ -25,6 +25,12 @@ type HmdGormDB struct {
 	HmdClient *gorm.DB     // mysql client
 }
 
+type HSDZGormDB struct {
+	dbConfig   *HSDZDBConfig
+	lock       sync.RWMutex // lock
+	HSDZClient *gorm.DB     // mysql client
+}
+
 // 本方法会给GormClient赋值，多次调用GormClient指向最后一次调用的GormDB
 func InitGormDB(dbConfig *DBConfig) *GormDB {
 	logrus.Infoln("starting db")
@@ -220,6 +226,15 @@ type HmdDBConfig struct {
 	DetectionInterval int           //心跳检测间隔，单位为s，默认30s,小于0则不检测
 }
 
+type HSDZDBConfig struct {
+	HSDZDBAddr        string
+	AutoCreateTables  []interface{} //自动创建的表，不设置则不创建表
+	MaxIdleConns      int           //数据库连接池设置—— 最大空闲数，不设置则为10
+	MaxOpenConns      int           //数据库连接池设置—— 最大打开的连接数，不设置则为100
+	LogMode           bool          //是否打印gorm的日志 配置文件是打印
+	DetectionInterval int           //心跳检测间隔，单位为s，默认30s,小于0则不检测
+}
+
 func (p *DBConfig) check() error {
 	if p.DBAddr == "" {
 		logrus.Println("empty sql addr")
@@ -253,6 +268,24 @@ func (p *HmdDBConfig) hmdcheck() error {
 		p.DetectionInterval = 30
 	}
 	return nil
+}
+
+// 本方法会给HmdGormClient赋值，多次调用HmdGormClient指向最后一次调用的GormDB
+func HSDZInitGormDB(HSDZstr string) *gorm.DB {
+	logrus.Infoln("starting hs-dz db")
+
+	db, err := gorm.Open("mysql", HSDZstr)
+	if err != nil {
+		logrus.Println("hs-dz db initing fail", err)
+		return nil
+	}
+	err = db.DB().Ping()
+	if err != nil {
+		logrus.Println("hs-dz db ping fail", err)
+		return nil
+	}
+
+	return db
 }
 
 // Param 分页参数

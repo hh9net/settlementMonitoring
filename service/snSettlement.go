@@ -246,3 +246,14 @@ func QueryOverdueData() (int, error, *[]dto.Overduedata) {
 	//返回数据赋值
 	return types.StatusSuccessfully, nil, &Data
 }
+
+//QueryHSDZData
+func QueryHSDZData() (int, error, *[]db.Hsdzdata) {
+
+	data, err := db.QueryHSDZData()
+	if err != nil {
+		return types.Statuszero, err, nil
+	}
+	//返回数据赋值
+	return types.StatusSuccessfully, nil, data
+}

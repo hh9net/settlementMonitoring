@@ -151,7 +151,7 @@ func (p *Kafka) Init() func() {
 
 	version, err := sarama.ParseKafkaVersion(p.version)
 	if err != nil {
-		log.Println("+++++++++++++++++++++++++++++++++++++++Error parsing Kafka version: %v", err)
+		log.Println("+++++++++++++++++++++++++++++++++++++++Error parsing Kafka version:  ", err)
 	}
 	config := sarama.NewConfig()
 	config.Version = version
@@ -162,7 +162,7 @@ func (p *Kafka) Init() func() {
 	ctx, cancel := context.WithCancel(context.Background())
 	client, err := sarama.NewConsumerGroup(p.brokers, p.group, config)
 	if err != nil {
-		log.Println("+++++++++++++++++++++++++++++++++++++++++++++Error creating consumer group client: %v", err)
+		log.Println("+++++++++++++++++++++++++++++++++++++++++++++Error creating consumer group client: ", err)
 	}
 
 	wg := &sync.WaitGroup{}
@@ -174,7 +174,7 @@ func (p *Kafka) Init() func() {
 		}()
 		for {
 			if err := client.Consume(ctx, p.topics, p); err != nil {
-				log.Println("++++++++++++++++++++++++++++++++Error from consumer: %v", err)
+				log.Println("++++++++++++++++++++++++++++++++Error from consumer: ", err)
 			}
 			// check if context was cancelled, signaling that the consumer should stop
 			if ctx.Err() != nil {
@@ -192,7 +192,7 @@ func (p *Kafka) Init() func() {
 		cancel()
 		wg.Wait()
 		if err = client.Close(); err != nil {
-			log.Println("++++++++++++++++++++++++++++++++++Error closing client: %v", err)
+			log.Println("++++++++++++++++++++++++++++++++++Error closing client: ", err)
 		}
 	}
 }

@@ -87,6 +87,8 @@ func AuthAPIInit(route *gin.RouterGroup) {
 	route.GET("/sn/abnormaldataparking", controller.QueryAbnormalDataParking)
 	//4.2.10 逾期数据停车场top10[1]
 	route.GET("/sn/overduedata", controller.QueryOverdueData)
+	//4.2.11 恒生对帐数据[1]
+	route.GET("/sn/checkaccount", controller.QueryHSDZData)
 
 	//最近15天清分包数据差额
 	route.GET("/sw/clarifydifference", controller.Clarifydifference)

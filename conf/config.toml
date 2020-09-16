@@ -43,6 +43,8 @@ redis_addr         = "192.168.200.170:6379"
 
 ;[ip_address]
 ip_address          =192.168.200.201:6089
+;[hl_address]
+hl_address          =192.168.200.201:8092
 
 
 ;[frequency]

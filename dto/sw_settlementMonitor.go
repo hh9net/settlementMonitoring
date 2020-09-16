@@ -31,20 +31,28 @@ type TotalSettlementData struct {
 }
 
 type TotalClarifyData struct {
-	Amount string `json:"amount"  example:"1244547.00"`
-	Count  int    `json:"count"  example:"42626"`
+	Amount   string `json:"amount"  example:"1244547.00"`
+	Count    int    `json:"count"  example:"42626"`
+	DateTime string `json:"datetime"  example:"2020-08-18"` //完成时间
+
 }
 type TotalBaddebtsData struct {
-	Amount string `json:"amount"  example:"1244547.00"`
-	Count  int    `json:"count"  example:"42626"`
+	Amount   string `json:"amount"  example:"1244547.00"`
+	Count    int    `json:"count"  example:"42626"`
+	DateTime string `json:"datetime"  example:"2020-08-18"` //完成时间
+
 }
 type TotalDisputeData struct {
-	Amount string `json:"amount"  example:"1244547.00"`
-	Count  int    `json:"count"  example:"42626"`
+	Amount   string `json:"amount"  example:"1244547.00"`
+	Count    int    `json:"count"  example:"42626"`
+	DateTime string `json:"datetime"  example:"2020-08-18"` //完成时间
+
 }
 type TotalAbnormalData struct {
-	Amount string `json:"amount"  example:"1244547.00"`
-	Count  int    `json:"count"  example:"42626"`
+	Amount   string `json:"amount"  example:"1244547.00"`
+	Count    int    `json:"count"  example:"42626"`
+	DateTime string `json:"datetime"  example:"2020-08-18"` //完成时间
+
 }
 
 type TotalBlacklistData struct {
@@ -90,14 +98,16 @@ type ClearlingcheckData struct {
 }
 
 type Dataclassification struct {
-	Shengwzcount int `json:"total_count" example:"1244547"`        //省外结算总数据
-	Yiqfcount    int `json:"clear_count" example:"1244547"`        //已清分总条数（不含坏账）
-	Jizcount     int `json:"keepaccount_count" example:"1244547"`  //记账
-	Zhengycount  int `json:"dispute_count" example:"1244547"`      //争议
-	Weidbcount   int `json:"no_packaging_count" example:"1244547"` //未打包
-	Yidbcount    int `json:"packaging_count" example:"1244547"`    //已打包
-	Yifscount    int `json:"send_count" example:"1244547"`         //已发送
-	Huaizcount   int `json:"bad_debts_count" example:"1244547"`    //坏账
+	Shengwzcount int    `json:"total_count" example:"1244547"`        //省外结算总数据
+	Yiqfcount    int    `json:"clear_count" example:"1244547"`        //已清分总条数（不含坏账）
+	Jizcount     int    `json:"keepaccount_count" example:"1244547"`  //记账
+	Zhengycount  int    `json:"dispute_count" example:"1244547"`      //争议
+	Weidbcount   int    `json:"no_packaging_count" example:"1244547"` //未打包
+	Yidbcount    int    `json:"packaging_count" example:"1244547"`    //已打包
+	Yifscount    int    `json:"send_count" example:"1244547"`         //已发送
+	Huaizcount   int    `json:"bad_debts_count" example:"1244547"`    //坏账
+	DateTime     string `json:"datetime"  example:"2020-08-18"`       //完成时间
+
 }
 
 type TurnData struct {

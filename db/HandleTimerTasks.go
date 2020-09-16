@@ -13,22 +13,14 @@ import (
 //goroutine1
 //1定时任务 一天一次的
 func HandleDayTasks() {
-	tiker := time.NewTicker(time.Hour * 24) //每15秒执行一下 一天一次的
-	//tiker := time.NewTicker(time.Minute * 20) //每15秒执行一下 一天一次的
+
+	now := time.Now()                                                                    //获取当前时间，放到now里面，要给next用
+	next := now.Add(time.Hour * 24)                                                      //通过now偏移24小时
+	next = time.Date(next.Year(), next.Month(), next.Day(), 1, 0, 0, 0, next.Location()) //获取下一个凌晨的日期
+	t := time.NewTimer(next.Sub(now))                                                    //计算当前时间到凌晨的时间间隔，设置一个定时器
 	for {
 		log.Println("执行线程1，处理一天一次的定时任务11111111111111111111111111111111111111111111111111111111111111111")
-		//任务一
-		//查询省外结算总金额、总笔数
-		qerr := QuerTotalSettlementData()
-		if qerr != nil {
-			log.Println("+++++++++++++++++++++【1.1error】+++++++++++++++++=查询省外结算总金额、总笔数定时任务:", qerr)
-		}
-		//任务二
-		//查询省外已清分总金额、总笔数(不含坏账)
-		qcerr := QuerTotalClarify()
-		if qcerr != nil {
-			log.Println("+++++++++++++++++++++【1.2error】+++++++++++++++++=查询省外已清分总金额、总笔数定时任务:", qcerr)
-		}
+
 		//任务三
 		//查询停车场的总金额、总笔数
 		qterr := QueryTingccJieSuan()
@@ -81,8 +73,8 @@ func HandleDayTasks() {
 		if snqserr != nil {
 			log.Println("+++++++++++++++++++++【1.11error】+++++++++++++++++=查询省内停车场结算趋势 定时任务 error:", snqserr)
 		}
-
-		log.Println(utils.DateTimeFormat(<-tiker.C), "执行线程1，处理一天一次的定时任务【完成】11111111111111111111111111111111111111111111111111111111111111111")
+		<-t.C
+		log.Println("执行线程1，处理一天一次的定时任务【完成】11111111111111111111111111111111111111111111111111111111111111111")
 
 	}
 }
@@ -94,7 +86,18 @@ func HandleHourTasks() {
 
 	for {
 		log.Println("执行线程2，处理按小时的定时任务222222222222222222222222222222222222222222222222")
-
+		//任务一
+		//查询省外结算总金额、总笔数
+		qerr := QuerTotalSettlementData()
+		if qerr != nil {
+			log.Println("+++++++++++++++++++++【1.1error】+++++++++++++++++=查询省外结算总金额、总笔数定时任务:", qerr)
+		}
+		//任务二
+		//查询省外已清分总金额、总笔数(不含坏账)
+		qcerr := QuerTotalClarify()
+		if qcerr != nil {
+			log.Println("+++++++++++++++++++++【1.2error】+++++++++++++++++=查询省外已清分总金额、总笔数定时任务:", qcerr)
+		}
 		//任务1 待处理争议数据
 		qderr := QueryShengwDisputedata()
 		if qderr != nil {
@@ -104,11 +107,6 @@ func HandleHourTasks() {
 		qycerr := QueryAbnormaldata()
 		if qycerr != nil {
 			log.Println("查询异常数据统计的总金额、总笔数定时任务 error:", qycerr)
-		}
-		//任务3 处理黑名单统计
-		qhmderr := QueryblacklistCount()
-		if qhmderr != nil {
-			log.Println("查询黑名单统计总数定时任务 error:", qhmderr)
 		}
 
 		//任务4 海玲数据同步
@@ -128,6 +126,13 @@ func HandleHourTasks() {
 		qdcerr := DataClassification()
 		if qdcerr != nil {
 			log.Println("+++++++++++++++++++++【2.6error】+++++++++++++++++=数据分类查询定时任务 error:", qdcerr)
+		}
+
+		//任务 五
+		//省内发送结算数据金额、条数
+		snjsfserr := ShengnSendJieSuanData()
+		if snjsfserr != nil {
+			log.Println("+++++++++++++++++++++【3.5error】+++++++++++++++++=查询省内发送结算数据金额、条数 定时任务 error:", snjsfserr)
 		}
 
 		//任务 八
@@ -157,6 +162,11 @@ func HandleHourTasks() {
 			log.Println("省外之前24小时转结算定时任务 error:", dterr)
 		}
 
+		//任务3 处理黑名单统计
+		qhmderr := QueryblacklistCount()
+		if qhmderr != nil {
+			log.Println("查询黑名单统计总数定时任务 error:", qhmderr)
+		}
 		log.Println(utils.DateTimeFormat(<-tiker.C), "执行线程2，处理按小时的定时任务【完成】222222222222222222222222222222222222222222222222")
 
 	}
@@ -189,13 +199,6 @@ func HandleMinutesTasks() {
 			log.Println("+++++++++++++++++++++【3.4error】+++++++++++++++++=f查询省内已请款数据金额、条数 定时任务 error:", qqingkerr)
 		}
 
-		//任务 五
-		//省内发送结算数据金额、条数
-		snjsfserr := ShengnSendJieSuanData()
-		if snjsfserr != nil {
-			log.Println("+++++++++++++++++++++【3.5error】+++++++++++++++++=查询省内发送结算数据金额、条数 定时任务 error:", snjsfserr)
-		}
-
 		log.Println(utils.DateTimeFormat(<-tiker.C), "执行线程3，处理按分钟的定时任务【完成】333333333333333333333333333333333333333333333333333333333333333333")
 
 	}
@@ -205,14 +208,20 @@ func HandleMinutesTasks() {
 //goroutine4
 //3定时任务 按分钟的
 func HandleKafka() {
-	tiker := time.NewTicker(time.Second * 10)
-	for {
-		log.Println(<-tiker.C)
-		log.Println("执行go程 处理kafka数据++++++++++++++++++++++++【kafka执行】+++++++++++++++++++++++++++++++++处理kafka数据")
-		//处理kafka数据
-		err := utils.ConsumerGroup()
-		log.Println("+++++++++++++++++++++++++++++++++++++++++++++++++++【执行go程 处理kafka数据】 error :", err)
+	//tiker := time.NewTicker(time.Second * 10)
+	//for {
+	//	log.Println(<-tiker.C)
+KafkaI:
+	log.Println("执行go程 处理kafka数据++++++++++++++++++++++++【kafka执行】+++++++++++++++++++++++++++++++++处理kafka数据")
+	//处理kafka数据
+	err := utils.ConsumerGroup()
+	if err != nil {
+		goto KafkaI
 	}
+
+	log.Println("+++++++++++++++++++++++++++++++++++++++++++++++++++【执行go程 处理kafka数据】 error :", err)
+
+	//	}
 
 }
 
@@ -392,33 +401,39 @@ func QueryClearlingAndDisputePackage() error {
 	if qcerr != nil {
 		return qcerr
 	}
-	//Clears:=make( []types.ClearlingAndDispute,0)
-	var Clear types.ClearlingAndDispute
+	//	Clears:=make( []types.ClearlingAndDispute,0)
+	//var Clear types.ClearlingAndDispute
 	if clears == nil {
-		Clear = types.ClearlingAndDispute{
+		Clear := types.ClearlingAndDispute{
 			DataType:  "clear",
 			PackageNo: "",
 			DateTime:  "",
 		}
+
+		// key:日期    value:"包号"｜"时间"
+		m[Yesterday] = Clear.PackageNo + "|" + Clear.DateTime
+		//2、把数据存储于redis  接收时间、包号
+		hmseterr := utils.RedisHMSet(&conn, Clear.DateTime, m)
+		if hmseterr != nil {
+			return hmseterr
+		}
+		log.Println("获取清分包-【RedisHSet】 v:=clear 成功 【++++++++++++[1.4]++++++++++++++++++】")
 	} else {
 		for _, clear := range *clears {
-			Clear = types.ClearlingAndDispute{
+			Clear := types.ClearlingAndDispute{
 				DataType:  "clear",
 				PackageNo: strconv.Itoa(int(clear.FNbXiaoxxh)),
-				DateTime:  clear.FVcQingfmbr,
+				DateTime:  clear.FDtChulsj.Format("2006-01-02 15:04:05"),
 			}
-			//Clears= append(Clears, Clear)
-
 			// key:日期    value:"包号"｜"时间"
-
 			m[clear.FVcQingfmbr] = Clear.PackageNo + "|" + Clear.DateTime
 			//2、把数据存储于redis  接收时间、包号
-
 			hmseterr := utils.RedisHMSet(&conn, Clear.DataType, m)
 			if hmseterr != nil {
 				return hmseterr
 			}
 			log.Println("获取清分包-【RedisHSet】 v:=clear 成功 【++++++++++++[1.4]++++++++++++++++++】")
+
 		}
 	}
 

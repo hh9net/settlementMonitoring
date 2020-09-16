@@ -62,3 +62,9 @@ func TestExportExcel(t *testing.T) {
 	req := dto.ReqClarifyExportExcel{BeginTime: "2020-08-10", EndTime: "2020-08-22", CheckState: 2, Orderstatus: 1}
 	log.Println(ExportExcel(req))
 }
+
+//QueryHSDZData()
+func TestQueryHSDZData(t *testing.T) {
+	db.NewHSZDDB()
+	log.Println(QueryHSDZData())
+}

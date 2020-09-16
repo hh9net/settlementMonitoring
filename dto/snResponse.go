@@ -57,3 +57,25 @@ type AbnormalDataOfParking struct {
 	Parkingname        string `json:"parking_name"  example:"南京南站"` //停车场名称
 	AbnormalDataAmount string `json:"abnormal_data_amount"  example:"123"`
 }
+
+type SyncRequest struct {
+	TradeTimeStart string `json:"tradeTimeStart"  example:"123"`
+	SyncStatus     int    `json:"syncStatus"  example:"123"`
+}
+
+type SyncResponse struct {
+	Code      int       `json:"code"  example:"123"`  //	"code": 0,
+	Desc      string    `json:"desc"  example:"123"`  //	"desc": "SUCCESS",
+	SyncData  SyncData  `json:"data"  example:"123"`  // "data": {
+	SyncParam SyncParam `json:"param"  example:"123"` //"param": {
+
+}
+type SyncData struct {
+	Count int   `json:"count"  example:"123"` // "count": 5130,
+	Sum   int64 `json:"sum"  example:"123"`   // "sum": 7007310,
+}
+
+type SyncParam struct {
+	TradeTimeStart string `json:"tradeTimeStart"  example:"123"`
+	SyncStatus     int    `json:"syncStatus"  example:"123"`
+}

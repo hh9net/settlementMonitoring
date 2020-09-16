@@ -64,7 +64,7 @@ func QuerTotalClarify() (int, error, *dto.TotalClarifyData) {
 	}
 	log.Println("查询省外已清分总金额、总笔数 (包含坏账的)成功")
 	//返回数据赋值
-	return types.StatusSuccessfully, nil, &dto.TotalClarifyData{Amount: utils.Fen2Yuan(qingfjg.FNbZongje), Count: qingfjg.FNbZongts}
+	return types.StatusSuccessfully, nil, &dto.TotalClarifyData{Amount: utils.Fen2Yuan(qingfjg.FNbZongje), Count: qingfjg.FNbZongts, DateTime: qingfjg.FDtTongjwcsj.Format("2006-01-02 15:04:05")}
 }
 
 //查询省外坏账总金额、总笔数
@@ -77,7 +77,7 @@ func QuerTotalBaddebts() (int, error, *dto.TotalBaddebtsData) {
 	}
 	log.Println("查询省外坏账总金额、总笔数 成功")
 	//返回数据赋值
-	return types.StatusSuccessfully, nil, &dto.TotalBaddebtsData{Amount: utils.Fen2Yuan(qingfjg.FNbHuaizje), Count: qingfjg.FNbHuaizts}
+	return types.StatusSuccessfully, nil, &dto.TotalBaddebtsData{Amount: utils.Fen2Yuan(qingfjg.FNbHuaizje), Count: qingfjg.FNbHuaizts, DateTime: qingfjg.FDtTongjwcsj.Format("2006-01-02 15:04:05")}
 }
 
 //查询存在争议的数据总金额、总笔数
@@ -90,7 +90,7 @@ func QueryDisputedata() (int, error, *dto.TotalDisputeData) {
 	}
 	log.Println("查询存在争议的数据总金额、总笔数 (包含坏账的)成功")
 	//返回数据赋值
-	return types.StatusSuccessfully, nil, &dto.TotalDisputeData{Amount: utils.Fen2Yuan(zyjg.FNbZongje), Count: zyjg.FNbZongts}
+	return types.StatusSuccessfully, nil, &dto.TotalDisputeData{Amount: utils.Fen2Yuan(zyjg.FNbZongje), Count: zyjg.FNbZongts, DateTime: zyjg.FDtTongjwcsj.Format("2006-01-02 15:04:05")}
 }
 
 //查询异常的数据总金额、总笔数
@@ -156,7 +156,7 @@ func Queryblacklistdata() (int, error, *dto.TotalBlacklistData) {
 		}
 		bs12 := make([]dto.BlackList, 0)
 		for i, blist := range bs {
-			if i == 0 || i == 2 || i == 4 || i == 6 || i == 8 || i == 10 || i == 12 || i == 14 || i == 16 || i == 18 || i == 20 || i == 22 {
+			if (i == 0 && blist.Blacklistcount != 0) || (i == 2 && blist.Blacklistcount != 0) || (i == 4 && blist.Blacklistcount != 0) || (i == 6 && blist.Blacklistcount != 0) || (i == 8 && blist.Blacklistcount != 0) || (i == 10 && blist.Blacklistcount != 0) || (i == 12 && blist.Blacklistcount != 0) || (i == 14 && blist.Blacklistcount != 0) || (i == 16 && blist.Blacklistcount != 0) || (i == 18 && blist.Blacklistcount != 0) || (i == 20 && blist.Blacklistcount != 0) || (i == 22 && blist.Blacklistcount != 0) {
 				bs12 = append(bs12, blist)
 			}
 		}
@@ -192,7 +192,7 @@ func Queryblacklistdata() (int, error, *dto.TotalBlacklistData) {
 	}
 	bs12 := make([]dto.BlackList, 0)
 	for i, blist := range bs {
-		if i == 0 || i == 2 || i == 4 || i == 6 || i == 8 || i == 10 || i == 12 || i == 14 || i == 16 || i == 18 || i == 20 || i == 22 {
+		if (i == 0 && blist.Blacklistcount != 0) || (i == 2 && blist.Blacklistcount != 0) || (i == 4 && blist.Blacklistcount != 0) || (i == 6 && blist.Blacklistcount != 0) || (i == 8 && blist.Blacklistcount != 0) || (i == 10 && blist.Blacklistcount != 0) || (i == 12 && blist.Blacklistcount != 0) || (i == 14 && blist.Blacklistcount != 0) || (i == 16 && blist.Blacklistcount != 0) || (i == 18 && blist.Blacklistcount != 0) || (i == 20 && blist.Blacklistcount != 0) || (i == 22 && blist.Blacklistcount != 0) {
 			bs12 = append(bs12, blist)
 		}
 	}
@@ -304,7 +304,7 @@ func Dataclassification() (int, error, *dto.Dataclassification) {
 			Yidbcount:    data.FNbYidbsjts,   //已打包
 			Yifscount:    data.FNbYifssjts,   //已发送
 			Huaizcount:   data.FNbHuaizsjts,  //坏账
-
+			DateTime:     data.FDtTongjwcsj.Format("2006-01-02 15:04:05"),
 		}
 	}
 

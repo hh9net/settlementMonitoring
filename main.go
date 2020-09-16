@@ -28,8 +28,11 @@ func main() {
 
 	//结算监控数据库 "root:Microvideo_1@tcp(122.51.24.189:3307)/blacklist?charset=utf8&parseTime=true&loc=Local"
 	mstr := conf.MUserName + ":" + conf.MPass + "@tcp(" + conf.MHostname + ":" + conf.MPort + ")/" + conf.Mdatabasename + "?charset=utf8&parseTime=true&loc=Local"
-	IpAddress := conf.IpAddress
+
 	db.DBInit(mstr) //初始化数据库
+	HSDZstr := conf.MUserName + ":" + conf.MPass + "@tcp(" + conf.MHostname + ":" + conf.MPort + ")/" + "localsettle" + "?charset=utf8&parseTime=true&loc=Local"
+	db.HSDZGormClientDB = utils.HSDZInitGormDB(HSDZstr)
+
 	//快照频率
 	types.Frequency = conf.Frequency
 	log.Println("10分钟快照的频率 的条数：", types.Frequency)
@@ -44,6 +47,9 @@ func main() {
 	types.RedisAddr = conf.RedisAddr
 	log.Println("RedisAddrConf:=", conf.RedisAddr)
 
+	types.HlsyncAddr = conf.HlsyncAddr
+	log.Println("HlsyncAddrConf:=", conf.RedisAddr)
+
 	utils.Pool = &redis.Pool{
 		MaxIdle:     16,  //最大空闲连接数
 		MaxActive:   0,   //最大活跃连接数  0为没有限制
@@ -54,7 +60,7 @@ func main() {
 		},
 	}
 	defer utils.Pool.Close()
-
+	IpAddress := conf.IpAddress
 	//goroutine1
 	go db.HandleDayTasks()
 	//goroutine2

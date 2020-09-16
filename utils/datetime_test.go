@@ -26,7 +26,7 @@ func TestYesterdaydate(t *testing.T) {
 
 //OldData
 func TestOldData(t *testing.T) {
-	OldData(14)
+	logrus.Print(OldData(7))
 }
 
 //StrdateToNowdate()

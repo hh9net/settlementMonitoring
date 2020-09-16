@@ -27,9 +27,9 @@ func QuerySNTotalSettlementData(c *gin.Context) {
 	code, err, totaldata := service.QuerSNTotalSettlementData()
 	if err != nil {
 		log.Println("QuerSNTotalSettlementData err: %v", err)
-		respFailure.Code = code
-		respFailure.Message = fmt.Sprintf("QuerSNTotalSettlementData err: %v", err)
-		c.JSON(http.StatusOK, respFailure)
+		respFailure.Code = types.StatusQuerySNTotalSettlementDataError
+		respFailure.Message = fmt.Sprintf("QuerSNTotalSettlementData【查询省内结算总金额、总条数错误】 err: %v", err)
+		c.JSON(types.StatusQuerySNTotalSettlementDataError, respFailure)
 		return
 	}
 	if code == types.StatusSuccessfully {
@@ -56,9 +56,9 @@ func QuerySNSendTotalSettlementData(c *gin.Context) {
 	code, err, totaldata := service.QuerySNSendTotalSettlemen()
 	if err != nil {
 		log.Println("QuerySNSendTotalSettlemen err: %v", err)
-		respFailure.Code = code
-		respFailure.Message = fmt.Sprintf("QuerySNSendTotalSettlemen err: %v", err)
-		c.JSON(http.StatusOK, respFailure)
+		respFailure.Code = types.StatusQuerySNTotalSettlementDataError
+		respFailure.Message = fmt.Sprintf("QuerySNSendTotalSettlemen err[查询省内的已发送总条数、总金额错误]: %v", err)
+		c.JSON(types.StatusQuerySNTotalSettlementDataError, respFailure)
 		return
 	}
 	if code == types.StatusSuccessfully {
@@ -85,9 +85,9 @@ func QuerySNAlreadyPleaseData(c *gin.Context) {
 	code, err, totaldata := service.QuerySNAlreadyPleaseData()
 	if err != nil {
 		log.Println("QuerySNAlreadyPleaseData err: %v", err)
-		respFailure.Code = code
+		respFailure.Code = types.StatusQuerySNAlreadyPleaseDataError
 		respFailure.Message = fmt.Sprintf("QuerySNAlreadyPleaseData err: %v", err)
-		c.JSON(http.StatusOK, respFailure)
+		c.JSON(types.StatusQuerySNAlreadyPleaseDataError, respFailure)
 		return
 	}
 	if code == types.StatusSuccessfully {
@@ -292,6 +292,34 @@ func QueryOverdueData(c *gin.Context) {
 		respFailure.Message = fmt.Sprintf("QueryOverdueData err: %v", err)
 		c.JSON(http.StatusOK, respFailure)
 		return
+	}
+	if code == types.StatusSuccessfully {
+		c.JSON(http.StatusOK, dto.QueryResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "查询逾期数据停车场top10 成功"})
+	}
+	if code == types.Statuszero {
+		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryOverdueDataError, Data: types.StatusText(types.StatusQueryOverdueDataError), Message: "查询逾期数据停车场top10 失败"})
+	}
+}
+
+//
+
+/*  接口10方法注释   */
+//@Summary 恒生对帐 api
+//@Tags 查询最近7天恒生对帐
+//@version 1.0
+//@Accept application/json
+//@Param req body dto.Reqlogin true "请求参数"
+//@Success 200 object dto.Response 成功后返回值
+//@Failure 404 object dto.ResponseFailure 查询失败
+//@Router /sn/overduedata [get]
+func QueryHSDZData(c *gin.Context) {
+	respFailure := dto.ResponseFailure{}
+	//查询逾期数据停车场top10
+	code, err, totaldata := service.QueryHSDZData()
+	if err != nil {
+		log.Println("QueryOverdueData err: %v", err)
+		respFailure.Code = code
+		respFailure.Message = fmt.Sprintf("QueryOverdueData err: %v", err)
 	}
 	if code == types.StatusSuccessfully {
 		c.JSON(http.StatusOK, dto.QueryResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "查询逾期数据停车场top10 成功"})

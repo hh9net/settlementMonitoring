@@ -1,10 +1,14 @@
 package db
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
+	"io/ioutil"
 	"math"
+	"net/http"
 	"settlementMonitoring/config"
 	"settlementMonitoring/dto"
 	"settlementMonitoring/types"
@@ -835,16 +839,16 @@ func QueryDataTurnMonitor() *types.TurnData {
 	db := utils.GormClient.Client
 	//1、查处出 b_dd_chedckyssj，b_zdz_chedckyssj 数据量  F_NB_JIAOYZT=1：转结算ok
 	ddckzcount := 0
-	db.Table("b_dd_chedckyssj").Count(&ddckzcount)
+	db.Table("b_dd_chedckyssj").Where("F_NB_JIAOYZT = ?", 1).Where("F_DT_JIAOYSJ >= ?", "2020-09-01 :00:00:00").Count(&ddckzcount)
 	log.Printf("查询单点出口表总交易笔数ddckzcount:%d", ddckzcount)
 
 	zdzckzcount := 0
-	db.Table("b_zdz_chedckyssj").Count(&zdzckzcount)
+	db.Table("b_zdz_chedckyssj").Where("F_NB_JIAOYZT = ?", 1).Where("F_DT_JIAOYSJ >= ?", "2020-09-01 :00:00:00").Count(&zdzckzcount)
 	log.Printf("查询总对总出口表总交易笔数zdzckzcount:%d", zdzckzcount)
 
 	//2、查处b_js_jiessj  数据量
 	jszcount := 0
-	db.Table("b_js_jiessj").Count(&jszcount)
+	db.Table("b_js_jiessj").Where("F_DT_JIAOYSJ >= ?", "2020-09-01 :00:00:00").Count(&jszcount)
 	log.Printf("查询结算表总交易笔数jszcount:%d", jszcount)
 	turndata := new(types.TurnData)
 	turndata.DDzcount = ddckzcount
@@ -1676,12 +1680,33 @@ func QueryShengNSettlementTrendtable(ts int) (error, *[]types.BJsjkShengnjsqs) {
 }
 
 //4.2.7	海岭数据同步监控
+func postWithJson() *dto.SyncResponse {
+	//post请求提交json数据
+	sync := dto.SyncRequest{"2020-09-01 00:00:00", 2}
+	sy, _ := json.Marshal(sync)
+	//localhost:8092
+	addr := types.HlsyncAddr
+	resp, _ := http.Post("http://"+addr+"/hl/syncStat/query", "application/json", bytes.NewBuffer([]byte(sy)))
+	body, _ := ioutil.ReadAll(resp.Body)
+	Resp := new(dto.SyncResponse)
+
+	unmerr := json.Unmarshal(body, Resp)
+	if unmerr != nil {
+		log.Println("json.Unmarshal error")
+	}
+
+	log.Println("Post request with json result:", string(body), Resp)
+	return Resp
+}
+
 func QueryDataSync() (int, int) {
 
 	//查询海玲oracle数据库 B_TXF_CHEDXFYSSJ
 	num := 0
 	//num = oracledb.OrclQuerydata()
 	//log.Println("oracle num:", num)
+	sr := postWithJson()
+	num = sr.SyncData.Count
 
 	db := utils.GormClient.Client
 	//查询结算数据 停车场id

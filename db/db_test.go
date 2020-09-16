@@ -441,3 +441,8 @@ func TestQueryOverdueDatatable(t *testing.T) {
 	log.Println(QueryOverdueDatatable("2020-08-12", 10))
 
 }
+func TestQueryHSDZData(t *testing.T) {
+	NewHSZDDB()
+	QueryHSDZData()
+
+}

@@ -28,9 +28,9 @@ func QueryTotalSettlementData(c *gin.Context) {
 	code, err, totaldata := service.QuerTotalSettlementData()
 	if err != nil {
 		log.Println("QuerTotalSettlementData  err: %v", err)
-		respFailure.Code = code
+		respFailure.Code = types.StatusQueryTotalSettlementDataError
 		respFailure.Message = fmt.Sprintf("QuerTotalSettlementData err: %v", err)
-		c.JSON(http.StatusOK, respFailure)
+		c.JSON(types.StatusQueryTotalSettlementDataError, respFailure)
 		return
 	}
 	if code == types.StatusQuerySWTotalSettlementDataSuccessfully {
@@ -56,9 +56,9 @@ func QueryTotalClarify(c *gin.Context) {
 	code, err, totaldata := service.QuerTotalClarify()
 	if err != nil {
 		log.Println("QuerTotalClarify  err: %v", err)
-		respFailure.Code = code
+		respFailure.Code = types.StatusQueryTotalSettlementDataError
 		respFailure.Message = fmt.Sprintf("QuerTotalClarify err: %v", err)
-		c.JSON(http.StatusOK, respFailure)
+		c.JSON(types.StatusQueryTotalSettlementDataError, respFailure)
 		return
 	}
 	if code == types.StatusSuccessfully {
@@ -84,9 +84,9 @@ func QueryTotalBaddebts(c *gin.Context) {
 	code, err, totaldata := service.QuerTotalBaddebts()
 	if err != nil {
 		log.Println("QueryTotalBaddebts  err: %v", err)
-		respFailure.Code = code
+		respFailure.Code = types.StatusQueryTotalBaddebtsError
 		respFailure.Message = fmt.Sprintf("QueryTotalBaddebts err: %v", err)
-		c.JSON(http.StatusOK, respFailure)
+		c.JSON(types.StatusQueryTotalBaddebtsError, respFailure)
 		return
 	}
 	if code == types.StatusSuccessfully {
@@ -113,9 +113,9 @@ func QueryShengwDisputedata(c *gin.Context) {
 	code, err, totaldata := service.QueryDisputedata()
 	if err != nil {
 		log.Println("QueryDisputedata  err: %v", err)
-		respFailure.Code = code
+		respFailure.Code = types.StatusQueryShengwDisputedataError
 		respFailure.Message = fmt.Sprintf("QueryDisputedata err: %v", err)
-		c.JSON(http.StatusOK, respFailure)
+		c.JSON(types.StatusQueryShengwDisputedataError, respFailure)
 		return
 	}
 	if code == types.StatusSuccessfully {
@@ -141,9 +141,9 @@ func QueryAbnormaldata(c *gin.Context) {
 	code, err, totaldata := service.QueryAbnormaldata()
 	if err != nil {
 		log.Println("QueryAbnormaldata  err: %v", err)
-		respFailure.Code = code
+		respFailure.Code = types.StatusQueryAbnormaldataError
 		respFailure.Message = fmt.Sprintf("QueryAbnormaldata err: %v", err)
-		c.JSON(http.StatusOK, respFailure)
+		c.JSON(types.StatusQueryAbnormaldataError, respFailure)
 		return
 	}
 	if code == types.StatusSuccessfully {
@@ -169,9 +169,9 @@ func Queryblacklistdata(c *gin.Context) {
 	code, err, totaldata := service.Queryblacklistdata()
 	if err != nil {
 		log.Println("Queryblacklistdata  err: %v", err)
-		respFailure.Code = code
+		respFailure.Code = types.StatusQueryblacklistdataError
 		respFailure.Message = fmt.Sprintf("Queryblacklistdata err: %v", err)
-		c.JSON(http.StatusOK, respFailure)
+		c.JSON(types.StatusQueryblacklistdataError, respFailure)
 		return
 	}
 	if code == types.StatusSuccessfully {
@@ -197,9 +197,9 @@ func QueryClearlingAndDisputePackage(c *gin.Context) {
 	code, err, totaldata := service.QueryClearlingAndDisputePackagedata()
 	if err != nil {
 		log.Println("QueryClearlingAndDisputePackagedata  err: %v", err)
-		respFailure.Code = code
+		respFailure.Code = types.StatusQueryClearlingAndDisputePkgError
 		respFailure.Message = fmt.Sprintf("QueryClearlingAndDisputePackagedata err: %v", err)
-		c.JSON(http.StatusOK, respFailure)
+		c.JSON(types.StatusQueryClearlingAndDisputePkgError, respFailure)
 		return
 	}
 	if code == types.StatusSuccessfully {
@@ -225,9 +225,9 @@ func Clearlingcheck(c *gin.Context) {
 	code, err, totaldata := service.StatisticalClearlingcheck()
 	if err != nil {
 		log.Println("StatisticalClearlingcheck  err: %v", err)
-		respFailure.Code = code
+		respFailure.Code = types.StatusQueryClearlingcheckOneDataError
 		respFailure.Message = fmt.Sprintf("StatisticalClearlingcheck err: %v", err)
-		c.JSON(http.StatusOK, respFailure)
+		c.JSON(types.StatusQueryClearlingcheckOneDataError, respFailure)
 		return
 	}
 	if code == types.StatusSuccessfully {
@@ -253,9 +253,9 @@ func Dataclassification(c *gin.Context) {
 	code, err, totaldata := service.Dataclassification()
 	if err != nil {
 		log.Println("QueryDataclassification  err: %v", err)
-		respFailure.Code = code
+		respFailure.Code = types.StatusQueryDataclassificationError
 		respFailure.Message = fmt.Sprintf("QueryDataclassification err: %v", err)
-		c.JSON(http.StatusOK, respFailure)
+		c.JSON(types.StatusQueryDataclassificationError, respFailure)
 		return
 	}
 	if code == types.StatusSuccessfully {
@@ -281,9 +281,9 @@ func QueryDataTurnMonitor(c *gin.Context) {
 	code, err, totaldata := service.QueryDataTurnMonitordata()
 	if err != nil {
 		log.Println("QueryDataTurnMonitordata err: %v", err)
-		respFailure.Code = code
+		respFailure.Code = types.StatusQueryDataTurnMonitorError
 		respFailure.Message = fmt.Sprintf("QueryDataTurnMonitordata err: %v", err)
-		c.JSON(http.StatusOK, respFailure)
+		c.JSON(types.StatusQueryDataTurnMonitorError, respFailure)
 		return
 	}
 	if code == types.StatusSuccessfully {
@@ -309,9 +309,9 @@ func QuerySettlementTrendbyDay(c *gin.Context) {
 	code, err, totaldata := service.QuerySettlementTrend()
 	if err != nil {
 		log.Println("QuerySettlementTrend err: %v", err)
-		respFailure.Code = code
+		respFailure.Code = types.StatusQuerySettlementTrendError
 		respFailure.Message = fmt.Sprintf("QuerySettlementTrend err: %v", err)
-		c.JSON(http.StatusOK, respFailure)
+		c.JSON(types.StatusQuerySettlementTrendError, respFailure)
 		return
 	}
 	if code == types.StatusSuccessfully {
@@ -337,9 +337,9 @@ func PacketMonitoring(c *gin.Context) {
 	code, err, totaldata := service.QueryPacketMonitoring()
 	if err != nil {
 		log.Println("QueryPacketMonitoring err: %v", err)
-		respFailure.Code = code
+		respFailure.Code = types.StatusQueryPacketMonitoringError
 		respFailure.Message = fmt.Sprintf("QueryPacketMonitoring err: %v", err)
-		c.JSON(http.StatusOK, respFailure)
+		c.JSON(types.StatusQueryPacketMonitoringError, respFailure)
 		return
 	}
 	if code == types.StatusSuccessfully {
@@ -367,9 +367,9 @@ func Clarifydifference(c *gin.Context) {
 	code, err, totaldata := service.Clarifydifference()
 	if err != nil {
 		log.Println("Clarifydifference err: %v", err)
-		respFailure.Code = code
+		respFailure.Code = types.StatusQueryClarifydifferenceError
 		respFailure.Message = fmt.Sprintf("QueryClarifydifference err: %v", err)
-		c.JSON(http.StatusOK, respFailure)
+		c.JSON(types.StatusQueryClarifydifferenceError, respFailure)
 		return
 	}
 	if code == types.StatusSuccessfully {
@@ -398,7 +398,7 @@ func ClarifyQuery(c *gin.Context) {
 		log.Println("ReqQueryClarify json unmarshal err: %v", err)
 		respFailure.Code = -1
 		respFailure.Message = fmt.Sprintf("json unmarshal err: %v", err)
-		c.JSON(http.StatusOK, respFailure)
+		c.JSON(types.StatusQueryClarifyError, respFailure)
 		return
 	}
 	//查询清分核对
@@ -474,7 +474,7 @@ func ExportExcel(c *gin.Context) {
 		log.Println("QueryClarify err: %v", err)
 		respFailure.Code = code
 		respFailure.Message = fmt.Sprintf("QueryClarify err: %v", err)
-		c.JSON(http.StatusOK, respFailure)
+		c.JSON(types.StatusExportExcelError, respFailure)
 		return
 	}
 	log.Println("fileName:", fileName)

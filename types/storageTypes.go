@@ -2,6 +2,7 @@ package types
 
 import "time"
 
+var HlsyncAddr string
 var RedisAddr string
 var HmdDBAddrconf string
 var Frequency int
