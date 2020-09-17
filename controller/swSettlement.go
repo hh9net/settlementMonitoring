@@ -31,13 +31,13 @@ func QueryTotalSettlementData(c *gin.Context) {
 	if err != nil {
 		log.Println("QuerTotalSettlementData  err: %v", err)
 		respFailure.Code = types.StatusQueryTotalSettlementDataError
-		respFailure.Message = fmt.Sprintf("QuerTotalSettlementData err[查询结算总金额、总笔数 失败]: %v", err)
+		respFailure.Message = fmt.Sprintf("查询结算总金额、总笔数 失败: %v", err)
 	}
 	if code == types.StatusQuerySWTotalSettlementDataSuccessfully {
 		c.JSON(http.StatusOK, dto.QuerResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "查询结算总金额、总笔数 成功"})
 	}
 	if code == types.Statuszero {
-		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryTotalSettlementDataError, Data: types.StatusText(types.StatusQueryTotalSettlementDataError), Message: "查询结算总金额、总笔数 失败"})
+		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryTotalSettlementDataError, Data: types.StatusText(types.StatusQueryTotalSettlementDataError), Message: fmt.Sprintf("查询结算总金额、总笔数 失败: %v", err)})
 	}
 }
 
