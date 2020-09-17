@@ -74,22 +74,26 @@ func Login(c *gin.Context) {
 	//登录处理
 	code, err := service.Login(req)
 	if err != nil {
-		logrus.Errorf("Login  err: %v", err)
 		respFailure.Code = code
-		respFailure.Message = fmt.Sprintf("Login err: %v", err)
-		c.JSON(http.StatusOK, respFailure)
-		return
+		respFailure.Message = fmt.Sprintf("%v", err)
+		//c.JSON(http.StatusOK, respFailure)
+		//return
 	}
 
 	if code == types.StatusPleaseRegister {
-		logrus.Println("用户未注册，请先注册")
-		c.JSON(http.StatusOK, dto.Response{Code: types.StatusPleaseRegister, Data: types.StatusText(types.StatusPleaseRegister), Message: "用户未注册，请先注册"})
+		logrus.Println("用户名输入错误")
+		c.JSON(http.StatusOK, dto.Response{Code: types.StatusPleaseRegister, Data: types.StatusText(types.StatusPleaseRegister), Message: "用户名输入错误,请重新输入"})
 		return
 	}
 
 	if code == types.StatusPasswordError {
 		logrus.Println("密码错误,请重新输入")
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusPasswordError, Data: types.StatusText(types.StatusPasswordError), Message: "密码错误,请重新输入"})
+		return
+	}
+	if code == types.StatusNoVerificationcode {
+		logrus.Println("验证码错误,请重新输入")
+		c.JSON(http.StatusOK, dto.Response{Code: types.StatusNoVerificationcode, Data: types.StatusText(types.StatusNoVerificationcode), Message: "验证码错误,请重新输入"})
 		return
 	}
 

@@ -212,18 +212,16 @@ func HandleMinutesTasks() {
 func HandleKafka() {
 	//tiker := time.NewTicker(time.Second * 10)
 	//for {
-	//	log.Println(<-tiker.C)
 KafkaI:
 	log.Println("执行go程 处理kafka数据++++++++++++++++++++++++【kafka执行】+++++++++++++++++++++++++++++++++处理kafka数据")
 	//处理kafka数据
 	err := utils.ConsumerGroup()
 	if err != nil {
+		log.Println("+++++++++++++++++++++++++++++++++++++++++++++++++++【执行go程 处理kafka数据】 error :", err)
 		goto KafkaI
 	}
-
-	log.Println("+++++++++++++++++++++++++++++++++++++++++++++++++++【执行go程 处理kafka数据】 error :", err)
-
-	//	}
+	//log.Println(<-tiker.C)
+	//}
 
 }
 

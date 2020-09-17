@@ -1687,7 +1687,7 @@ func QueryShengNSettlementTrendtable(ts int) (error, *[]types.BJsjkShengnjsqs) {
 //4.2.7	海岭数据同步监控
 func postWithJson() *dto.SyncResponse {
 	//post请求提交json数据
-	sync := dto.SyncRequest{"2020-09-16 00:00:00", 2}
+	sync := dto.SyncRequest{"2020-09-15 00:00:00", 2}
 	sy, _ := json.Marshal(sync)
 	//localhost:8092
 	addr := types.HlsyncAddr
@@ -1723,7 +1723,7 @@ func QueryDataSync() (int, int) {
 	//	Parkingid:= []int{3208260001,3201000001,3202110001,3212830001,3203110001,3201000009,3201000002,3205830001,3201000003,3201000004,3201000005,3201000007,3201000006,3201000008,3206120001,3101130001,3205820001}
 	var result types.Result
 
-	sqlstr := `select  count(F_NB_JINE) as count from b_js_jiessj where F_VC_TINGCCBH in ( 3208260001,3201000001,3202110001,3212830001,3203110001,3201000009,3201000002,3205830001,3201000003,3201000004,3201000005,3201000007,3201000006,3201000008,3206120001,3101130001,3205820001) and F_DT_JIAOYSJ >='2020-09-16 00:00:00'  and   F_NB_DABZT <> 4 and   F_NB_DABZT <> 5`
+	sqlstr := `select  count(F_NB_JINE) as count from b_js_jiessj where F_VC_TINGCCBH in ( 3208260001,3201000001,3202110001,3212830001,3203110001,3201000009,3201000002,3205830001,3201000003,3201000004,3201000005,3201000007,3201000006,3201000008,3206120001,3101130001,3205820001) and F_DT_JIAOYSJ >='2020-09-15 00:00:00'  and   F_NB_DABZT <> 4 and   F_NB_DABZT <> 5`
 	db.Raw(sqlstr).Scan(&result)
 	log.Printf("查询海玲数据库数据量:%d，结算表数据同步数据量:=%v", num, result.Count)
 	return num, result.Count

@@ -69,14 +69,14 @@ func main() {
 	//goroutine3
 	go db.HandleMinutesTasks()
 	//kafka处理
-	go db.HandleKafka()
+	//go db.HandleKafka()
 	//http处理
 	router.RouteInit(IpAddress)
 	tiker := time.NewTicker(time.Minute * 1)
 	for {
 		log.Println("执行主go程 ", <-tiker.C)
-		log.Println("执行主go程 休息1分钟 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
-		time.Sleep(time.Minute * 1)
+		log.Println("执行主go程 休息3分钟 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+		time.Sleep(time.Minute * 3)
 	}
 
 }

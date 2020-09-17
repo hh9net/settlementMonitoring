@@ -29,8 +29,6 @@ func QuerySNTotalSettlementData(c *gin.Context) {
 		log.Println("QuerSNTotalSettlementData err: %v", err)
 		respFailure.Code = types.StatusQuerySNTotalSettlementDataError
 		respFailure.Message = fmt.Sprintf("QuerSNTotalSettlementData【查询省内结算总金额、总条数错误】 err: %v", err)
-		c.JSON(types.StatusQuerySNTotalSettlementDataError, respFailure)
-		return
 	}
 	if code == types.StatusSuccessfully {
 		c.JSON(http.StatusOK, dto.QueryResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "查询省内结算数据表的总条数、总金额 成功"})
@@ -58,8 +56,6 @@ func QuerySNSendTotalSettlementData(c *gin.Context) {
 		log.Println("QuerySNSendTotalSettlemen err: %v", err)
 		respFailure.Code = types.StatusQuerySNTotalSettlementDataError
 		respFailure.Message = fmt.Sprintf("QuerySNSendTotalSettlemen err[查询省内的已发送总条数、总金额错误]: %v", err)
-		c.JSON(types.StatusQuerySNTotalSettlementDataError, respFailure)
-		return
 	}
 	if code == types.StatusSuccessfully {
 		c.JSON(http.StatusOK, dto.QueryResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "查询省内的已发送 总条数、总金额 成功"})
@@ -201,7 +197,7 @@ func QueryDataSync(c *gin.Context) {
 	if err != nil {
 		log.Println("QueryDataSync err: %v", err)
 		respFailure.Code = code
-		respFailure.Message = fmt.Sprintf("QueryDataSync err: %v", err)
+		respFailure.Message = fmt.Sprintf("QueryDataSync err【查询海岭数据同步监控 失败】: %v", err)
 		c.JSON(http.StatusOK, respFailure)
 		return
 	}

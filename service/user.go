@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"log"
@@ -49,8 +50,8 @@ func Login(req dto.Reqlogin) (int, error) {
 	err, jg := db.QueryUserLoginmsg(req.UserName)
 
 	//校验密码
-	if err == nil && jg == nil {
-		logrus.Println("请先注册")
+	if "record not found" == fmt.Sprintf("%v", err) {
+		logrus.Println("用户名不正确错误")
 		return types.StatusPleaseRegister, nil
 	}
 	if err != nil {

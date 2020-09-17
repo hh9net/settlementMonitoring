@@ -32,8 +32,6 @@ func QueryTotalSettlementData(c *gin.Context) {
 		log.Println("QuerTotalSettlementData  err: %v", err)
 		respFailure.Code = types.StatusQueryTotalSettlementDataError
 		respFailure.Message = fmt.Sprintf("QuerTotalSettlementData err[查询结算总金额、总笔数 失败]: %v", err)
-		c.JSON(types.StatusQueryTotalBaddebtsError, respFailure)
-		return
 	}
 	if code == types.StatusQuerySWTotalSettlementDataSuccessfully {
 		c.JSON(http.StatusOK, dto.QuerResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "查询结算总金额、总笔数 成功"})
