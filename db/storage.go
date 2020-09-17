@@ -1711,12 +1711,12 @@ func QueryDataSync() (int, int) {
 	//num = oracledb.OrclQuerydata()
 	//log.Println("oracle num:", num)
 
-	//sr := postWithJson()
-	//if sr == nil {
-	//	num = 0
-	//} else {
-	//	num = sr.SyncData.Count
-	//}
+	sr := postWithJson()
+	if sr == nil {
+		num = 0
+	} else {
+		num = sr.SyncData.Count
+	}
 
 	db := utils.GormClient.Client
 	//查询结算数据 停车场id

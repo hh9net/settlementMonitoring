@@ -295,6 +295,7 @@ func Dataclassification() (int, error, *dto.Dataclassification) {
 		if err2 != nil {
 			return types.Statuszero, err2, nil
 		}
+		sj := data.FDtTongjwcsj.Format("2006-01-02 15:04:05")
 		return types.StatusSuccessfully, nil, &dto.Dataclassification{
 			Shengwzcount: data.FNbJiaoyzts,
 			Yiqfcount:    data.FNbQingfsjts,  //已清分总条数（不含坏账）
@@ -304,7 +305,7 @@ func Dataclassification() (int, error, *dto.Dataclassification) {
 			Yidbcount:    data.FNbYidbsjts,   //已打包
 			Yifscount:    data.FNbYifssjts,   //已发送
 			Huaizcount:   data.FNbHuaizsjts,  //坏账
-			DateTime:     data.FDtTongjwcsj.Format("2006-01-02 15:04:05"),
+			DateTime:     sj,
 		}
 	}
 
@@ -317,6 +318,7 @@ func Dataclassification() (int, error, *dto.Dataclassification) {
 		Yidbcount:   dataclassification.FNbYidbsjts,   //已打包
 		Yifscount:   dataclassification.FNbYifssjts,   //已发送
 		Huaizcount:  dataclassification.FNbHuaizsjts,  //坏账
+		DateTime:    dataclassification.FDtTongjwcsj.Format("2006-01-02 15:04:05"),
 	}
 }
 
