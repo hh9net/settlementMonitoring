@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/garyburd/redigo/redis"
@@ -38,7 +39,9 @@ func RedisSelectDB(conn *redis.Conn) {
 //set设置值
 func RedisSet(conn *redis.Conn, key string, value string) error {
 	RedisSelectDB(conn)
-	result, err := (*conn).Do("SET", key, value)
+	v, _ := json.Marshal(value)
+
+	result, err := (*conn).Do("SET", key, string(v))
 	if err != nil {
 		log.Print(err)
 		return err
@@ -89,7 +92,8 @@ func RedisDelete(conn *redis.Conn, key string) error {
 func RedisHSet(conn *redis.Conn, key string, item string, value string) error {
 	RedisSelectDB(conn)
 	//hset
-	_, err := (*conn).Do("HSet", key, item, value)
+	v, _ := json.Marshal(value)
+	_, err := (*conn).Do("HSet", key, item, string(v))
 	if err != nil {
 		fmt.Println("hset出错，错误信息：", err)
 		return err
@@ -155,7 +159,7 @@ func RedisHMSet(conn *redis.Conn, key string, v map[string]string) error {
 		i++
 		kvs[i] = kk
 		i++
-		kvs[i] = vv
+		kvs[i] = `"` + vv + `"`
 	}
 	//hash存
 	values, err := (*conn).Do("HMSET", kvs...)
