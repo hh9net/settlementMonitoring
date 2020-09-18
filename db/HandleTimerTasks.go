@@ -413,7 +413,7 @@ func QueryClearlingAndDisputePackage() error {
 		// key:日期    value:"包号"｜"时间"
 		m[Yesterday] = Clear.PackageNo + "|" + Clear.DateTime
 		//2、把数据存储于redis  接收时间、包号
-		hmseterr := utils.RedisHMSet(&conn, Clear.DateTime, m)
+		hmseterr := utils.RedisHMSet(&conn, Clear.DataType, m)
 		if hmseterr != nil {
 			return hmseterr
 		}

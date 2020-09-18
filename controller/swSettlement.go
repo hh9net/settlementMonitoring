@@ -638,8 +638,8 @@ func ClearlingAndDisputePackagecalibration(c *gin.Context) {
 
 	m := make(map[string]string, 0)
 	//1、获取清分包、争议包数据
-	Yesterday := utils.Yesterdaydate()
-	qcerr, clears := db.QueryClearlingdata(req.BeginTime)
+	Yesterday := req.BeginTime
+	qcerr, clears := db.QueryClearlingdata(Yesterday)
 	if qcerr != nil {
 		log.Println("获取清分包数据 错误")
 	}
@@ -654,7 +654,7 @@ func ClearlingAndDisputePackagecalibration(c *gin.Context) {
 		// key:日期    value:"包号"｜"时间"
 		m[Yesterday] = Clear.PackageNo + "|" + Clear.DateTime
 		//2、把数据存储于redis  接收时间、包号
-		hmseterr := utils.RedisHMSet(&conn, Clear.DateTime, m)
+		hmseterr := utils.RedisHMSet(&conn, Clear.DataType, m)
 		if hmseterr != nil {
 			log.Println("utils.RedisHMSet 错误")
 
