@@ -533,6 +533,12 @@ func SetRedis(c *gin.Context) {
 	if chmseterr != nil {
 		log.Print("set redis  disput 零值error", chmseterr)
 	}
+
+	//rhseterr :=utils. RedisHSet(&conn, "jiesstatistical", Parkingid, Totalstr+"|"+strconv.Itoa(1))
+	//if rhseterr != nil {
+	//	log.Println("+++++++++++++++++++【该停车场为第一次出现】++++++++++++++++++++【RedisHSet error】：", rhseterr)
+	//	return rhseterr
+	//}
 	conn.Close()
 	log.Println("set redis 成功 ", s, strconv.Itoa(int(1))+"|"+strconv.Itoa(1), strconv.Itoa(int(1))+"|"+strconv.Itoa(1))
 	c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "set redis ok", Message: "set redis   零值 ok "})

@@ -328,7 +328,12 @@ func ProcessMessage(topic string, msg []byte) error {
 			return rhseterr
 		}
 	}
-	vstr := string(value.([]uint8))
+	rhgeterr1, value1 := RedisHGet(&conn, "jiesstatistical", Parkingid)
+	if rhgeterr1 != nil {
+		log.Println("+++++++++++++++++++++++【rhgeterr】：", rhgeterr)
+		return rhgeterr1
+	}
+	vstr := string(value1.([]uint8))
 	log.Println("The hget value is ：", vstr)
 
 	if !StringExist(vstr, "|") {
