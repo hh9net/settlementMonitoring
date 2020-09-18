@@ -394,7 +394,7 @@ func QueryTingccJieSuan() error {
 func QueryClearlingAndDisputePackage() error {
 	conn := utils.Pool.Get()
 	defer conn.Close()
-	m := make(map[string]string, 0)
+
 	//1、获取清分包、争议包数据
 	Yesterday := utils.Yesterdaydate()
 	qcerr, clears := QueryClearlingdata(Yesterday)
@@ -409,7 +409,7 @@ func QueryClearlingAndDisputePackage() error {
 			PackageNo: "",
 			DateTime:  "",
 		}
-
+		m := make(map[string]string, 0)
 		// key:日期    value:"包号"｜"时间"
 		m[Yesterday] = Clear.PackageNo + "|" + Clear.DateTime
 		//2、把数据存储于redis  接收时间、包号
@@ -426,11 +426,11 @@ func QueryClearlingAndDisputePackage() error {
 				DateTime:  clear.FDtChulsj.Format("2006-01-02 15:04:05"),
 			}
 			// key:日期    value:"包号"｜"时间"
-
+			m1 := make(map[string]string, 0)
 			sj := strings.Split(clear.FVcQingfmbr, "T")
-			m[sj[0]] = Clear.PackageNo + "|" + Clear.DateTime
+			m1[sj[0]] = Clear.PackageNo + "|" + Clear.DateTime
 			//2、把数据存储于redis  接收时间、包号
-			hmseterr := utils.RedisHMSet(&conn, Clear.DataType, m)
+			hmseterr := utils.RedisHMSet(&conn, Clear.DataType, m1)
 			if hmseterr != nil {
 				return hmseterr
 			}
@@ -458,11 +458,11 @@ func QueryClearlingAndDisputePackage() error {
 			DateTime:  utils.DateTimeFormat(dispute.FDtZhengyclsj),
 		}
 	}
-
+	m2 := make(map[string]string, 0)
 	//2、把数据存储于redis  接收时间、包号
-	m[Yesterday] = Disput.PackageNo + "|" + Disput.DateTime
+	m2[Yesterday] = Disput.PackageNo + "|" + Disput.DateTime
 
-	dishmseterr := utils.RedisHMSet(&conn, Disput.DataType, m)
+	dishmseterr := utils.RedisHMSet(&conn, Disput.DataType, m2)
 	if dishmseterr != nil {
 		return dishmseterr
 	}

@@ -647,7 +647,6 @@ func ClearlingAndDisputePackagecalibration(c *gin.Context) {
 
 	}
 
-	m := make(map[string]string, 0)
 	//1、获取清分包、争议包数据
 	Yesterday := req.BeginTime
 	qcerr, clears := db.QueryClearlingdata(Yesterday)
@@ -663,7 +662,7 @@ func ClearlingAndDisputePackagecalibration(c *gin.Context) {
 			PackageNo: "",
 			DateTime:  "",
 		}
-
+		m := make(map[string]string, 0)
 		// key:日期    value:"包号"｜"时间"
 		m[Yesterday] = Clear.PackageNo + "|" + Clear.DateTime
 		//2、把数据存储于redis  接收时间、包号
@@ -681,11 +680,12 @@ func ClearlingAndDisputePackagecalibration(c *gin.Context) {
 				PackageNo: strconv.Itoa(int(clear.FNbXiaoxxh)),
 				DateTime:  clear.FDtChulsj.Format("2006-01-02 15:04:05"),
 			}
+			m1 := make(map[string]string, 0)
 			// key:日期    value:"包号"｜"时间"
 			sj := strings.Split(clear.FVcQingfmbr, "T")
-			m[sj[0]] = Clear.PackageNo + "|" + Clear.DateTime
+			m1[sj[0]] = Clear.PackageNo + "|" + Clear.DateTime
 			//2、把数据存储于redis  接收时间、包号
-			hmseterr := utils.RedisHMSet(&conn, Clear.DataType, m)
+			hmseterr := utils.RedisHMSet(&conn, Clear.DataType, m1)
 			if hmseterr != nil {
 				log.Println("utils.RedisHMSet 错误")
 				c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "utils.RedisHMSet 错误 error", Message: "utils.RedisHMSet 错误 error "})
@@ -717,11 +717,11 @@ func ClearlingAndDisputePackagecalibration(c *gin.Context) {
 			DateTime:  utils.DateTimeFormat(dispute.FDtZhengyclsj),
 		}
 	}
-
+	m2 := make(map[string]string, 0)
 	//2、把数据存储于redis  接收时间、包号
-	m[Yesterday] = Disput.PackageNo + "|" + Disput.DateTime
+	m2[Yesterday] = Disput.PackageNo + "|" + Disput.DateTime
 
-	dishmseterr := utils.RedisHMSet(&conn, Disput.DataType, m)
+	dishmseterr := utils.RedisHMSet(&conn, Disput.DataType, m2)
 	if dishmseterr != nil {
 		log.Println(" utils.RedisHMSet 错误")
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "utils.RedisHMSet 错误 error", Message: "utils.RedisHMSet 错误 "})
