@@ -83,8 +83,8 @@ func QuerySNAlreadyPleaseData(c *gin.Context) {
 		log.Println("QuerySNAlreadyPleaseData err: %v", err)
 		respFailure.Code = types.StatusQuerySNAlreadyPleaseDataError
 		respFailure.Message = fmt.Sprintf("QuerySNAlreadyPleaseData err: %v", err)
-		c.JSON(types.StatusQuerySNAlreadyPleaseDataError, respFailure)
-		return
+		//c.JSON(types.StatusQuerySNAlreadyPleaseDataError, respFailure)
+		//return
 	}
 	if code == types.StatusSuccessfully {
 		c.JSON(http.StatusOK, dto.QueryResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "查询省内已请款的数据总条数、总金额 成功"})
@@ -112,8 +112,8 @@ func QuerySNRefusePayData(c *gin.Context) {
 		log.Println("QuerySNRefusePayData err: %v", err)
 		respFailure.Code = code
 		respFailure.Message = fmt.Sprintf("QuerySNRefusePayData err: %v", err)
-		c.JSON(http.StatusOK, respFailure)
-		return
+		//c.JSON(http.StatusOK, respFailure)
+		//return
 	}
 	if code == types.StatusSuccessfully {
 		c.JSON(http.StatusOK, dto.QueryResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "查询坏账（拒付）数据 总条数、总金额 成功"})
@@ -140,8 +140,8 @@ func QuerySNRealTimeData(c *gin.Context) {
 		log.Println("QuerySNRealTimeData err: %v", err)
 		respFailure.Code = code
 		respFailure.Message = fmt.Sprintf("QuerySNRealTimeData err: %v", err)
-		c.JSON(http.StatusOK, respFailure)
-		return
+		//c.JSON(http.StatusOK, respFailure)
+		//return
 	}
 	if code == types.StatusSuccessfully {
 		c.JSON(http.StatusOK, dto.QueryResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "查询省内结算实时数据监控 成功"})
@@ -169,8 +169,8 @@ func QuerySNSettlementTrend(c *gin.Context) {
 		log.Println("QuerySNSettlementTrend err: %v", err)
 		respFailure.Code = code
 		respFailure.Message = fmt.Sprintf("QuerySNSettlementTrend err: %v", err)
-		c.JSON(http.StatusOK, respFailure)
-		return
+		//c.JSON(http.StatusOK, respFailure)
+		//return
 	}
 	if code == types.StatusSuccessfully {
 		c.JSON(http.StatusOK, dto.QueryResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "查询省内前30日省内结算趋势概览 成功"})
@@ -198,8 +198,8 @@ func QueryDataSync(c *gin.Context) {
 		log.Println("QueryDataSync err: %v", err)
 		respFailure.Code = code
 		respFailure.Message = fmt.Sprintf("QueryDataSync err【查询海岭数据同步监控 失败】: %v", err)
-		c.JSON(http.StatusOK, respFailure)
-		return
+		//c.JSON(http.StatusOK, respFailure)
+		//return
 	}
 	if code == types.StatusSuccessfully {
 		c.JSON(http.StatusOK, dto.QueryResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "查询海岭数据同步监控 成功"})
@@ -227,8 +227,8 @@ func QuerySNDataClassification(c *gin.Context) {
 		log.Println("QuerySNDataClassification err: %v", err)
 		respFailure.Code = code
 		respFailure.Message = fmt.Sprintf("QuerySNDataClassification err: %v", err)
-		c.JSON(http.StatusOK, respFailure)
-		return
+		//c.JSON(http.StatusOK, respFailure)
+		//return
 	}
 	if code == types.StatusSuccessfully {
 		c.JSON(http.StatusOK, dto.QueryResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: " 查询省内结算数据分类 成功"})
@@ -258,8 +258,7 @@ func QueryAbnormalDataParking(c *gin.Context) {
 		log.Println("QueryAbnormalDataParking err: %v", err)
 		respFailure.Code = code
 		respFailure.Message = fmt.Sprintf("QueryAbnormalDataParking err: %v", err)
-		c.JSON(http.StatusOK, respFailure)
-		return
+
 	}
 	if code == types.StatusSuccessfully {
 		c.JSON(http.StatusOK, dto.QueryResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "  查询异常数据停车场top10 成功"})
@@ -286,8 +285,7 @@ func QueryOverdueData(c *gin.Context) {
 		log.Println("QueryOverdueData err: %v", err)
 		respFailure.Code = code
 		respFailure.Message = fmt.Sprintf("QueryOverdueData err: %v", err)
-		c.JSON(http.StatusOK, respFailure)
-		return
+
 	}
 	if code == types.StatusSuccessfully {
 		c.JSON(http.StatusOK, dto.QueryResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "查询逾期数据停车场top10 成功"})

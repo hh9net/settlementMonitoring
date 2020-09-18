@@ -28,8 +28,8 @@ type SNClearandJiesuan struct {
 }
 
 type DataSync struct {
-	JiesuanCount int    `json:"sync_count"  example:"123"`      //交易结算条数
-	HailCount    int    `json:"source_count"  example:"123"`    //清分总笔数
+	JiesuanCount int    `json:"sync_count"  example:"123"`      //结算表
+	HailCount    int    `json:"source_count"  example:"123"`    //海岭
 	DateTime     string `json:"datetime"  example:"2020-08-18"` //完成时间
 
 }

@@ -58,8 +58,8 @@ func QueryTotalClarify(c *gin.Context) {
 		log.Println("QuerTotalClarify  err: %v", err)
 		respFailure.Code = types.StatusQueryTotalSettlementDataError
 		respFailure.Message = fmt.Sprintf("QuerTotalClarify err: %v", err)
-		c.JSON(types.StatusQueryTotalBaddebtsError, respFailure)
-		return
+		//c.JSON(types.StatusQueryTotalBaddebtsError, respFailure)
+		//return
 	}
 	if code == types.StatusSuccessfully {
 		c.JSON(http.StatusOK, dto.QuerResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "查询已清分总金额、总笔数 成功"})
@@ -86,8 +86,8 @@ func QueryTotalBaddebts(c *gin.Context) {
 		log.Println("QueryTotalBaddebts  err: %v", err)
 		respFailure.Code = types.StatusQueryTotalBaddebtsError
 		respFailure.Message = fmt.Sprintf("QueryTotalBaddebts err: %v", err)
-		c.JSON(types.StatusQueryTotalBaddebtsError, respFailure)
-		return
+		//c.JSON(types.StatusQueryTotalBaddebtsError, respFailure)
+		//return
 	}
 	if code == types.StatusSuccessfully {
 		c.JSON(http.StatusOK, dto.QuerResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "查询坏账总金额、总笔数 成功"})
@@ -115,8 +115,8 @@ func QueryShengwDisputedata(c *gin.Context) {
 		log.Println("QueryDisputedata  err: %v", err)
 		respFailure.Code = types.StatusQueryShengwDisputedataError
 		respFailure.Message = fmt.Sprintf("QueryDisputedata err: %v", err)
-		c.JSON(types.StatusQueryShengwDisputedataError, respFailure)
-		return
+		//c.JSON(types.StatusQueryShengwDisputedataError, respFailure)
+		//return
 	}
 	if code == types.StatusSuccessfully {
 		c.JSON(http.StatusOK, dto.QuerResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "查询存在争议总金额、总笔数 成功"})
@@ -143,8 +143,8 @@ func QueryAbnormaldata(c *gin.Context) {
 		log.Println("QueryAbnormaldata  err: %v", err)
 		respFailure.Code = types.StatusQueryAbnormaldataError
 		respFailure.Message = fmt.Sprintf("QueryAbnormaldata err: %v", err)
-		c.JSON(types.StatusQueryAbnormaldataError, respFailure)
-		return
+		//c.JSON(types.StatusQueryAbnormaldataError, respFailure)
+		//return
 	}
 	if code == types.StatusSuccessfully {
 		c.JSON(http.StatusOK, dto.QuerResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "查询异常数据总金额、总笔数 成功"})
@@ -171,8 +171,8 @@ func Queryblacklistdata(c *gin.Context) {
 		log.Println("Queryblacklistdata  err: %v", err)
 		respFailure.Code = types.StatusQueryblacklistdataError
 		respFailure.Message = fmt.Sprintf("Queryblacklistdata err: %v", err)
-		c.JSON(types.StatusQueryblacklistdataError, respFailure)
-		return
+		//c.JSON(types.StatusQueryblacklistdataError, respFailure)
+		//return
 	}
 	if code == types.StatusSuccessfully {
 		c.JSON(http.StatusOK, dto.QuerResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "查询黑名单总数、较2小时前变化值 成功"})
@@ -199,8 +199,8 @@ func QueryClearlingAndDisputePackage(c *gin.Context) {
 		log.Println("QueryClearlingAndDisputePackagedata  err: %v", err)
 		respFailure.Code = types.StatusQueryClearlingAndDisputePkgError
 		respFailure.Message = fmt.Sprintf("QueryClearlingAndDisputePackagedata err: %v", err)
-		c.JSON(types.StatusQueryClearlingAndDisputePkgError, respFailure)
-		return
+		//c.JSON(types.StatusQueryClearlingAndDisputePkgError, respFailure)
+		//return
 	}
 	if code == types.StatusSuccessfully {
 		c.JSON(http.StatusOK, dto.QuerResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "查询清分包、争议包的接收时间、包号 成功"})
@@ -227,8 +227,8 @@ func Clearlingcheck(c *gin.Context) {
 		log.Println("StatisticalClearlingcheck  err: %v", err)
 		respFailure.Code = types.StatusQueryClearlingcheckOneDataError
 		respFailure.Message = fmt.Sprintf("StatisticalClearlingcheck err: %v", err)
-		c.JSON(types.StatusQueryClearlingcheckOneDataError, respFailure)
-		return
+		//c.JSON(types.StatusQueryClearlingcheckOneDataError, respFailure)
+		//return
 	}
 	if code == types.StatusSuccessfully {
 		c.JSON(http.StatusOK, dto.QuerResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "查询清分核对结果 成功"})
@@ -255,8 +255,8 @@ func Dataclassification(c *gin.Context) {
 		log.Println("QueryDataclassification  err: %v", err)
 		respFailure.Code = types.StatusQueryDataclassificationError
 		respFailure.Message = fmt.Sprintf("QueryDataclassification err: %v", err)
-		c.JSON(types.StatusQueryDataclassificationError, respFailure)
-		return
+		//c.JSON(types.StatusQueryDataclassificationError, respFailure)
+		//return
 	}
 	if code == types.StatusSuccessfully {
 		c.JSON(http.StatusOK, dto.QuerResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "查询省外数据分类 成功"})
@@ -283,8 +283,8 @@ func QueryDataTurnMonitor(c *gin.Context) {
 		log.Println("QueryDataTurnMonitordata err: %v", err)
 		respFailure.Code = types.StatusQueryDataTurnMonitorError
 		respFailure.Message = fmt.Sprintf("QueryDataTurnMonitordata err: %v", err)
-		c.JSON(types.StatusQueryDataTurnMonitorError, respFailure)
-		return
+		//c.JSON(types.StatusQueryDataTurnMonitorError, respFailure)
+		//return
 	}
 	if code == types.StatusSuccessfully {
 		c.JSON(http.StatusOK, dto.QuerResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "查询省外转结算 成功"})
@@ -311,8 +311,8 @@ func QuerySettlementTrendbyDay(c *gin.Context) {
 		log.Println("QuerySettlementTrend err: %v", err)
 		respFailure.Code = types.StatusQuerySettlementTrendError
 		respFailure.Message = fmt.Sprintf("QuerySettlementTrend err: %v", err)
-		c.JSON(types.StatusQuerySettlementTrendError, respFailure)
-		return
+		//c.JSON(types.StatusQuerySettlementTrendError, respFailure)
+		//return
 	}
 	if code == types.StatusSuccessfully {
 		c.JSON(http.StatusOK, dto.QuerResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "查询省外结算趋势 成功"})
@@ -339,8 +339,8 @@ func PacketMonitoring(c *gin.Context) {
 		log.Println("QueryPacketMonitoring err: %v", err)
 		respFailure.Code = types.StatusQueryPacketMonitoringError
 		respFailure.Message = fmt.Sprintf("QueryPacketMonitoring err: %v", err)
-		c.JSON(types.StatusQueryPacketMonitoringError, respFailure)
-		return
+		//c.JSON(types.StatusQueryPacketMonitoringError, respFailure)
+		//return
 	}
 	if code == types.StatusSuccessfully {
 		c.JSON(http.StatusOK, dto.QuerResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "查询省外数据包监控 成功"})
@@ -369,8 +369,8 @@ func Clarifydifference(c *gin.Context) {
 		log.Println("Clarifydifference err: %v", err)
 		respFailure.Code = types.StatusQueryClarifydifferenceError
 		respFailure.Message = fmt.Sprintf("QueryClarifydifference err: %v", err)
-		c.JSON(types.StatusQueryClarifydifferenceError, respFailure)
-		return
+		//c.JSON(types.StatusQueryClarifydifferenceError, respFailure)
+		//return
 	}
 	if code == types.StatusSuccessfully {
 		c.JSON(http.StatusOK, dto.QuerResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "查询最近15天清分包数据差额 成功"})
@@ -398,8 +398,8 @@ func ClarifyQuery(c *gin.Context) {
 		log.Println("ReqQueryClarify json unmarshal err: %v", err)
 		respFailure.Code = -1
 		respFailure.Message = fmt.Sprintf("json unmarshal err: %v", err)
-		c.JSON(types.StatusQueryClarifyError, respFailure)
-		return
+		//c.JSON(types.StatusQueryClarifyError, respFailure)
+		//return
 	}
 	//查询清分核对
 	code, err, totaldata := service.ClarifyQuery(req)
@@ -435,8 +435,8 @@ func Clarifyconfirm(c *gin.Context) {
 		log.Println("Clarifyconfirmerr: %v", err)
 		respFailure.Code = code
 		respFailure.Message = fmt.Sprintf("Clarifyconfirm err: %v", err)
-		c.JSON(http.StatusOK, respFailure)
-		return
+		//c.JSON(http.StatusOK, respFailure)
+		//return
 	}
 	if code == types.StatusSuccessfully {
 		c.JSON(http.StatusOK, dto.QuerResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "清分确认成功 【待实现】"})
@@ -465,8 +465,8 @@ func ExportExcel(c *gin.Context) {
 		log.Println("ReqQueryClarify json unmarshal err: %v", err)
 		respFailure.Code = -1
 		respFailure.Message = fmt.Sprintf("json unmarshal err: %v", err)
-		c.JSON(http.StatusOK, respFailure)
-		return
+		//c.JSON(http.StatusOK, respFailure)
+		//return
 	}
 	//导出清分核对记录为excel
 	code, err, totaldata, fileName := service.ExportExcel(req)
@@ -612,5 +612,99 @@ func Clearcalibration(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "清分核对校准 ok", Message: "清分核对校准 ok "})
+
+}
+
+//Clearcalibration清分包、争议包校准
+func ClearlingAndDisputePackagecalibration(c *gin.Context) {
+	conn := utils.Pool.Get() //初始化redis
+	defer conn.Close()
+	req := dto.ReqQuery{}
+	respFailure := dto.ResponseFailure{}
+
+	if err := c.Bind(&req); err != nil {
+		log.Println("ReqQueryClarify json unmarshal err: %v", err)
+		respFailure.Code = -1
+		respFailure.Message = fmt.Sprintf("json unmarshal err: %v", err)
+		c.JSON(types.StatusQueryClarifyError, respFailure)
+
+	}
+
+	m := make(map[string]string, 0)
+	//1、获取清分包、争议包数据
+	Yesterday := utils.Yesterdaydate()
+	qcerr, clears := db.QueryClearlingdata(req.BeginTime)
+	if qcerr != nil {
+		log.Println("获取清分包数据 错误")
+	}
+
+	if clears == nil {
+		Clear := types.ClearlingAndDispute{
+			DataType:  "clear",
+			PackageNo: "",
+			DateTime:  "",
+		}
+
+		// key:日期    value:"包号"｜"时间"
+		m[Yesterday] = Clear.PackageNo + "|" + Clear.DateTime
+		//2、把数据存储于redis  接收时间、包号
+		hmseterr := utils.RedisHMSet(&conn, Clear.DateTime, m)
+		if hmseterr != nil {
+			log.Println("utils.RedisHMSet 错误")
+
+		}
+		log.Println("获取清分包-【RedisHSet】 v:=clear 成功 【++++++++++++[1.4]++++++++++++++++++】")
+	} else {
+		for _, clear := range *clears {
+			Clear := types.ClearlingAndDispute{
+				DataType:  "clear",
+				PackageNo: strconv.Itoa(int(clear.FNbXiaoxxh)),
+				DateTime:  clear.FDtChulsj.Format("2006-01-02 15:04:05"),
+			}
+			// key:日期    value:"包号"｜"时间"
+			m[clear.FVcQingfmbr] = Clear.PackageNo + "|" + Clear.DateTime
+			//2、把数据存储于redis  接收时间、包号
+			hmseterr := utils.RedisHMSet(&conn, Clear.DataType, m)
+			if hmseterr != nil {
+				log.Println("utils.RedisHMSet 错误")
+
+			}
+			log.Println("获取清分包-【RedisHSet】 v:=clear 成功 【++++++++++++[1.4]++++++++++++++++++】")
+
+		}
+	}
+
+	//1查询争议处理数据
+	qderr, dispute := db.QueryDisputedata(Yesterday)
+	if qderr != nil {
+		log.Println("获取争议包数据 错误")
+
+	}
+	var Disput types.ClearlingAndDispute
+	if dispute == nil {
+		Disput = types.ClearlingAndDispute{
+			DataType:  "disput",
+			PackageNo: "",
+			DateTime:  "",
+		}
+	} else {
+		Disput = types.ClearlingAndDispute{
+			DataType:  "disput",
+			PackageNo: strconv.Itoa(int(dispute.FNbXiaoxxh)),
+			DateTime:  utils.DateTimeFormat(dispute.FDtZhengyclsj),
+		}
+	}
+
+	//2、把数据存储于redis  接收时间、包号
+	m[Yesterday] = Disput.PackageNo + "|" + Disput.DateTime
+
+	dishmseterr := utils.RedisHMSet(&conn, Disput.DataType, m)
+	if dishmseterr != nil {
+		log.Println(" utils.RedisHMSet 错误")
+
+	}
+	log.Println("获取争议包-【RedisHSet】 v:=disput 成功 【++++++++++++[1.4]++++++++++++++++++】")
+	log.Println("  【++++++++++++【1.4 是 ok的】++++++++++++++++++】")
+	c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "清分包、争议包校准 ok", Message: "清分包、争议包校准 ok "})
 
 }

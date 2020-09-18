@@ -108,6 +108,8 @@ func AuthAPIInit(route *gin.RouterGroup) {
 	route.GET("/sw/setredis", controller.SetRedis)
 	//清分核对校准
 	route.POST("/sw/clearcalibration", controller.Clearcalibration)
+	//清分包，争议处理包校准
+	route.POST("/sw/clearlinganddisputepackageclearcalibration", controller.ClearlingAndDisputePackagecalibration)
 
 }
 

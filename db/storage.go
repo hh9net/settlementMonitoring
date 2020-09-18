@@ -622,11 +622,16 @@ func StatisticalkeepAccount(Yesterdaydate string) (int64, int) {
 	db.Raw(sqlstr1, begin, end).Pluck("SUM(F_NB_JILSL) as totalcount", &totalcount)
 	log.Printf("统计记账包总条数为：%d", totalcount)
 
+	var czzycount []int
+	sqlstr2 := `select SUM(F_NB_ZHENGYSL) as czzycount from b_js_jizclxx  where F_DT_CHULSJ>=? and F_DT_CHULSJ<=?`
+	db.Raw(sqlstr2, begin, end).Pluck("SUM(F_NB_ZHENGYSL) as czzycount", &czzycount)
+	log.Printf("统计记账包存在争议的数量为：%d", czzycount)
+
 	//if total_money == nil {
 	//	log.Printf("total_money == nil" )
 	//	return 0, 0
 	//}
-	return total_money[0], totalcount[0]
+	return total_money[0], totalcount[0] - czzycount[0]
 }
 
 //3、统计清分包中可以清分的争议数据的金额
@@ -645,6 +650,7 @@ func DisputedDataCanClearling(qingfxiaoxiid int64) (error, *(types.BJsZhengyjycl
 		}
 	}
 	log.Println("查询清分包数据表结果:", qingfmxsj)
+
 	if qingfmxsj.FNbZhengycljgwjid == 0 {
 		log.Println("查询清分包 没有争议处理数据，全部可以记账清分++++++++++++++++++++++++++++++++++++++++ ")
 		return nil, nil, 0
@@ -653,7 +659,7 @@ func DisputedDataCanClearling(qingfxiaoxiid int64) (error, *(types.BJsZhengyjycl
 		if err := db.Table("b_js_zhengyjyclxx").Where("F_VC_ZHENGYJGWJID=?", qingfmxsj.FNbZhengycljgwjid).Last(&zytjsj).Error; err != nil {
 			if fmt.Sprint(err) == "record not found" {
 				log.Println("QueryDisputedata err == `record not found`:", err)
-				//return nil, nil, 0
+				return err, nil, 0
 			} else {
 				log.Println("查询争议处理包数据表最新数据时 QueryDisputedata error :", err)
 				return err, nil, 0
@@ -679,7 +685,7 @@ func QueryDisputedData(zyxx *types.BJsZhengyjyclxx) (error, int) {
 	if err := db.Table("b_js_zhengyjyclmx").Where("F_NB_ZHENGYJYCLXXXH=?", zyxx.FNbXiaoxxh).Where("F_NB_CHULJG=?", 0).Find(&zytjsjmx).Error; err != nil {
 		if fmt.Sprint(err) == "record not found" {
 			log.Println("QueryDisputedata err == `record not found`:", err)
-			return nil, 0
+			return err, 0
 		}
 		log.Println("查询争议处理包mx数量 error :", err)
 		return err, 0

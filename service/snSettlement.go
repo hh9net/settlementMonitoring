@@ -158,7 +158,7 @@ func QueryDataSync() (int, error, *[]dto.DataSync) {
 		return types.Statuszero, err, nil
 	}
 	for i, d := range *ds {
-		Data[i].HailCount = d.FNbJiessjzl
+		Data[i].HailCount = d.FNbJiessjzl //海岭
 		Data[i].JiesuanCount = d.FNbYitbsjl
 		Data[i].DateTime = d.FDtTongjwcsj.Format("2006-01-02 15:04:05")
 	}
