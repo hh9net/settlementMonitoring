@@ -595,6 +595,14 @@ func StatisticalClearlingcheck() error {
 
 		s := strings.Split(clear.FVcQingfmbr, "T")
 		data.FVcTongjrq = s[0] //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',【清分包的清分目标日】
+		qcrerr := QueryCheckResult(data)
+		if qcrerr != nil {
+			if fmt.Sprint(qcrerr) == "查询清分核对结果成功,不能重复插入" {
+				log.Println("查询清分核对结果成功,不能重复插入")
+				return nil
+			}
+			return qcrerr
+		}
 		cherr := CheckResult(data)
 		if cherr != nil {
 			return cherr
@@ -705,6 +713,21 @@ func CheckResult(clear *types.BJsjkQingfhd) error {
 	}
 	log.Println("新增清分核对结果成功！++++++++++++++++++++++++++++++++++++++++++++++++", clear.FNbQingfbxh)
 	return nil
+}
+
+func QueryCheckResult(clear *types.BJsjkQingfhd) error {
+	db := utils.GormClient.Client
+	Clear := new(types.BJsjkQingfhd)
+	if err := db.Table("b_jsjk_qingfhd").Where("F_NB_QINGFBXH = ?", clear.FNbQingfbxh).First(Clear).Error; err != nil {
+		if fmt.Sprint(err) == "record not found" {
+			log.Println("Query b_jsjk_qingfhd err == `record not found`:", err)
+			return nil
+		}
+		log.Println("Query b_jsjk_qingfhd error", err)
+		return err
+	}
+	log.Println("查询清分核对结果成功！++++++++++++++++++++++++++++++++++++++++++++++++", clear.FNbQingfbxh)
+	return errors.New("查询清分核对结果成功,不能重复插入")
 }
 
 //查询最新一条清分核对结果

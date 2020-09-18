@@ -610,9 +610,20 @@ func Clearcalibration(c *gin.Context) {
 
 		s := strings.Split(clear.FVcQingfmbr, "T")
 		data.FVcTongjrq = s[0] //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',【清分包的清分目标日】
+		qcrerr := db.QueryCheckResult(data)
+		if qcrerr != nil {
+			if fmt.Sprint(qcrerr) == "查询清分核对结果成功,不能重复插入" {
+				log.Println("查询清分核对结果成功,不能重复插入")
+				c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "查询清分核对结果成功,不能重复插入", Message: "查询清分核对结果成功,不能重复插入"})
+				return
+			}
+			c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "清分核对校准error", Message: "清分核对校准error "})
+			return
+		}
 		cherr := db.CheckResult(data)
 		if cherr != nil {
-			//	return cherr
+			c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "清分核对校准 插入 error", Message: "清分核对校准 插入 error "})
+			return
 		}
 		log.Println("清分金额核对完成++++++++++++++++++++【1.5】+++++++++++++")
 	}
@@ -642,6 +653,8 @@ func ClearlingAndDisputePackagecalibration(c *gin.Context) {
 	qcerr, clears := db.QueryClearlingdata(Yesterday)
 	if qcerr != nil {
 		log.Println("获取清分包数据 错误")
+		c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "取清分包数据 错误 error", Message: "取清分包数据 错误 error "})
+
 	}
 
 	if clears == nil {
@@ -657,6 +670,7 @@ func ClearlingAndDisputePackagecalibration(c *gin.Context) {
 		hmseterr := utils.RedisHMSet(&conn, Clear.DataType, m)
 		if hmseterr != nil {
 			log.Println("utils.RedisHMSet 错误")
+			c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "utils.RedisHMSet 错误", Message: "utils.RedisHMSet 错误"})
 
 		}
 		log.Println("获取清分包-【RedisHSet】 v:=clear 成功 【++++++++++++[1.4]++++++++++++++++++】")
@@ -668,11 +682,13 @@ func ClearlingAndDisputePackagecalibration(c *gin.Context) {
 				DateTime:  clear.FDtChulsj.Format("2006-01-02 15:04:05"),
 			}
 			// key:日期    value:"包号"｜"时间"
-			m[clear.FVcQingfmbr] = Clear.PackageNo + "|" + Clear.DateTime
+			sj := strings.Split(clear.FVcQingfmbr, "T")
+			m[sj[0]] = Clear.PackageNo + "|" + Clear.DateTime
 			//2、把数据存储于redis  接收时间、包号
 			hmseterr := utils.RedisHMSet(&conn, Clear.DataType, m)
 			if hmseterr != nil {
 				log.Println("utils.RedisHMSet 错误")
+				c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "utils.RedisHMSet 错误 error", Message: "utils.RedisHMSet 错误 error "})
 
 			}
 			log.Println("获取清分包-【RedisHSet】 v:=clear 成功 【++++++++++++[1.4]++++++++++++++++++】")
@@ -684,6 +700,7 @@ func ClearlingAndDisputePackagecalibration(c *gin.Context) {
 	qderr, dispute := db.QueryDisputedata(Yesterday)
 	if qderr != nil {
 		log.Println("获取争议包数据 错误")
+		c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "获取争议包数据 错误 error", Message: "获取争议包数据 错误 "})
 
 	}
 	var Disput types.ClearlingAndDispute
@@ -707,6 +724,7 @@ func ClearlingAndDisputePackagecalibration(c *gin.Context) {
 	dishmseterr := utils.RedisHMSet(&conn, Disput.DataType, m)
 	if dishmseterr != nil {
 		log.Println(" utils.RedisHMSet 错误")
+		c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "utils.RedisHMSet 错误 error", Message: "utils.RedisHMSet 错误 "})
 
 	}
 	log.Println("获取争议包-【RedisHSet】 v:=disput 成功 【++++++++++++[1.4]++++++++++++++++++】")

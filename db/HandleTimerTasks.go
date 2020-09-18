@@ -426,7 +426,9 @@ func QueryClearlingAndDisputePackage() error {
 				DateTime:  clear.FDtChulsj.Format("2006-01-02 15:04:05"),
 			}
 			// key:日期    value:"包号"｜"时间"
-			m[clear.FVcQingfmbr] = Clear.PackageNo + "|" + Clear.DateTime
+
+			sj := strings.Split(clear.FVcQingfmbr, "T")
+			m[sj[0]] = Clear.PackageNo + "|" + Clear.DateTime
 			//2、把数据存储于redis  接收时间、包号
 			hmseterr := utils.RedisHMSet(&conn, Clear.DataType, m)
 			if hmseterr != nil {
