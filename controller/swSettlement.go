@@ -732,3 +732,24 @@ func ClearlingAndDisputePackagecalibration(c *gin.Context) {
 	c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "清分包、争议包校准 ok", Message: "清分包、争议包校准 ok "})
 
 }
+
+//Settlementtrendcalibration
+func Settlementtrendcalibration(c *gin.Context) {
+	//任务七
+	//省外结算趋势
+	qserr := db.SettlementTrendbyDay()
+	if qserr != nil {
+		log.Println("+++++++++++++++++++++【1.6error】+++++++++++++++++=查询省外结算趋势定时任务 error:", qserr)
+	}
+
+	//省内业务
+	//任务十三
+	//省内结算趋势
+	qsnqserr := db.QueryShengNSettlementTrenddata()
+	if qsnqserr != nil {
+		log.Println("+++++++++++++++++++++【1.8error】+++++++++++++++++=查询省内结算分类 定时任务 error:", qsnqserr)
+	}
+
+	c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "省内、省外结算趋势校准 ok", Message: "省内、省外结算趋势校准ok "})
+
+}
