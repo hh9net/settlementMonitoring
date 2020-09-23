@@ -740,6 +740,8 @@ func Settlementtrendcalibration(c *gin.Context) {
 	qserr := db.SettlementTrendbyDay()
 	if qserr != nil {
 		log.Println("+++++++++++++++++++++【1.6error】+++++++++++++++++=查询省外结算趋势定时任务 error:", qserr)
+		c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "省内、省外结算趋势校准 error", Message: "省内、省外结算趋势校准error "})
+
 	}
 
 	//省内业务
@@ -748,8 +750,10 @@ func Settlementtrendcalibration(c *gin.Context) {
 	qsnqserr := db.QueryShengNSettlementTrenddata()
 	if qsnqserr != nil {
 		log.Println("+++++++++++++++++++++【1.8error】+++++++++++++++++=查询省内结算分类 定时任务 error:", qsnqserr)
+		c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "省内、省外结算趋势校准 error", Message: "省内、省外结算趋势校准error "})
+
 	}
 
-	c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "省内、省外结算趋势校准 ok", Message: "省内、省外结算趋势校准ok "})
+	c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "省内、省外结算趋势校准 error", Message: "省内、省外结算趋势校准error "})
 
 }
