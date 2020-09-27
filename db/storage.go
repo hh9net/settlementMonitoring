@@ -551,7 +551,7 @@ func StatisticalClearlingcheck() error {
 		return qerr
 	}
 	if clears == nil {
-		log.Println("+++++++++++++++++++++++++++昨日没有清分包【1.5】++++++++++++++++++++++")
+		log.Println("+++++++++++++++++++++++++++昨日没有清分包【1.3】++++++++++++++++++++++")
 		return errors.New("昨日没有清分包，需要检查清分包是否接收")
 	}
 	for _, clear := range *clears {
@@ -607,7 +607,7 @@ func StatisticalClearlingcheck() error {
 		if cherr != nil {
 			return cherr
 		}
-		log.Println("清分金额核对完成++++++++++++++++++++【1.5】+++++++++++++")
+		log.Println("清分金额核对完成++++++++++++++++++++【1.3】+++++++++++++")
 	}
 
 	return nil
@@ -1713,20 +1713,25 @@ func QueryShengNSettlementTrendtable(ts int) (error, *[]types.BJsjkShengnjsqs) {
 	return nil, &shujus
 }
 
-//4.2.7	海岭数据同步监控
+//4.2.7	海岭数据同步监控 这个接口会因为
 func postWithJson() *dto.SyncResponse {
 	//post请求提交json数据
 	sync := dto.SyncRequest{"2020-09-17 00:00:00", 2}
 	sy, _ := json.Marshal(sync)
 	//localhost:8092
 	addr := types.HlsyncAddr
-	resp, _ := http.Post("http://"+addr+"/hl/syncStat/query", "application/json", bytes.NewBuffer([]byte(sy)))
+	resp, err := http.Post("http://"+addr+"/hl/syncStat/query", "application/json", bytes.NewBuffer([]byte(sy)))
+	if err != nil {
+		log.Println("查询海岭数据同步的时候error:", err)
+		return nil
+	}
 	body, _ := ioutil.ReadAll(resp.Body)
 	Resp := new(dto.SyncResponse)
 
 	unmerr := json.Unmarshal(body, Resp)
 	if unmerr != nil {
 		log.Println("json.Unmarshal error")
+		return nil
 	}
 
 	log.Println("Post request with json result:", string(body), Resp)
