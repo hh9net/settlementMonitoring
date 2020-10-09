@@ -59,7 +59,10 @@ func main() {
 			return redis.Dial("tcp", conf.RedisAddr)
 		},
 	}
-	defer utils.Pool.Close()
+
+	defer func() {
+		_ = utils.Pool.Close()
+	}()
 	IpAddress := conf.IpAddress
 
 	//goroutine1

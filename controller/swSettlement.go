@@ -481,7 +481,8 @@ func ExportExcel(c *gin.Context) {
 	if code == types.StatusSuccessfully {
 		//c.JSON(http.StatusOK, dto.QuerResponse{Code: 0, CodeMsg: types.StatusText(0), Data: totaldata, Message: "导出清分包核对记录表 成功"})
 		c.Header("Content-Disposition", "attachment;filename="+fileName)
-		c.Writer.Write(totaldata)
+		n, _ := c.Writer.Write(totaldata)
+		log.Println(n)
 		utils.DelFile("./" + fileName)
 	}
 	if code == types.Statuszero {
@@ -504,18 +505,18 @@ func SetRedis(c *gin.Context) {
 
 	conn := utils.Pool.Get() //初始化redis
 	//redis set新值
-	s := strconv.Itoa(int(1)) + "|" + strconv.Itoa(1) + "|" + strconv.Itoa(int(1)) + "|" + strconv.Itoa(1) + "|" + strconv.Itoa(int(1)) + "|" + strconv.Itoa(1)
+	s := strconv.Itoa(1) + "|" + strconv.Itoa(1) + "|" + strconv.Itoa(1) + "|" + strconv.Itoa(1) + "|" + strconv.Itoa(1) + "|" + strconv.Itoa(1)
 	rseterr := utils.RedisSet(&conn, "snshishishuju", s)
 	if rseterr != nil {
 		log.Print("set redis snshishishuju 零值error", rseterr)
 	}
 	//redis set新值
-	rhseterr := utils.RedisSet(&conn, "swjiesuantotal", strconv.Itoa(int(1))+"|"+strconv.Itoa(1))
+	rhseterr := utils.RedisSet(&conn, "swjiesuantotal", strconv.Itoa(1)+"|"+strconv.Itoa(1))
 	if rhseterr != nil {
 		log.Print("set redis swjiesuantotal 零值error", rhseterr)
 	}
 	//redis set新值
-	rsnseterr := utils.RedisSet(&conn, "snjiesuantotal", strconv.Itoa(int(1))+"|"+strconv.Itoa(1))
+	rsnseterr := utils.RedisSet(&conn, "snjiesuantotal", strconv.Itoa(1)+"|"+strconv.Itoa(1))
 	if rsnseterr != nil {
 		log.Print("set redis snjiesuantotal 零值error", rsnseterr)
 	}
@@ -533,14 +534,10 @@ func SetRedis(c *gin.Context) {
 	if chmseterr != nil {
 		log.Print("set redis  disput 零值error", chmseterr)
 	}
-
-	//rhseterr :=utils. RedisHSet(&conn, "jiesstatistical", Parkingid, Totalstr+"|"+strconv.Itoa(1))
-	//if rhseterr != nil {
-	//	log.Println("+++++++++++++++++++【该停车场为第一次出现】++++++++++++++++++++【RedisHSet error】：", rhseterr)
-	//	return rhseterr
-	//}
-	conn.Close()
-	log.Println("set redis 成功 ", s, strconv.Itoa(int(1))+"|"+strconv.Itoa(1), strconv.Itoa(int(1))+"|"+strconv.Itoa(1))
+	defer func() {
+		_ = conn.Close()
+	}()
+	log.Println("set redis 成功 ", s, strconv.Itoa(1)+"|"+strconv.Itoa(1), strconv.Itoa(1)+"|"+strconv.Itoa(1))
 	c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "set redis ok", Message: "set redis   零值 ok "})
 
 }
@@ -548,7 +545,9 @@ func SetRedis(c *gin.Context) {
 //Clearcalibration清分核对校准
 func Clearcalibration(c *gin.Context) {
 	conn := utils.Pool.Get() //初始化redis
-	defer conn.Close()
+	defer func() {
+		_ = conn.Close()
+	}()
 	req := dto.ReqQuery{}
 	respFailure := dto.ResponseFailure{}
 
@@ -563,11 +562,13 @@ func Clearcalibration(c *gin.Context) {
 	//1、获取昨日的清分包数据
 	qerr, clears := db.QueryClearlingdata(req.BeginTime)
 	if qerr != nil {
-		//	return qerr
+		c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "清分核对校准,获取昨日的清分包数据error", Message: "清分核对校准,获取昨日的清分包数据error "})
+		return
 	}
 	if clears == nil {
 		log.Println("+++++++++++++++++++++++++++昨日没有清分包【1.5】++++++++++++++++++++++")
-		//	return errors.New("昨日没有清分包，需要检查清分包是否接收")
+		c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "清分核对校准,昨日没有清分包", Message: "清分核对校准,昨日没有清分包"})
+		return
 	}
 	for _, clear := range *clears {
 		//2、统计昨日记账包总金额
@@ -635,7 +636,11 @@ func Clearcalibration(c *gin.Context) {
 //Clearcalibration清分包、争议包校准
 func ClearlingAndDisputePackagecalibration(c *gin.Context) {
 	conn := utils.Pool.Get() //初始化redis
-	defer conn.Close()
+
+	defer func() {
+		_ = conn.Close()
+
+	}()
 	req := dto.ReqQuery{}
 	respFailure := dto.ResponseFailure{}
 
