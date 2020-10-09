@@ -35,10 +35,13 @@ func QueryTotalSettlementData(c *gin.Context) {
 	}
 	if code == types.StatusQuerySWTotalSettlementDataSuccessfully {
 		c.JSON(http.StatusOK, dto.QuerResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "查询结算总金额、总笔数 成功"})
+		return
 	}
 	if code == types.Statuszero {
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryTotalSettlementDataError, Data: types.StatusText(types.StatusQueryTotalSettlementDataError), Message: fmt.Sprintf("查询结算总金额、总笔数 失败: %v", err)})
+		return
 	}
+
 }
 
 /*  接口2方法注释   */
@@ -63,9 +66,11 @@ func QueryTotalClarify(c *gin.Context) {
 	}
 	if code == types.StatusSuccessfully {
 		c.JSON(http.StatusOK, dto.QuerResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "查询已清分总金额、总笔数 成功"})
+		return
 	}
 	if code == types.Statuszero {
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryTotalSettlementDataError, Data: types.StatusText(types.StatusQueryTotalSettlementDataError), Message: "查询已清分总金额、总笔数 失败"})
+		return
 	}
 }
 
@@ -91,10 +96,12 @@ func QueryTotalBaddebts(c *gin.Context) {
 	}
 	if code == types.StatusSuccessfully {
 		c.JSON(http.StatusOK, dto.QuerResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "查询坏账总金额、总笔数 成功"})
+		return
 	}
 	//返回失败
 	if code == types.Statuszero {
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryTotalBaddebtsError, Data: types.StatusText(types.StatusQueryTotalBaddebtsError), Message: "查询坏账总金额、总笔数 失败"})
+		return
 	}
 }
 
@@ -120,9 +127,11 @@ func QueryShengwDisputedata(c *gin.Context) {
 	}
 	if code == types.StatusSuccessfully {
 		c.JSON(http.StatusOK, dto.QuerResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "查询存在争议总金额、总笔数 成功"})
+		return
 	}
 	if code == types.Statuszero {
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryShengwDisputedataError, Data: types.StatusText(types.StatusQueryShengwDisputedataError), Message: "查询存在争议总金额、总笔数 失败"})
+		return
 	}
 }
 
@@ -148,9 +157,11 @@ func QueryAbnormaldata(c *gin.Context) {
 	}
 	if code == types.StatusSuccessfully {
 		c.JSON(http.StatusOK, dto.QuerResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "查询异常数据总金额、总笔数 成功"})
+		return
 	}
 	if code == types.Statuszero {
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryAbnormaldataError, Data: types.StatusText(types.StatusQueryAbnormaldataError), Message: "查询异常数据总金额、总笔数 失败"})
+		return
 	}
 }
 
@@ -176,9 +187,11 @@ func Queryblacklistdata(c *gin.Context) {
 	}
 	if code == types.StatusSuccessfully {
 		c.JSON(http.StatusOK, dto.QuerResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "查询黑名单总数、较2小时前变化值 成功"})
+		return
 	}
 	if code == types.Statuszero {
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryblacklistdataError, Data: types.StatusText(types.StatusQueryblacklistdataError), Message: "查询黑名单总数、较2小时前变化值 失败"})
+		return
 	}
 }
 
@@ -204,9 +217,11 @@ func QueryClearlingAndDisputePackage(c *gin.Context) {
 	}
 	if code == types.StatusSuccessfully {
 		c.JSON(http.StatusOK, dto.QuerResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "查询清分包、争议包的接收时间、包号 成功"})
+		return
 	}
 	if code == types.Statuszero {
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryClearlingAndDisputePkgError, Data: types.StatusText(types.StatusQueryClearlingAndDisputePkgError), Message: "查询清分包、争议包的接收时间、包号 失败"})
+		return
 	}
 }
 
@@ -232,9 +247,11 @@ func Clearlingcheck(c *gin.Context) {
 	}
 	if code == types.StatusSuccessfully {
 		c.JSON(http.StatusOK, dto.QuerResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "查询清分核对结果 成功"})
+		return
 	}
 	if code == types.Statuszero {
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryClearlingcheckOneDataError, Data: types.StatusText(types.StatusQueryClearlingcheckOneDataError), Message: "查询清分核对结果 失败"})
+		return
 	}
 }
 
@@ -260,9 +277,11 @@ func Dataclassification(c *gin.Context) {
 	}
 	if code == types.StatusSuccessfully {
 		c.JSON(http.StatusOK, dto.QuerResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "查询省外数据分类 成功"})
+		return
 	}
 	if code == types.Statuszero {
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryDataclassificationError, Data: types.StatusText(types.StatusQueryDataclassificationError), Message: "查询省外数据分类 失败"})
+		return
 	}
 }
 
@@ -288,9 +307,11 @@ func QueryDataTurnMonitor(c *gin.Context) {
 	}
 	if code == types.StatusSuccessfully {
 		c.JSON(http.StatusOK, dto.QuerResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "查询省外转结算 成功"})
+		return
 	}
 	if code == types.Statuszero {
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryDataTurnMonitorError, Data: types.StatusText(types.StatusQueryDataTurnMonitorError), Message: "查询省外转结算 失败"})
+		return
 	}
 }
 
@@ -316,9 +337,11 @@ func QuerySettlementTrendbyDay(c *gin.Context) {
 	}
 	if code == types.StatusSuccessfully {
 		c.JSON(http.StatusOK, dto.QuerResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "查询省外结算趋势 成功"})
+		return
 	}
 	if code == types.Statuszero {
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQuerySettlementTrendError, Data: types.StatusText(types.StatusQuerySettlementTrendError), Message: "查询省外结算趋势 失败"})
+		return
 	}
 }
 
@@ -344,9 +367,11 @@ func PacketMonitoring(c *gin.Context) {
 	}
 	if code == types.StatusSuccessfully {
 		c.JSON(http.StatusOK, dto.QuerResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "查询省外数据包监控 成功"})
+		return
 	}
 	if code == types.Statuszero {
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryPacketMonitoringError, Data: types.StatusText(types.StatusQueryPacketMonitoringError), Message: "查询省外数据包监控 失败"})
+		return
 	}
 }
 
@@ -374,9 +399,11 @@ func Clarifydifference(c *gin.Context) {
 	}
 	if code == types.StatusSuccessfully {
 		c.JSON(http.StatusOK, dto.QuerResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "查询最近15天清分包数据差额 成功"})
+		return
 	}
 	if code == types.Statuszero {
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryClarifydifferenceError, Data: types.StatusText(types.StatusQueryClarifydifferenceError), Message: "查询最近15天清分包数据差额 失败"})
+		return
 	}
 }
 
@@ -407,14 +434,18 @@ func ClarifyQuery(c *gin.Context) {
 		log.Println("QueryClarify err: %v", err)
 		respFailure.Code = code
 		respFailure.Message = fmt.Sprintf("QueryClarify err: %v", err)
-		c.JSON(http.StatusOK, respFailure)
+		log.Println("+++++++++++++++service.ClarifyQuery(req) err: %v", err)
+		//c.JSON(http.StatusOK, respFailure)
+		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryClarifyError, Data: types.StatusText(types.StatusQueryClarifyError), Message: "查询清分核对 失败"})
 		return
 	}
 	if code == types.StatusSuccessfully {
 		c.JSON(http.StatusOK, dto.QuerResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "查询清分核对 成功"})
+		return
 	}
 	if code == types.Statuszero {
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryClarifyError, Data: types.StatusText(types.StatusQueryClarifyError), Message: "查询清分核对 失败"})
+		return
 	}
 }
 
@@ -440,9 +471,11 @@ func Clarifyconfirm(c *gin.Context) {
 	}
 	if code == types.StatusSuccessfully {
 		c.JSON(http.StatusOK, dto.QuerResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "清分确认成功 【待实现】"})
+		return
 	}
 	if code == types.Statuszero {
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryPacketMonitoringError, Data: types.StatusText(types.StatusQueryPacketMonitoringError), Message: "清分确认 失败 【待实现】"})
+		return
 	}
 }
 
@@ -487,6 +520,7 @@ func ExportExcel(c *gin.Context) {
 	}
 	if code == types.Statuszero {
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusExportExcelError, Data: types.StatusText(types.StatusExportExcelError), Message: "导出清分包核对记录表 失败"})
+		return
 	}
 }
 
@@ -539,7 +573,6 @@ func SetRedis(c *gin.Context) {
 	}()
 	log.Println("set redis 成功 ", s, strconv.Itoa(1)+"|"+strconv.Itoa(1), strconv.Itoa(1)+"|"+strconv.Itoa(1))
 	c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "set redis ok", Message: "set redis   零值 ok "})
-
 }
 
 //Clearcalibration清分核对校准
@@ -639,7 +672,6 @@ func ClearlingAndDisputePackagecalibration(c *gin.Context) {
 
 	defer func() {
 		_ = conn.Close()
-
 	}()
 	req := dto.ReqQuery{}
 	respFailure := dto.ResponseFailure{}
@@ -649,7 +681,7 @@ func ClearlingAndDisputePackagecalibration(c *gin.Context) {
 		respFailure.Code = -1
 		respFailure.Message = fmt.Sprintf("json unmarshal err: %v", err)
 		c.JSON(types.StatusQueryClarifyError, respFailure)
-
+		return
 	}
 
 	//1、获取清分包、争议包数据
@@ -658,7 +690,7 @@ func ClearlingAndDisputePackagecalibration(c *gin.Context) {
 	if qcerr != nil {
 		log.Println("获取清分包数据 错误")
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "取清分包数据 错误 error", Message: "取清分包数据 错误 error "})
-
+		return
 	}
 
 	if clears == nil {
@@ -675,7 +707,7 @@ func ClearlingAndDisputePackagecalibration(c *gin.Context) {
 		if hmseterr != nil {
 			log.Println("utils.RedisHMSet 错误")
 			c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "utils.RedisHMSet 错误", Message: "utils.RedisHMSet 错误"})
-
+			return
 		}
 		log.Println("获取清分包-【RedisHSet】 v:=clear 成功 【++++++++++++[1.4]++++++++++++++++++】")
 	} else {
@@ -694,7 +726,7 @@ func ClearlingAndDisputePackagecalibration(c *gin.Context) {
 			if hmseterr != nil {
 				log.Println("utils.RedisHMSet 错误")
 				c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "utils.RedisHMSet 错误 error", Message: "utils.RedisHMSet 错误 error "})
-
+				return
 			}
 			log.Println("获取清分包-【RedisHSet】 v:=clear 成功 【++++++++++++[1.4]++++++++++++++++++】")
 
@@ -706,7 +738,7 @@ func ClearlingAndDisputePackagecalibration(c *gin.Context) {
 	if qderr != nil {
 		log.Println("获取争议包数据 错误")
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "获取争议包数据 错误 error", Message: "获取争议包数据 错误 "})
-
+		return
 	}
 	var Disput types.ClearlingAndDispute
 	if dispute == nil {
@@ -730,7 +762,7 @@ func ClearlingAndDisputePackagecalibration(c *gin.Context) {
 	if dishmseterr != nil {
 		log.Println(" utils.RedisHMSet 错误")
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "utils.RedisHMSet 错误 error", Message: "utils.RedisHMSet 错误 "})
-
+		return
 	}
 	log.Println("获取争议包-【RedisHSet】 v:=disput 成功 【++++++++++++[1.4]++++++++++++++++++】")
 	log.Println("  【++++++++++++【1.4 是 ok的】++++++++++++++++++】")
@@ -746,7 +778,7 @@ func Settlementtrendcalibration(c *gin.Context) {
 	if qserr != nil {
 		log.Println("+++++++++++++++++++++【1.6error】+++++++++++++++++=查询省外结算趋势定时任务 error:", qserr)
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "省内、省外结算趋势校准 error", Message: "省内、省外结算趋势校准error "})
-
+		return
 	}
 
 	//省内业务
@@ -756,7 +788,7 @@ func Settlementtrendcalibration(c *gin.Context) {
 	if qsnqserr != nil {
 		log.Println("+++++++++++++++++++++【1.8error】+++++++++++++++++=查询省内结算分类 定时任务 error:", qsnqserr)
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "省内、省外结算趋势校准 error", Message: "省内、省外结算趋势校准error "})
-
+		return
 	}
 
 	c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "省内、省外结算趋势校准 error", Message: "省内、省外结算趋势校准error "})
