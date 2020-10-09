@@ -11,7 +11,7 @@ import (
 )
 
 //goroutine1
-//1定时任务 一天一次的
+//1定时任务 一天一次的【都去重了】
 func HandleDayTasks() {
 	for {
 		now := time.Now()               //获取当前时间，放到now里面，要给next用
@@ -36,7 +36,7 @@ func HandleDayTasks() {
 			log.Println("+++++++++++++++++++++【1.2error】+++++++++++++++++=查询清分包、争议包的包号、接收时间定时任务:", qcderr)
 		}
 		//任务五
-		//清分核对
+		//清分核对[已经去重了]
 		cherr := StatisticalClearlingcheck()
 		if cherr != nil {
 			log.Println("+++++++++++++++++++++【1.3error】+++++++++++++++++=清分核对定时任务:", cherr)
@@ -1206,6 +1206,18 @@ func Overduedata() error {
 
 //1.15 省外停车场结算趋势
 func SWSettlementTrendbyDay() error {
+	qoneerr, qsOnesqsj := QuerySWSettlementTrendTable()
+	if qoneerr != nil {
+		return qoneerr
+	}
+
+	s1 := utils.DateNowFormat()
+	s2 := qsOnesqsj.FDtTongjwcsj.Format("2006-01-02")
+	if s2 == s1 {
+		log.Println("这一天已经插入数据了，不需要重复统计")
+		return nil
+	}
+
 	qsdatas := QuerySWSettlementTrendOne()
 	for _, qsdata := range *qsdatas {
 		//1、新增省外结算趋势
@@ -1241,6 +1253,17 @@ func SWSettlementTrendbyDay() error {
 
 //1.16 省内停车场昨日结算趋势
 func SNSettlementTrendbyDay() error {
+	qsnqserr, snqsonedata := QuerySNSettlementTrendTable()
+	if qsnqserr != nil {
+		return qsnqserr
+	}
+	s1 := utils.DateNowFormat()
+	s2 := snqsonedata.FDtTongjwcsj.Format("2006-01-02")
+	if s2 == s1 {
+		log.Println("这一天已经插入数据了，不需要重复统计")
+		return nil
+	}
+
 	qsdatas := QuerySNSettlementTrendOne()
 	for _, qsdata := range *qsdatas {
 		//1、新增省内结算趋势
