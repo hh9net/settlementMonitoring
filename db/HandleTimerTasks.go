@@ -353,6 +353,11 @@ func QueryTingccJieSuan() error {
 	}
 	//获取停车场总金额、总笔数
 	result := QueryTingccJieSuandata()
+	conn := utils.Pool.Get()
+
+	defer func() {
+		_ = conn.Close()
+	}()
 	for _, r := range *result {
 		//1、插入表新数据
 		inerr := InsertTingjiesuan()
@@ -380,12 +385,6 @@ func QueryTingccJieSuan() error {
 
 		//4、更新到redis中
 		//	conn := utils.RedisConn //初始化redis
-		conn := utils.Pool.Get()
-
-		defer func() {
-			_ = conn.Close()
-
-		}()
 		// key:"jiesstatistical"  item: 停车场id  value："金额｜总条数"
 		rhseterr := utils.RedisHSet(&conn, "jiesstatistical", r.Parkingid, strconv.Itoa(int(r.Total))+"|"+strconv.Itoa(r.Count))
 		if rhseterr != nil {
@@ -393,7 +392,6 @@ func QueryTingccJieSuan() error {
 		}
 		log.Println("按停车场获取-停车场总金额、总笔数 -【RedisHSet】jiesstatistical 成功 【++++++++++++[1.1]++++++++++++++++++】")
 	}
-
 	return nil
 }
 
@@ -825,7 +823,6 @@ func ShengnJieSuanData() error {
 
 	defer func() {
 		_ = conn.Close()
-
 	}()
 	// key:"snjiesuantotal"  value："金额｜总条数"
 	rseterr := utils.RedisSet(&conn, "snjiesuantotal", strconv.Itoa(int(amount))+"|"+strconv.Itoa(count))

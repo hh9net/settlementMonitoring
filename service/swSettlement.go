@@ -211,7 +211,10 @@ func QueryClearlingAndDisputePackagedata() (int, error, *dto.ClearlAndDisputeDat
 	//查询清分包、争议包的接收时间、包号[最新的数据]前14天数据[1天]
 	date := utils.OldData(14)
 	conn := utils.Pool.Get()
-	defer conn.Close()
+
+	defer func() {
+		_ = conn.Close()
+	}()
 	chmgeterr, cleardata := utils.RedisHMGet(&conn, "clear", date)
 	if chmgeterr != nil {
 		return types.Statuszero, chmgeterr, nil
@@ -253,7 +256,8 @@ func QueryClearlingAndDisputePackagedata() (int, error, *dto.ClearlAndDisputeDat
 	log.Println("++++++++++++++++++++++查询清分包、争议包的接收时间、包号  成功。data数组长度:", len(data))
 	//if len(data)!=
 	//返回数据赋值
-	return types.StatusSuccessfully, nil, &dto.ClearlAndDisputeData{data}
+
+	return types.StatusSuccessfully, nil, &dto.ClearlAndDisputeData{ClearlingAndDisputedata: data}
 }
 
 //省外清分核对 StatisticalClearlingcheck
