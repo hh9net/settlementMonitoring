@@ -277,7 +277,10 @@ func QuerTotalSettlementData() error {
 	if rhseterr != nil {
 		return rhseterr
 	}
-	conn.Close()
+	defer func() {
+		_ = conn.Close()
+
+	}()
 	log.Println("更新省外结算统计最新统计记录成功++++++++++++++++++++++++++++[2.1]++++++++++++++++++++++++++++++++++")
 	//返回数据赋值
 	return nil
@@ -378,7 +381,11 @@ func QueryTingccJieSuan() error {
 		//4、更新到redis中
 		//	conn := utils.RedisConn //初始化redis
 		conn := utils.Pool.Get()
-		defer conn.Close()
+
+		defer func() {
+			_ = conn.Close()
+
+		}()
 		// key:"jiesstatistical"  item: 停车场id  value："金额｜总条数"
 		rhseterr := utils.RedisHSet(&conn, "jiesstatistical", r.Parkingid, strconv.Itoa(int(r.Total))+"|"+strconv.Itoa(r.Count))
 		if rhseterr != nil {
@@ -393,7 +400,11 @@ func QueryTingccJieSuan() error {
 //1任务4 查询清分、争议处理包
 func QueryClearlingAndDisputePackage() error {
 	conn := utils.Pool.Get()
-	defer conn.Close()
+
+	defer func() {
+		_ = conn.Close()
+
+	}()
 
 	//1、获取清分包、争议包数据
 	Yesterday := utils.Yesterdaydate()
@@ -811,7 +822,11 @@ func ShengnJieSuanData() error {
 	//6、把数据更新到redis
 	//conn := utils.RedisConn //初始化redis
 	conn := utils.Pool.Get()
-	defer conn.Close()
+
+	defer func() {
+		_ = conn.Close()
+
+	}()
 	// key:"snjiesuantotal"  value："金额｜总条数"
 	rseterr := utils.RedisSet(&conn, "snjiesuantotal", strconv.Itoa(int(amount))+"|"+strconv.Itoa(count))
 	if rseterr != nil {
@@ -960,7 +975,11 @@ func ShengNRealTimeSettlementData() error {
 	//get redis
 	//conn := utils.RedisConn //初始化redis
 	conn := utils.Pool.Get()
-	defer conn.Close()
+
+	defer func() {
+		_ = conn.Close()
+
+	}()
 	// key:"snshishishuju"  value："金额｜总条数"
 	rhgeterr, value := utils.RedisGet(&conn, "snshishishuju")
 	if rhgeterr != nil {
