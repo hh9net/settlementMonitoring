@@ -115,7 +115,7 @@ func QueryAbnormaldata() (int, error, *dto.TotalAbnormalData) {
 
 //Queryblacklistdata
 func Queryblacklistdata() (int, error, *dto.TotalBlacklistData) {
-	//查询黑名单总数、较2小时前变化值[最新的数据]
+	//查询黑名单总数、较2小时前变化值[获取统计表最新的数据]
 	qerr, hmdjl := db.QueryBlacklisttable()
 	if qerr != nil {
 		log.Println("+++++++++++++++++【db.QueryBlacklisttable error】++++++++++++++++++：", qerr)
@@ -127,14 +127,63 @@ func Queryblacklistdata() (int, error, *dto.TotalBlacklistData) {
 
 	if hmdjl.FNbHeimdzs == 0 {
 		id = id - 1
+		//查询上一条id
 		hmerr, hmdsj := db.QueryBlacklisttableByID(id)
 		if hmerr != nil {
-			log.Println("+++++++++++++++++【db.QueryBlacklisttableByID error】++++++++++++++++++：", hmerr)
-			return types.Statuszero, hmerr, nil
+			if fmt.Sprint(hmerr) == "record not found" {
+				log.Println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++err:", hmerr)
+				id = id - 2
+				hmerr11, hmdsj11 := db.QueryBlacklisttableByID(id)
+				if hmerr11 != nil {
+					if fmt.Sprint(hmerr11) == "record not found" {
+						log.Println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++err:", hmerr)
+						return types.Statuszero, hmerr, nil
+					} else {
+						log.Println("+++++++++++++++++【db.QueryBlacklisttableByID error】++++++++++++++++++：", hmerr)
+						return types.Statuszero, hmerr, nil
+					}
+				}
+				log.Println("QueryBlacklisttableByID有值了", hmdsj11.FDtTongjwcsj)
+				//获取到数据
+
+				hmerr22, hmdsj22 := db.QueryBlacklistTiaoshutable(id, 3)
+				if hmerr22 != nil {
+					log.Println("+++++++++++++++++【db.QueryBlacklisttableByID error】++++++++++++++++++：", hmerr22)
+					return types.Statuszero, hmerr22, nil
+				}
+				log.Println("查询最新的黑名单数据的数据记录结果成功!++++++++++++【两小时前的数据】hmdjl2.FNbId:", (*hmdsj22)[2].FNbId)
+
+				ts := 24 //需要查询条数
+				qdterr, hmdjls := db.QueryBlacklistTiaoshutable(id, ts)
+				if qdterr != nil {
+					log.Println("+++++++++++++++++【QueryBlacklistTiaoshutable error】++++++++++++++++++：", qdterr)
+					return types.Statuszero, qdterr, nil
+				}
+				bs := make([]dto.BlackList, 24)
+				for i, b := range *hmdjls {
+					bs[i].Blacklistcount = b.FNbHeimdzs
+					bs[i].DateTime = b.FDtTongjwcsj.Format("2006-01-02 15:04:05")
+				}
+				bs12 := make([]dto.BlackList, 0)
+				for i, blist := range bs {
+					if (i == 0 && blist.Blacklistcount != 0) || (i == 2 && blist.Blacklistcount != 0) || (i == 4 && blist.Blacklistcount != 0) || (i == 6 && blist.Blacklistcount != 0) || (i == 8 && blist.Blacklistcount != 0) || (i == 10 && blist.Blacklistcount != 0) || (i == 12 && blist.Blacklistcount != 0) || (i == 14 && blist.Blacklistcount != 0) || (i == 16 && blist.Blacklistcount != 0) || (i == 18 && blist.Blacklistcount != 0) || (i == 20 && blist.Blacklistcount != 0) || (i == 22 && blist.Blacklistcount != 0) {
+						bs12 = append(bs12, blist)
+					}
+				}
+				changecount := hmdsj.FNbHeimdzs - (*hmdsj22)[2].FNbHeimdzs
+				log.Println("+++++++++++++++++++++++++++++++++++++++++++查询黑名单总数、较2小时前变化值  成功")
+				return types.StatusSuccessfully, nil, &dto.TotalBlacklistData{Blacklistcount: hmdsj.FNbHeimdzs,
+					ChangeCount: changecount,
+					DateTime:    hmdsj.FDtTongjwcsj.Format("2006-01-02 15:04:05"),
+					Blacklist:   bs12}
+
+			} else {
+				log.Println("+++++++++++++++++【db.QueryBlacklisttableByID error】++++++++++++++++++：", hmerr)
+				return types.Statuszero, hmerr, nil
+			}
+
 		}
 		log.Println("查询最新的黑名单数据的数据记录结果成功!++++++++++++hmdjl.FNbId:", hmdjl.FNbId, hmdjl.FDtTongjwcsj)
-
-		//hmerr2, hmdsj2 := db.QueryBlacklisttableByID(id - 2)
 
 		hmerr2, hmdsj2 := db.QueryBlacklistTiaoshutable(id, 3)
 		if hmerr2 != nil {
