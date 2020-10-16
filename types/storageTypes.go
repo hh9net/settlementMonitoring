@@ -13,6 +13,7 @@ var KafkaIp string
 var DdkafkaTopic string
 var ZdzkafkaTopic string
 var Parkids string
+var Tradestarttime string
 
 //1 结算统计监控表 b_jsjk_jiestj
 type BJsjkJiestj struct {

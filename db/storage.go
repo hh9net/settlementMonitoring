@@ -1714,9 +1714,9 @@ func QueryShengNSettlementTrendtable(ts int) (error, *[]types.BJsjkShengnjsqs) {
 }
 
 //4.2.7	海岭数据同步监控 这个接口会因为
-func postWithJson() *dto.SyncResponse {
-	//post请求提交json数据
-	sync := dto.SyncRequest{"2020-09-17 00:00:00", 2}
+func postWithJson(tradestarttime string) *dto.SyncResponse {
+	//post请求提交json数据 tradestarttime
+	sync := dto.SyncRequest{tradestarttime, 2}
 	sy, _ := json.Marshal(sync)
 	//localhost:8092
 	addr := types.HlsyncAddr
@@ -1744,8 +1744,9 @@ func QueryDataSync() (int, int) {
 	num := 0
 	//num = oracledb.OrclQuerydata()
 	//log.Println("oracle num:", num)
+	//tradestarttime
 
-	sr := postWithJson()
+	sr := postWithJson(types.Tradestarttime)
 	if sr == nil {
 		num = 0
 	} else {
@@ -1756,9 +1757,9 @@ func QueryDataSync() (int, int) {
 	//查询结算数据 停车场id
 	var result types.Result
 	parkids := types.Parkids
-	sqlstr := `select  count(F_NB_JINE) as count from b_js_jiessj where F_VC_TINGCCBH in (` + parkids + `) and F_DT_JIAOYSJ >='2020-09-17 00:00:00'  and   F_NB_DABZT <> 4 and   F_NB_DABZT <> 5`
+	sqlstr := `select  count(F_NB_JINE) as count from b_js_jiessj where F_VC_TINGCCBH in (` + parkids + `) and F_DT_JIAOYSJ >='` + types.Tradestarttime + `'  and   F_NB_DABZT <> 4 and   F_NB_DABZT <> 5`
 
-	log.Println("parkids:", parkids, "sqlstr:", sqlstr)
+	log.Println("types.Tradestarttime", types.Tradestarttime, "parkids:", parkids, "sqlstr:", sqlstr)
 	db.Raw(sqlstr).Scan(&result)
 	log.Printf("查询海玲数据库数据量:%d，结算表数据同步数据量:=%v", num, result.Count)
 	return num, result.Count
