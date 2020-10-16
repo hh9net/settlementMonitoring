@@ -202,7 +202,7 @@ func QueryDataSync(c *gin.Context) {
 		//return
 	}
 	if code == types.StatusSuccessfully {
-		c.JSON(http.StatusOK, dto.QueryResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "查询海岭数据同步监控 成功"})
+		c.JSON(http.StatusOK, dto.QueryResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: types.Tradestarttime + "|查询海岭数据同步监控成功"})
 	}
 	if code == types.Statuszero {
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryDataSyncError, Data: types.StatusText(types.StatusQueryDataSyncError), Message: "查询海岭数据同步监控 失败"})

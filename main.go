@@ -5,6 +5,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"settlementMonitoring/config"
 	"settlementMonitoring/db"
+	"settlementMonitoring/router"
 	"settlementMonitoring/types"
 	"settlementMonitoring/utils"
 	"time"
@@ -65,18 +66,18 @@ func main() {
 	defer func() {
 		_ = utils.Pool.Close()
 	}()
-	//IpAddress := conf.IpAddress
+	IpAddress := conf.IpAddress
 
 	//goroutine1
-	//go db.HandleDayTasks()
+	go db.HandleDayTasks()
 	//goroutine2
 	go db.HandleHourTasks()
 	//goroutine3
-	//go db.HandleMinutesTasks()
+	go db.HandleMinutesTasks()
 	//kafka处理
-	//go db.HandleKafka()
+	go db.HandleKafka()
 	//http处理
-	//router.RouteInit(IpAddress)
+	router.RouteInit(IpAddress)
 	tiker := time.NewTicker(time.Minute * 1)
 	for {
 		log.Println("执行主go程 ", <-tiker.C)
