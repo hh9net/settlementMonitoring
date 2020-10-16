@@ -50,6 +50,8 @@ func main() {
 	types.HlsyncAddr = conf.HlsyncAddr
 	log.Println("HlsyncAddrConf:=", conf.HlsyncAddr)
 
+	types.Parkids = conf.Parkids
+
 	utils.Pool = &redis.Pool{
 		MaxIdle:     16,  //最大空闲连接数
 		MaxActive:   0,   //最大活跃连接数  0为没有限制

@@ -83,6 +83,7 @@ type Config struct { //配置文件要通过tag来指定配置文件中的名称
 	IpAddress string `ini:"ip_address"`
 	//
 	HlsyncAddr string `ini:"hl_address"`
+	Parkids    string `ini:"parkids"`
 
 	//频率
 	Frequency int `ini:"frequency"`

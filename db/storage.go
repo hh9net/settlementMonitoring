@@ -1754,10 +1754,11 @@ func QueryDataSync() (int, int) {
 
 	db := utils.GormClient.Client
 	//查询结算数据 停车场id
-	//	Parkingid:= []int{3208260001,3201000001,3202110001,3212830001,3203110001,3201000009,3201000002,3205830001,3201000003,3201000004,3201000005,3201000007,3201000006,3201000008,3206120001,3101130001,3205820001}
 	var result types.Result
+	parkids := types.Parkids
+	sqlstr := `select  count(F_NB_JINE) as count from b_js_jiessj where F_VC_TINGCCBH in (` + parkids + `) and F_DT_JIAOYSJ >='2020-09-17 00:00:00'  and   F_NB_DABZT <> 4 and   F_NB_DABZT <> 5`
 
-	sqlstr := `select  count(F_NB_JINE) as count from b_js_jiessj where F_VC_TINGCCBH in ( 3208260001,3201000001,3202110001,3212830001,3203110001,3201000002,3205830001,3201000003,3201000004,3201000005,3201000007,3201000006,3201000008,3206120001,3101130001,3205820001) and F_DT_JIAOYSJ >='2020-09-17 00:00:00'  and   F_NB_DABZT <> 4 and   F_NB_DABZT <> 5`
+	log.Println("parkids:", parkids, "sqlstr:", sqlstr)
 	db.Raw(sqlstr).Scan(&result)
 	log.Printf("查询海玲数据库数据量:%d，结算表数据同步数据量:=%v", num, result.Count)
 	return num, result.Count
