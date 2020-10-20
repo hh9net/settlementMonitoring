@@ -1032,7 +1032,7 @@ func ShengNRealTimeSettlementData() error {
 		return rseterr
 	}
 	log.Println("set redis 成功 ")
-	log.Println("set redis 省内今日实时数据 完成 [ snshishishuju ]  ++++++++++++++++++++++【3.2】++++++++++++++++++++++++")
+	log.Println("set redis 省内今日实时数据 完成 [ snshishishuju ]  ++++【3.2】+", s)
 
 	return nil
 }
