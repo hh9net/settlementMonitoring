@@ -17,7 +17,7 @@ func HandleDayTasks() {
 		now := time.Now()               //获取当前时间，放到now里面，要给next用
 		next := now.Add(time.Hour * 24) //通过now偏移24小时
 
-		next = time.Date(next.Year(), next.Month(), next.Day(), 8, 0, 0, 0, next.Location()) //获取下一个凌晨的日期
+		next = time.Date(next.Year(), next.Month(), next.Day(), 20, 0, 0, 0, next.Location()) //获取下一个20点的日期
 
 		t := time.NewTimer(next.Sub(now)) //计算当前时间到凌晨的时间间隔，设置一个定时器
 		<-t.C
@@ -29,12 +29,7 @@ func HandleDayTasks() {
 		if qterr != nil {
 			log.Println("+++++++++++++++++++++【1.1error】+++++++++++++++++=查询停车场的总金额、总笔数定时任务:", qterr)
 		}
-		//任务四
-		//查询清分包、争议包的包号、接收时间  使用redis记录的
-		qcderr := QueryClearlingAndDisputePackage()
-		if qcderr != nil {
-			log.Println("+++++++++++++++++++++【1.2error】+++++++++++++++++=查询清分包、争议包的包号、接收时间定时任务:", qcderr)
-		}
+
 		//任务五
 		//清分核对[已经去重了]
 		cherr := StatisticalClearlingcheck()
@@ -168,6 +163,13 @@ func HandleHourTasks() {
 		qhmderr := QueryblacklistCount()
 		if qhmderr != nil {
 			log.Println("查询黑名单统计总数定时任务【2.13error】 error:", qhmderr)
+		}
+
+		//任务四
+		//查询清分包、争议包的包号、接收时间  使用redis记录的
+		qcderr := QueryClearlingAndDisputePackage()
+		if qcderr != nil {
+			log.Println("+++++++++++++++++++++【2.14 error】+++++++++++++++++=查询清分包、争议包的包号、接收时间定时任务:", qcderr)
 		}
 		log.Println(utils.DateTimeFormat(<-tiker.C), "执行线程2，处理按小时的定时任务【完成】222222222222222222222222222222222222222222222222")
 
@@ -426,7 +428,7 @@ func QueryClearlingAndDisputePackage() error {
 		if hmseterr != nil {
 			return hmseterr
 		}
-		log.Println("获取清分包-【RedisHSet】 v:=clear 成功 【++++++++++++[1.2]++++++++++++++++++】")
+		log.Println("获取清分包-【RedisHSet】 v:=clear 成功 【++++++++++++[2.14]++++++++++++++++++】")
 	} else {
 		for _, clear := range *clears {
 			Clear := types.ClearlingAndDispute{
@@ -443,7 +445,7 @@ func QueryClearlingAndDisputePackage() error {
 			if hmseterr != nil {
 				return hmseterr
 			}
-			log.Println("获取清分包-【RedisHSet】 v:=clear 成功 【++++++++++++[1.2]++++++++++++++++++】")
+			log.Println("获取清分包-【RedisHSet】 v:=clear 成功 【++++++++++++[2.14]++++++++++++++++++】")
 
 		}
 	}
