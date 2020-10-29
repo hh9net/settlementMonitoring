@@ -140,6 +140,7 @@ func QuerySNSettlementTrend() (int, error, *[]dto.SNClearandJiesuan) {
 		Data[i].JiesuanMoney = utils.Fen2Yuan(d.FNbShengnjyje) //省内产生金额
 		Data[i].ClearlingMoney = utils.Fen2Yuan(d.FNbShengnqkje)
 		Data[i].DiffMoney = utils.Fen2Yuan(d.FNbChae)
+		Data[i].DiffCount = d.FNbJiaoyts - d.FNbQingkts
 		Data[i].JiesuanCount = d.FNbJiaoyts
 		Data[i].ClearlingCount = d.FNbQingkts
 		Data[i].DateTime = d.FVcKuaizsj

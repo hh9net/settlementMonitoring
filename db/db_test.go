@@ -378,7 +378,7 @@ func TestQueryRealTimeSettlementData(t *testing.T) {
 //QueryShengNSettlementTrend()
 func TestQueryShengNSettlementTrend(t *testing.T) {
 	Newdb()
-	QueryShengNSettlementTrendData("2020-08-05")
+	QueryShengNSettlementTrendData("2020-10-16")
 }
 
 //AbnormalDataOfParking

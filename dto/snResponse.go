@@ -20,7 +20,8 @@ type RealTimeSettlementData struct {
 type SNClearandJiesuan struct {
 	JiesuanMoney   string `json:"total_money"  example:"123"`     //交易总金额
 	ClearlingMoney string `json:"clearl_money"  example:"123"`    //清分总金额
-	DiffMoney      string `json:"diff_money"  example:"123"`      //清分总金额
+	DiffMoney      string `json:"diff_money"  example:"123"`      //差额
+	DiffCount      int    `json:"diff_count"  example:"123"`      //差数
 	JiesuanCount   int    `json:"count"  example:"123"`           //交易结算条数
 	ClearlingCount int    `json:"clear_count"  example:"123"`     //清分总笔数
 	DateTime       string `json:"datetime"  example:"2020-08-18"` //完成时间

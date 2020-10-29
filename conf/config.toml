@@ -7,10 +7,17 @@
 ;mysql_databasename = payflow
 
 ; [mysql开发]
-mysql_hostname     =192.168.200.170
+;mysql_hostname     =192.168.200.201
+;mysql_port         = 3306
+;mysql_user         = root
+;mysql_pass         = mysql
+;mysql_databasename = payflow
+
+; [mysql开发]
+mysql_hostname     =127.0.0.1
 mysql_port         = 3306
 mysql_user         = root
-mysql_pass         = mysql
+mysql_pass         = shx19930509321
 mysql_databasename = payflow
 
 ;日志配置
@@ -37,7 +44,7 @@ hmysql_databasename = blacklist
 
 ;[redis]
 ;redis_addr         = "172.18.70.252:6379"
-redis_addr         = "192.168.200.201:6379"
+redis_addr         = "192.168.200.204:6379"
 
 
 ;[parkids] 海岭 3201000009【机场】,3201000003【省人民医院停车场】
@@ -50,7 +57,7 @@ tradestarttime ="2020-09-26 00:00:00"
 
 
 ;[ip_address]
-ip_address          =192.168.200.201:6089
+ip_address          =192.168.200.204:6089
 ;[hl_address]
 hl_address          =192.168.200.41:8092
 

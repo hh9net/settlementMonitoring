@@ -1638,27 +1638,23 @@ func QueryShengNSettlementTrendData(datetime string) *types.SNClearandJiesuan {
 	begin := datetime + " 00:00:00"
 	end := datetime + " 23:59:59"
 	//查询省内交易金额 省内交易条数
-	count := 0
-	db.Table("b_js_jiessj").Where("F_VC_KAWLH = ?", 3201).Where("F_DT_JIAOYSJ >= ?", begin).Where("F_DT_JIAOYSJ <= ?", end).Count(&count)
-	var total_money []int64
-	sqlstr := `select SUM(F_NB_JINE) as total_money from b_js_jiessj where F_VC_KAWLH = ? and (F_DT_JIAOYSJ >= ?) and (F_DT_JIAOYSJ <= ?)  `
-	db.Raw(sqlstr, 3201, begin, end).Pluck("SUM(F_NB_JINE) as total_money", &total_money)
 
-	log.Printf("查询卡网络号为%d，结算表总交易笔数%d，查询总金额为：%d", 3201, count, total_money)
+	var result types.SNResult
+	sqlstr := `select SUM(F_NB_JINE) as total ,count(F_NB_JINE) as count from b_js_jiessj where F_VC_KAWLH = ? and (F_DT_JIAOYSJ >= ?) and (F_DT_JIAOYSJ <= ?) AND  not substring( F_VC_KAH, 5, 4 ) = '2300' `
+	db.Raw(sqlstr, 3201, begin, end).Scan(&result)
+	log.Printf("查询卡网络号为%d，结算表总交易笔数%d，查询总金额为：%d", 3201, result.Count, result.Total)
 
 	//省内请款金额 省内请款条数
-	qkcount := 0
-	//"F_NB_ZHENGYCLJG =?",
-	db.Table("b_js_jiessj").Where("F_VC_KAWLH = ?", 3201).Where("F_NB_QINGFJG =?", 1).Not("F_NB_ZHENGYCLJG = ?", 2).Where("F_DT_JIAOYSJ >= ?", begin).Where("F_DT_JIAOYSJ <= ?", end).Count(&qkcount)
-	var qktotal_money []int64
-	qksqlstr := `select SUM(F_NB_JINE) as qktotal_money from b_js_jiessj where F_VC_KAWLH = ? and F_NB_QINGFJG = ?  and not F_NB_ZHENGYCLJG =? and (F_DT_JIAOYSJ >= ?) and (F_DT_JIAOYSJ <= ?)`
-	db.Raw(qksqlstr, 3201, 1, 2, begin, end).Pluck("SUM(F_NB_JINE) as qktotal_money", &qktotal_money)
-	log.Printf("查询卡网络号为%d，省内已请款数据笔数%d，查询省内已请款数据总金额为：%d", 3201, count, qktotal_money)
+	var qkresult types.SNResult
+	qksqlstr := `select SUM(F_NB_JINE) as total ,count(F_NB_JINE) as count from b_js_jiessj where F_VC_KAWLH = ? and F_NB_QINGFJG = ?  and not F_NB_ZHENGYCLJG =? and (F_DT_JIAOYSJ >= ?) and (F_DT_JIAOYSJ <= ?) AND not  substring( F_VC_KAH, 5, 4 ) = '2300'`
+	db.Raw(qksqlstr, 3201, 1, 2, begin, end).Scan(&qkresult)
+
+	log.Printf("查询卡网络号为%d，省内已请款数据笔数%d，查询省内已请款数据总金额为：%d", 3201, qkresult.Count, qkresult.Total)
 	return &types.SNClearandJiesuan{
-		ClearlingMoney: qktotal_money[0],
-		ClearlingCount: qkcount,
-		JiesuanCount:   count,
-		JiesuanMoney:   total_money[0],
+		ClearlingMoney: qkresult.Total,
+		ClearlingCount: qkresult.Count,
+		JiesuanCount:   result.Count,
+		JiesuanMoney:   result.Total,
 		Datetime:       datetime,
 	}
 }

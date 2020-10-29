@@ -508,6 +508,11 @@ type Result struct {
 	//Date           string
 }
 
+type SNResult struct {
+	Total int64
+	Count int
+}
+
 type ClearlingAndDispute struct {
 	DataType  string
 	DateTime  string
