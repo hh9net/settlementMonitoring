@@ -791,6 +791,6 @@ func Settlementtrendcalibration(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "省内、省外结算趋势校准 error", Message: "省内、省外结算趋势校准error "})
+	c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "省内、省外结算趋势校准 ok", Message: "省内、省外结算趋势校准ok "})
 
 }

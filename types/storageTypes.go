@@ -347,7 +347,7 @@ type BSysYongh struct {
 	FNbYindzt      int       `gorm:"column:F_NB_YINDZT"`     //`F_NB_YINDZT` int(11) DEFAULT '0' COMMENT '引导状态 0：未引导； 1：已引导',
 }
 
-// 24   B_JS_QINGFTJXX【清分统计消息】b_js_qingftjxx
+// B_JS_QINGFTJXX【清分统计消息】b_js_qingftjxx
 type BJsQingftjxx struct {
 	FVcBanbh         string    `gorm:"column:F_VC_BANBH"`                              //F_VC_BANBH	版本号	VARCHAR(32)
 	FNbXiaoxlb       int       `gorm:"column:F_NB_XIAOXLB"`                            //F_NB_XIAOXLB	消息类别	INT
@@ -367,7 +367,7 @@ type BJsQingftjxx struct {
 	FNbWeiyid        int       `gorm:"AUTO_INCREMENT; primary_key;column:F_NB_WEIYID"` //`F_NB_WEIYID` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增主键',
 }
 
-//    B_JS_QINGFTONGJIMX【清分统计明细】b_js_qingftjmx
+//  B_JS_QINGFTONGJIMX【清分统计明细】b_js_qingftjmx
 type BJsQingftjmx struct {
 	FNbQingftjxxxh    int64  `gorm:"column:F_NB_QINGFTJXXXH"`                        //F_NB_QINGFTJXXXH	清分统计消息序号	BIGINT
 	FNbFenzxh         int    `gorm:"column:F_NB_FENZXH"`                             //F_NB_FENZXH	分组序号	INT
@@ -377,7 +377,7 @@ type BJsQingftjmx struct {
 	FNbWeiyid         int    `gorm:"AUTO_INCREMENT; primary_key;column:F_NB_WEIYID"` //`F_NB_WEIYID` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增主键',
 }
 
-// 25  B_JS_ZHENGYCLXX【争议交易处理消息】b_js_zhengyjyclxx
+//  B_JS_ZHENGYCLXX【争议交易处理消息】b_js_zhengyjyclxx
 type BJsZhengyjyclxx struct {
 	FVcBanbh        string    `gorm:"column:F_VC_BANBH"`                              //F_VC_BANBH	版本号	VARCHAR(32)
 	FNbXiaoxlb      int       `gorm:"column:F_NB_XIAOXLB"`                            //F_NB_XIAOXLB	消息类别	INT
