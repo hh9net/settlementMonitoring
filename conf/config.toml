@@ -7,18 +7,18 @@
 ;mysql_databasename = payflow
 
 ; [mysql开发]
-;mysql_hostname     =192.168.200.201
-;mysql_port         = 3306
-;mysql_user         = root
-;mysql_pass         = mysql
-;mysql_databasename = payflow
-
-; [mysql开发]
-mysql_hostname     =127.0.0.1
+mysql_hostname     =192.168.200.170
 mysql_port         = 3306
 mysql_user         = root
-mysql_pass         = shx19930509321
+mysql_pass         = mysql
 mysql_databasename = payflow
+
+; [mysql开发]
+;mysql_hostname     =127.0.0.1
+;mysql_port         = 3306
+;mysql_user         = root
+;mysql_pass         = shx19930509321
+;mysql_databasename = payflow
 
 ;日志配置
 ;[logconf]
