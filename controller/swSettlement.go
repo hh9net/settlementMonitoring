@@ -612,6 +612,12 @@ func Clearcalibration(c *gin.Context) {
 		if disputerr != nil {
 			//return disputerr
 		}
+		//统计退费数据
+		SWRefund := db.StatisticalRefund(req.BeginTime)
+		f := strconv.FormatFloat(float64(SWRefund.Total), 'f', 2, 64)
+		fs := strings.Split(f, ".")
+
+		i, _ := strconv.Atoi(fs[0] + fs[1])
 
 		var zhengyclje int64
 		if Disput == nil {
@@ -619,17 +625,19 @@ func Clearcalibration(c *gin.Context) {
 		} else {
 			zhengyclje = Disput.FNbQuerxyjzdzje
 		}
-
 		log.Println("今日核对清分结果的总金额：", keepAccount+zhengyclje)
 		log.Println("清分包清分总金额：", clear.FNbQingfzje)
+		log.Println("清分包退费总金额：", int64(i))
+
 		var is int
-		if (clear.FNbQingfzje == keepAccount+zhengyclje) && (clear.FNbQingfsl == keepAccountCount+zyfgsl) {
+		if (clear.FNbQingfzje == keepAccount+zhengyclje-int64(i)) && (clear.FNbQingfsl == keepAccountCount+zyfgsl+SWRefund.Count) {
 			is = 1
-			log.Println("清分金额核对正确++++++++++++++")
+			log.Println("清分核对正确++++++++++++++")
 		} else {
 			is = 2
-			log.Println("清分金额核对不正确++++++++++++++++++++++++++++++++")
+			log.Println("清分核对不正确++++++++++++++++++++++++++++++++")
 		}
+
 		//把清分核对结果存数据库
 		data := new(types.BJsjkQingfhd)
 		//赋值
@@ -641,6 +649,8 @@ func Clearcalibration(c *gin.Context) {
 		data.FNbQingfje = clear.FNbQingfzje            //   `F_NB_QINGFJE` bigint DEFAULT NULL COMMENT '清分金额',
 		data.FNbTongjqfje = keepAccount + (zhengyclje) //   `F_NB_TONGJQFJE` bigint DEFAULT NULL COMMENT '统计清分金额',
 		data.FNbHedjg = is                             //   `F_NB_HEDJG` int DEFAULT NULL COMMENT '核对结果 是否一致,1:一致，2:不一致',
+		data.FNbTuifje = int64(i)                      //退费总金额  分
+		data.FNbTuifts = SWRefund.Count                //退费总条数
 
 		s := strings.Split(clear.FVcQingfmbr, "T")
 		data.FVcTongjrq = s[0] //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',【清分包的清分目标日】

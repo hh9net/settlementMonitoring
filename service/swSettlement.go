@@ -481,7 +481,7 @@ func Clarifydifference() (int, error, *[]dto.DifferAmount) {
 	}
 
 	for i, d := range *ds {
-		Datas[i].Differamount = utils.Fen2Yuan(d.FNbQingfje - d.FNbTongjqfje)
+		Datas[i].Differamount = utils.Fen2Yuan(d.FNbTongjqfje - d.FNbQingfje - d.FNbTuifje)
 		Datas[i].DateTime = d.FVcTongjrq
 	}
 	log.Println("查询最近15天清分包数据差额 ; 响应数据len(Datas)：", len(Datas))
@@ -525,6 +525,8 @@ func ClarifyQuery(req dto.ReqQueryClarify) (int, error, *dto.Clearlingcheckdata)
 		Datas[i].Hedjg = d.FNbHedjg
 		Datas[i].Tongjrq = d.FVcTongjrq
 		Datas[i].Qingfbjssj = utils.DateTimeFormat(d.FDtQingfbjssj)
+		Datas[i].Tongjqfje = utils.Fen2Yuan(d.FNbTuifje)
+		Datas[i].Tuifts = d.FNbTuifts
 	}
 	Data := dto.Clearlingcheckdata{
 		Clearlingcheck: Datas,

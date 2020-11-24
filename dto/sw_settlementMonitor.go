@@ -95,6 +95,8 @@ type ClearlingcheckData struct {
 	Hedjg           int    `json:"result" example:"1244547"`           //核对结果 1：核对一致
 	Tongjrq         string `json:"datatime" example:"1244547"`         //统计日期
 	Qingfbjssj      string `json:"receiv_time" example:"1244547"`      //清分包接收时间
+	Tuifje          string `json:"refund_money" example:"1244547"`
+	Tuifts          int    `json:"refund_count"`
 }
 
 type Dataclassification struct {
