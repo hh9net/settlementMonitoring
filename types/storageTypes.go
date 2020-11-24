@@ -40,6 +40,8 @@ type BJsjkQingfhd struct {
 	FNbQingfts    int       `gorm:"column:F_NB_QINGFTS"`    //`F_NB_QINGFTS` int DEFAULT NULL COMMENT '清分条数',
 	FNbTongjqfts  int       `gorm:"column:F_NB_TONGJQFTS"`  //`F_NB_TONGJQFTS` int DEFAULT NULL COMMENT '统计清分条数',
 	FDtQingfbjssj time.Time `gorm:"column:F_DT_QINGFBJSSJ"` //`F_VC_QINGFBJSSJ` int DEFAULT NULL COMMENT '清分包接收时间',
+	FNbTuifje     int64     `gorm:"column:F_NB_TUIFZE"`     //`F_NB_TUIFZE` bigint(20) DEFAULT '0' COMMENT '退费总额',
+	FNbTuifts     int       `gorm:"column:F_NB_TUIFZSL"`    //`F_NB_TUIFZSL` int(11) DEFAULT '0' COMMENT '退费总数量',
 }
 
 //3 省内拒付数据统计表 `b_jsjk_shengnjfsjtj`
@@ -365,6 +367,7 @@ type BJsQingftjxx struct {
 	FVcXiaoxwjlj     string    `gorm:"column:F_VC_XIAOXWJLJ"`                          //F_VC_XIAOXWJLJ	消息文件路径	VARCHAR(512)
 	FDtChulsj        time.Time `gorm:"column:F_DT_CHULSJ"`                             //`F_DT_CHULSJ` datetime DEFAULT NULL COMMENT '处理时间',
 	FNbWeiyid        int       `gorm:"AUTO_INCREMENT; primary_key;column:F_NB_WEIYID"` //`F_NB_WEIYID` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增主键',
+	FNbTuifbsl       int       `gorm:"column:F_NB_TUIFBSL"`                            //`F_NB_TUIFBSL` int(11) DEFAULT '0' COMMENT '退费包数量',
 }
 
 //  B_JS_QINGFTONGJIMX【清分统计明细】b_js_qingftjmx
@@ -510,6 +513,11 @@ type Result struct {
 
 type SNResult struct {
 	Total int64
+	Count int
+}
+
+type SWRefund struct {
+	Total float64
 	Count int
 }
 

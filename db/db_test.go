@@ -453,3 +453,10 @@ func TestQueryDataSync1(t *testing.T) {
 	log.Println(QueryDataSync())
 
 }
+
+//
+func TestStatisticalRefund(t *testing.T) {
+	Newdb()
+	log.Println(StatisticalRefund("2020-11-24"))
+
+}
