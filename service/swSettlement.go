@@ -525,7 +525,7 @@ func ClarifyQuery(req dto.ReqQueryClarify) (int, error, *dto.Clearlingcheckdata)
 		Datas[i].Hedjg = d.FNbHedjg
 		Datas[i].Tongjrq = d.FVcTongjrq
 		Datas[i].Qingfbjssj = utils.DateTimeFormat(d.FDtQingfbjssj)
-		Datas[i].Tongjqfje = utils.Fen2Yuan(d.FNbTuifje)
+		Datas[i].Tuifje = utils.Fen2Yuan(d.FNbTuifje)
 		Datas[i].Tuifts = d.FNbTuifts
 	}
 	Data := dto.Clearlingcheckdata{
