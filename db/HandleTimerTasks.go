@@ -408,7 +408,8 @@ func QueryClearlingAndDisputePackage() error {
 
 	//1、获取清分包、争议包数据
 	Yesterday := utils.Yesterdaydate()
-	qcerr, clears := QueryClearlingdata(Yesterday)
+	today := time.Now().Format("2006-01-02")
+	qcerr, clears := QueryClearlingdata(today)
 	if qcerr != nil {
 		return qcerr
 	}
@@ -423,7 +424,7 @@ func QueryClearlingAndDisputePackage() error {
 		m := make(map[string]string, 0)
 		// key:日期    value:"包号"｜"时间"
 		m[Yesterday] = Clear.PackageNo + "|" + Clear.DateTime
-		//2、把数据存储于redis  接收时间、包号
+		//2、把数据存储于redis  接收时间[也是处理时间]、包号
 		hmseterr := utils.RedisHMSet(&conn, Clear.DataType, m)
 		if hmseterr != nil {
 			return hmseterr
@@ -451,7 +452,7 @@ func QueryClearlingAndDisputePackage() error {
 	}
 
 	//1查询争议处理数据
-	qderr, dispute := QueryDisputedata(Yesterday)
+	qderr, dispute := QueryDisputedata(today)
 	if qderr != nil {
 		return qderr
 	}
@@ -471,7 +472,7 @@ func QueryClearlingAndDisputePackage() error {
 	}
 	m2 := make(map[string]string, 0)
 	//2、把数据存储于redis  接收时间、包号
-	m2[Yesterday] = Disput.PackageNo + "|" + Disput.DateTime
+	m2[today] = Disput.PackageNo + "|" + Disput.DateTime
 
 	dishmseterr := utils.RedisHMSet(&conn, Disput.DataType, m2)
 	if dishmseterr != nil {
