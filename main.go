@@ -70,11 +70,11 @@ func main() {
 
 	//goroutine1
 	go db.HandleDayTasks()
-	//goroutine2
+	////goroutine2
 	go db.HandleHourTasks()
-	//goroutine3
+	////goroutine3
 	go db.HandleMinutesTasks()
-	//kafka处理
+	////kafka处理
 	go db.HandleKafka()
 	//http处理
 	router.RouteInit(IpAddress)

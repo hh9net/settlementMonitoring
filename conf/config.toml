@@ -67,8 +67,8 @@ frequency          =144
 
 ;[kafka_ip]
 kafka_ipa          ="172.18.70.8:9092"
-kafka_ipb          ="172.18.70.17:9092"
-kafka_ipc          ="172.18.70.18:9092"
+kafka_ipb          ="172.118.70.17:9092"
+kafka_ipc          =
 ddkafka_topic      ="billExitDataCollectTopic"
 zdzkafka_topic     ="zdzBillExitDataCollectTopic"
 

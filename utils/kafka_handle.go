@@ -25,7 +25,7 @@ const (
 )
 
 //代理
-var brokerAddrs = []string{kafkaConn1, kafkaConn2, kafkaConn3}
+//var brokerAddrs = []string{kafkaConn1, kafkaConn2, kafkaConn3}
 
 //生产数据
 func Producer(msgType string, value string) {
@@ -48,7 +48,9 @@ func Producer(msgType string, value string) {
 		panic(err)
 	}
 
-	defer producer.Close()
+	defer func() {
+		_ = producer.Close()
+	}()
 
 	//构建发送的消息，
 	msg := &sarama.ProducerMessage{
@@ -116,7 +118,11 @@ func Consumer() {
 		}(pc)
 	}
 	wg.Wait()
-	consumer.Close()
+
+	defer func() {
+		_ = consumer.Close()
+	}()
+
 }
 
 type Kafka struct {
@@ -311,7 +317,10 @@ func ProcessMessage(topic string, msg []byte) error {
 	//把数据更新到redis
 	//conn := RedisConn //初始化redis
 	conn := Pool.Get()
-	defer conn.Close()
+	defer func() {
+		_ = conn.Close()
+	}()
+
 	//1、获取redis中数据
 	rhgeterr, value := RedisHGet(&conn, "jiesstatistical", Parkingid)
 	if rhgeterr != nil {
@@ -461,9 +470,7 @@ func consume(group *sarama.ConsumerGroup, wg *sync.WaitGroup, name string) error
 	ctx := context.Background()
 	for {
 		//c1 ：group  topics := []string{"zdzBillExitDataCollectTopic", "topic1","sun", "billDataCollectTopic"}
-		ddtopic := types.DdkafkaTopic
-		zdztopic := types.ZdzkafkaTopic
-		topics := []string{zdztopic, "topic1", "sun", ddtopic}
+		topics := []string{types.ZdzkafkaTopic, types.DdkafkaTopic}
 		handler := consumerGroupHandler{name: name}
 
 		log.Println("+++++++++++++++++++topics:", topics)
@@ -484,8 +491,11 @@ func ConsumerGroup() error {
 	config := sarama.NewConfig()
 	config.Consumer.Return.Errors = false
 	config.Version = sarama.V0_10_2_0
-	client, err := sarama.NewClient([]string{types.KafkaIpa, types.KafkaIpb, types.KafkaIpc, "172.18.70.21:9092"}, config)
-	defer client.Close()
+	client, err := sarama.NewClient([]string{types.KafkaIpa /*, types.KafkaIpb, types.KafkaIpc, "172.18.70.21:9092"*/}, config)
+	defer func() {
+		_ = client.Close()
+	}()
+
 	if err != nil {
 		log.Println("++++++++++++++++++++++++++sarama.NewClient 执行出错: ", err)
 		return err
@@ -506,7 +516,11 @@ func ConsumerGroup() error {
 	//if err != nil {
 	//	panic(err)
 	//}
-	defer group1.Close()
+	defer func() {
+
+		_ = group1.Close()
+	}()
+
 	//defer group2.Close()
 	//defer group3.Close()
 	wg.Add(1)
