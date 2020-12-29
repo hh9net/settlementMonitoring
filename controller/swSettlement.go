@@ -577,10 +577,10 @@ func SetRedis(c *gin.Context) {
 
 //Clearcalibration清分核对校准
 func Clearcalibration(c *gin.Context) {
-	conn := utils.Pool.Get() //初始化redis
-	defer func() {
-		_ = conn.Close()
-	}()
+	//conn := utils.Pool.Get() //初始化redis
+	//defer func() {
+	//	_ = conn.Close()
+	//}()
 	req := dto.ReqQuery{}
 	respFailure := dto.ResponseFailure{}
 
@@ -591,6 +591,7 @@ func Clearcalibration(c *gin.Context) {
 		c.JSON(types.StatusQueryClarifyError, respFailure)
 		return
 	}
+	log.Println("清分核对校准的清分包接收日期：", req.BeginTime)
 
 	//1、获取昨日的清分包数据
 	qerr, clears := db.QueryClearlingdata(req.BeginTime)
@@ -605,8 +606,11 @@ func Clearcalibration(c *gin.Context) {
 	}
 	for _, clear := range *clears {
 		//2、统计昨日记账包总金额
-		s1 := strings.Split(clear.FVcQingfmbr, "T")
-		keepAccount, keepAccountCount := db.StatisticalkeepAccount(s1[0])
+		//	s1 := strings.Split(clear.FVcQingfmbr, "T")
+		log.Println("++++统计记账包")
+		keepAccount, keepAccountCount := db.StatisticalkeepAccount(clear.FVcQingfmbr)
+		log.Println("++++统计记账包完成")
+
 		//统计存在争议数据
 		disputerr, Disput, zyfgsl := db.DisputedDataCanClearling(clear.FNbXiaoxxh)
 		if disputerr != nil {
@@ -698,7 +702,7 @@ func ClearlingAndDisputePackagecalibration(c *gin.Context) {
 	Yesterday := req.BeginTime
 	qcerr, clears := db.QueryClearlingdata(Yesterday)
 	if qcerr != nil {
-		log.Println("获取清分包数据 错误")
+		log.Println("获取清分包数据 错误 qcerr:", qcerr)
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "取清分包数据 错误 error", Message: "取清分包数据 错误 error "})
 		return
 	}
