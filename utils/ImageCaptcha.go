@@ -9,7 +9,7 @@ import (
 
 //1.随机获取验证码文字
 func GetRandStr(n int) (randStr string) {
-	chars := "abcdefghijkmnpqrstuvwxyz23456789"
+	chars := "abcdefhjmnprstuwxyz345689"
 	charsLen := len(chars)
 	if n > 10 {
 		n = 10

@@ -606,9 +606,9 @@ func Clearcalibration(c *gin.Context) {
 	}
 	for _, clear := range *clears {
 		//2、统计昨日记账包总金额
-		//	s1 := strings.Split(clear.FVcQingfmbr, "T")
+		s1 := strings.Split(clear.FVcQingfmbr, "T")
 		log.Println("++++统计记账包")
-		keepAccount, keepAccountCount := db.StatisticalkeepAccount(clear.FVcQingfmbr)
+		keepAccount, keepAccountCount := db.StatisticalkeepAccount(s1[0])
 		log.Println("++++统计记账包完成")
 
 		//统计存在争议数据

@@ -166,7 +166,7 @@ type ReqQueryClarify struct {
 }
 
 type ReqQuery struct {
-	BeginTime string `json:"begin_time" example:"2020-08-13 13:13:13"`
+	BeginTime string `json:"begin_time" example:"2020-08-13"`
 }
 
 type ReqClarifyExportExcel struct {
