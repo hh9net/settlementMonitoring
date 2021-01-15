@@ -492,9 +492,19 @@ func Clarifydifference() (int, error, *[]dto.DifferAmount) {
 func ClarifyQuery(req dto.ReqQueryClarify) (int, error, *dto.Clearlingcheckdata) {
 	log.Print("清分核对请求参数：", req)
 	//获取请求数据
-	//var err error
-	//var qfhdreqs *[]types.BJsjkQingfhd
-
+	/*
+		Datas := make([]dto.ClearlingcheckData, 5)
+		Datas[0].Tongjrq="2021-01-12"
+		Datas[1].Tongjrq="2021-01-13"
+		Datas[2].Tongjrq="2021-01-01"
+		Datas[3].Tongjrq="2021-01-02"
+		Datas[4].Tongjrq="2021-01-03"
+		Data := dto.Clearlingcheckdata{
+			Clearlingcheck: Datas,
+			ZongTS:         5,
+			ZongYS:         50000,
+		}
+		return types.StatusSuccessfully, nil, &Data*/
 	err, qfhdreqs, zongjls, zongys := db.QueryClearlingcheck(&req)
 	if err != nil {
 		if fmt.Sprint(err) == "请输入开始查询时间" {

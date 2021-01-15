@@ -547,16 +547,24 @@ func QueryDisputedata(yesterday string) (error, *types.BJsZhengyjyclxx) {
 //1、统计清分数据
 func StatisticalClearlingcheck() error {
 	//1、获取昨日的清分包数据
-	y := utils.Yesterdaydate()
-	qerr, clears := QueryClearlingdata(y)
+	today := time.Now().Format("2006-01-02")
+	qerr, clears := QueryClearlingdata(today)
 	if qerr != nil {
 		return qerr
 	}
 	if clears == nil {
-		log.Println("+++++++++++++++++++++++++++昨日没有清分包【1.3】++++++++++++++++++++++")
-		return errors.New("昨日没有清分包，需要检查清分包是否接收")
+		log.Println("今日这时还没有收到清分包")
+		return errors.New("今日这时还没有收到清分包，需要检查清分包是否接收")
 	}
 	for _, clear := range *clears {
+		qcrerr := QueryCheckResult(clear.FNbXiaoxxh)
+		if qcrerr != nil {
+			if fmt.Sprint(qcrerr) == "查询清分核对结果成功,不能重复插入" {
+				log.Println("查询清分核对结果成功,不能重复插入")
+				return nil
+			}
+			return qcrerr
+		}
 		//2、统计昨日记账包总金额
 		s1 := strings.Split(clear.FVcQingfmbr, "T")
 		keepAccount, keepAccountCount := StatisticalkeepAccount(s1[0])
@@ -566,7 +574,7 @@ func StatisticalClearlingcheck() error {
 			return disputerr
 		}
 		//统计退费数据
-		SWRefund := StatisticalRefund(y)
+		SWRefund := StatisticalRefund(today)
 		f := strconv.FormatFloat(float64(SWRefund.Total), 'f', 2, 64)
 		fs := strings.Split(f, ".")
 
@@ -585,10 +593,10 @@ func StatisticalClearlingcheck() error {
 		var is int
 		if (clear.FNbQingfzje == keepAccount+zhengyclje-int64(i)) && (clear.FNbQingfsl == keepAccountCount+zyfgsl+SWRefund.Count) {
 			is = 1
-			log.Println("清分核对正确++++++++++++++")
+			log.Println("清分核对正确+++++")
 		} else {
 			is = 2
-			log.Println("清分核对不正确++++++++++++++++++++++++++++++++")
+			log.Println("清分核对不正确+++++")
 		}
 		//把清分核对结果存数据库
 		data := new(types.BJsjkQingfhd)
@@ -606,19 +614,12 @@ func StatisticalClearlingcheck() error {
 		data.FNbTuifts = SWRefund.Count //退费总条数
 		s := strings.Split(clear.FVcQingfmbr, "T")
 		data.FVcTongjrq = s[0] //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',【清分包的清分目标日】
-		qcrerr := QueryCheckResult(data)
-		if qcrerr != nil {
-			if fmt.Sprint(qcrerr) == "查询清分核对结果成功,不能重复插入" {
-				log.Println("查询清分核对结果成功,不能重复插入")
-				return nil
-			}
-			return qcrerr
-		}
-		cherr := CheckResult(data)
+
+		cherr := CheckResultInsert(data)
 		if cherr != nil {
 			return cherr
 		}
-		log.Println("清分金额核对完成++++++++++++++++++++【1.3】+++++++++++++")
+		log.Println("清分金额核对完成+++++")
 	}
 
 	return nil
@@ -731,21 +732,21 @@ func QueryDisputedData(zyxx *types.BJsZhengyjyclxx) (error, int) {
 }
 
 //4、把核对结果插入数据库
-func CheckResult(clear *types.BJsjkQingfhd) error {
+func CheckResultInsert(clear *types.BJsjkQingfhd) error {
 	db := utils.GormClient.Client
 	if err := db.Table("b_jsjk_qingfhd").Create(&clear).Error; err != nil {
 		// 错误处理...
 		log.Println("Insert b_jsjk_qingfhd error", err)
 		return err
 	}
-	log.Println("新增清分核对结果成功！++++++++++++++++++++++++++++++++++++++++++++++++", clear.FNbQingfbxh)
+	log.Println("新增清分核对结果成功！++++", clear.FNbQingfbxh)
 	return nil
 }
 
-func QueryCheckResult(clear *types.BJsjkQingfhd) error {
+func QueryCheckResult(Qingfbxh int64) error {
 	db := utils.GormClient.Client
 	Clear := new(types.BJsjkQingfhd)
-	if err := db.Table("b_jsjk_qingfhd").Where("F_NB_QINGFBXH = ?", clear.FNbQingfbxh).First(Clear).Error; err != nil {
+	if err := db.Table("b_jsjk_qingfhd").Where("F_NB_QINGFBXH = ?", Qingfbxh).First(Clear).Error; err != nil {
 		if fmt.Sprint(err) == "record not found" {
 			log.Println("Query b_jsjk_qingfhd err == `record not found`:", err)
 			return nil
@@ -753,7 +754,7 @@ func QueryCheckResult(clear *types.BJsjkQingfhd) error {
 		log.Println("Query b_jsjk_qingfhd error", err)
 		return err
 	}
-	log.Println("查询清分核对结果成功！++++++++++++++++++++++++++++++++++++++++++++++++", clear.FNbQingfbxh)
+	log.Println("查询清分核对结果成功！++++", Clear.FNbQingfbxh)
 	return errors.New("查询清分核对结果成功,不能重复插入")
 }
 

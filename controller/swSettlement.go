@@ -577,10 +577,6 @@ func SetRedis(c *gin.Context) {
 
 //Clearcalibration清分核对校准
 func Clearcalibration(c *gin.Context) {
-	//conn := utils.Pool.Get() //初始化redis
-	//defer func() {
-	//	_ = conn.Close()
-	//}()
 	req := dto.ReqQuery{}
 	respFailure := dto.ResponseFailure{}
 
@@ -605,6 +601,16 @@ func Clearcalibration(c *gin.Context) {
 		return
 	}
 	for _, clear := range *clears {
+		qcrerr := db.QueryCheckResult(clear.FNbXiaoxxh)
+		if qcrerr != nil {
+			if fmt.Sprint(qcrerr) == "查询清分核对结果成功,不能重复插入" {
+				log.Println("查询清分核对结果成功,不能重复插入")
+				c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "查询清分核对结果成功,不能重复插入", Message: "查询清分核对结果成功,不能重复插入"})
+				return
+			}
+			c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "清分核对校准error", Message: "清分核对校准error "})
+			return
+		}
 		//2、统计昨日记账包总金额
 		s1 := strings.Split(clear.FVcQingfmbr, "T")
 		log.Println("++++统计记账包")
@@ -658,17 +664,8 @@ func Clearcalibration(c *gin.Context) {
 
 		s := strings.Split(clear.FVcQingfmbr, "T")
 		data.FVcTongjrq = s[0] //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',【清分包的清分目标日】
-		qcrerr := db.QueryCheckResult(data)
-		if qcrerr != nil {
-			if fmt.Sprint(qcrerr) == "查询清分核对结果成功,不能重复插入" {
-				log.Println("查询清分核对结果成功,不能重复插入")
-				c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "查询清分核对结果成功,不能重复插入", Message: "查询清分核对结果成功,不能重复插入"})
-				return
-			}
-			c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "清分核对校准error", Message: "清分核对校准error "})
-			return
-		}
-		cherr := db.CheckResult(data)
+
+		cherr := db.CheckResultInsert(data)
 		if cherr != nil {
 			c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "清分核对校准 插入 error", Message: "清分核对校准 插入 error "})
 			return

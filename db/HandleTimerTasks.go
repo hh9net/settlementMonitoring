@@ -30,13 +30,6 @@ func HandleDayTasks() {
 			log.Println("+++++++++++++++++++++【1.1error】+++++++++++++++++=查询停车场的总金额、总笔数定时任务:", qterr)
 		}
 
-		//任务五
-		//清分核对[已经去重了]
-		cherr := StatisticalClearlingcheck()
-		if cherr != nil {
-			log.Println("+++++++++++++++++++++【1.3error】+++++++++++++++++=清分核对定时任务:", cherr)
-		}
-
 		//任务七
 		//省外结算趋势
 		qserr := SettlementTrendbyDay()
@@ -72,6 +65,32 @@ func HandleDayTasks() {
 		}
 
 		log.Println("执行线程1，处理一天一次的定时任务【完成】11111111111111111111111111111111111111111111111111111111111111111")
+
+	}
+}
+
+func HandleSixHourTasks() {
+	for {
+
+		now := time.Now()               //获取当前时间，放到now里面，要给next用
+		next := now.Add(time.Hour * 24) //通过now偏移24小时
+
+		next = time.Date(next.Year(), next.Month(), next.Day(), 0, 0, 0, 0, next.Location()) //获取下一个20点的日期
+
+		t := time.NewTimer(next.Sub(now)) //计算当前时间到凌晨的时间间隔，设置一个定时器
+		<-t.C
+
+		tiker := time.NewTimer(time.Hour * 6) //计算当前时间到凌晨的时间间隔，设置一个定时器
+		for {
+			<-tiker.C
+			//任务五
+			//清分核对[已经去重了]
+			cherr := StatisticalClearlingcheck()
+			if cherr != nil {
+				log.Println("清分核对定时任务error:", cherr)
+			}
+			log.Println("执行清分核对的定时任务【完成】")
+		}
 
 	}
 }

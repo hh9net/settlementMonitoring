@@ -253,7 +253,7 @@ func TestDisputedDataCanClearling(t *testing.T) {
 
 }
 
-//StatisticalClearlingcheck()
+//
 func TestStatisticalClearlingcheck(t *testing.T) {
 	Newdb()
 	log.Println(StatisticalClearlingcheck())
