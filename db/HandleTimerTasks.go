@@ -70,28 +70,15 @@ func HandleDayTasks() {
 }
 
 func HandleSixHourTasks() {
+	tiker := time.NewTimer(time.Hour * 6) //计算当前时间到凌晨的时间间隔，设置一个定时器
 	for {
-
-		now := time.Now()               //获取当前时间，放到now里面，要给next用
-		next := now.Add(time.Hour * 24) //通过now偏移24小时
-
-		next = time.Date(next.Year(), next.Month(), next.Day(), 0, 0, 0, 0, next.Location()) //获取下一个20点的日期
-
-		t := time.NewTimer(next.Sub(now)) //计算当前时间到凌晨的时间间隔，设置一个定时器
-		<-t.C
-
-		tiker := time.NewTimer(time.Hour * 6) //计算当前时间到凌晨的时间间隔，设置一个定时器
-		for {
-			<-tiker.C
-			//任务五
-			//清分核对[已经去重了]
-			cherr := StatisticalClearlingcheck()
-			if cherr != nil {
-				log.Println("清分核对定时任务error:", cherr)
-			}
-			log.Println("执行清分核对的定时任务【完成】")
+		cherr := StatisticalClearlingcheck()
+		if cherr != nil {
+			log.Println("清分核对定时任务error:", cherr)
+			continue
 		}
-
+		log.Println("执行清分核对的定时任务完成")
+		<-tiker.C
 	}
 }
 

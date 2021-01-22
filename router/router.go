@@ -112,6 +112,9 @@ func AuthAPIInit(route *gin.RouterGroup) {
 	route.POST("/sw/clearlinganddisputepackageclearcalibration", controller.ClearlingAndDisputePackagecalibration)
 	//省内、省外结算趋势校准
 	route.GET("/sw/settlementtrendcalibration", controller.Settlementtrendcalibration)
+	//省外结算清分包处理通知
+	route.POST("/sw/clearlinganddisputepackageclearcalibration", controller.ClearlingAndDisputePackagecalibration)
+
 }
 
 //以下为cors实现

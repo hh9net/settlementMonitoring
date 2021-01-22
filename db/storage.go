@@ -509,11 +509,11 @@ func UpdateAbnormalData(data *types.BJsjkYicsjtj, id int) error {
 
 //4.1.10	清分、争议包更新状态监控
 //1、查询清分包数据
-func QueryClearlingdata(yesterday string) (error, *[]types.BJsQingftjxx) {
+func QueryClearlingdata(todayJS string) (error, *[]types.BJsQingftjxx) {
 	db := utils.GormClient.Client
 	qingftjsjs := make([]types.BJsQingftjxx, 0)
 	//赋值
-	if err := db.Table("b_js_qingftjxx").Where("F_DT_JIESSJ>=?", yesterday+" 00:00:00").Where("F_DT_JIESSJ<=?", yesterday+" 23:59:59").Find(&qingftjsjs).Error; err != nil {
+	if err := db.Table("b_js_qingftjxx").Where("F_DT_JIESSJ>=?", todayJS+" 00:00:00").Where("F_DT_JIESSJ<=?", todayJS+" 23:59:59").Find(&qingftjsjs).Error; err != nil {
 		if fmt.Sprint(err) == "record not found" {
 			log.Println("QueryClearlingdata err== `record not found`:", err)
 			return nil, nil
