@@ -108,5 +108,20 @@ func Imagecaptcha(c *gin.Context) {
 	//1.随机获取验证码文字
 	randStr := utils.GetRandStr(4)
 	logrus.Println("随机获取验证码文字:", randStr)
+	//2、验证码存redis
+	conn := utils.Pool.Get()
+	defer func() {
+		_ = conn.Close()
+	}()
+	rseterr := utils.RedisSet(&conn, randStr, randStr)
+	if rseterr != nil {
+		c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Message: "随机获取验证码文字 时，set redis error"})
+		return
+	}
+	rserr := utils.RedisExpireSet(&conn, randStr, 300)
+	if rserr != nil {
+		c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Message: "设置过期时间 时，RedisExpireSet  error"})
+		return
+	}
 	c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: randStr, Message: "随机获取验证码文字成功"})
 }

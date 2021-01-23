@@ -101,7 +101,6 @@ func AuthAPIInit(route *gin.RouterGroup) {
 	route.POST("/sw/exportexcel", controller.ExportExcel)
 
 	//
-	//
 	//省外清分核对确认【待处理Clarify confirm】
 	route.POST("/sw/clarifyconfirm", controller.Clarifyconfirm)
 	//set redis 零值
@@ -113,7 +112,12 @@ func AuthAPIInit(route *gin.RouterGroup) {
 	//省内、省外结算趋势校准
 	route.GET("/sw/settlementtrendcalibration", controller.Settlementtrendcalibration)
 	//省外结算清分包处理通知
-	route.POST("/sw/clearlinganddisputepackageclearcalibration", controller.ClearlingAndDisputePackagecalibration)
+	//route.POST("/sw/clearingnotice", controller.ClearingNotice)
+
+	//
+
+	//关于前一天以及之前的未记账处理的原始消息包查询untreated
+	//route.POST("/sw/getunkeepaccountmsg", controller.GetUnkeepaccountMsg)
 
 }
 

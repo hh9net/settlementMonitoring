@@ -2415,3 +2415,16 @@ func QueryClearlingcheckByConditions(req *dto.ReqClarifyExportExcel) (error, *[]
 		return nil, &hmdtjs
 	}
 }
+
+//关于前一天以及之前的未记账处理的原始消息包查询
+func QueryUnkeepaccountMsg() (error, *types.BJsjkShengnjsqs) {
+	db := utils.GormClient.Client
+	//1、查询结算表中昨天以前没有记账的数据
+	shuju := new(types.BJsjkShengnjsqs)
+	if err := db.Table("b_jsjk_shengnjsqs").Last(&shuju).Error; err != nil {
+		log.Println("查询最新一条省内结算趋势 error :", err)
+		return err, nil
+	}
+	log.Println("查询省内结算趋势:", shuju)
+	return nil, shuju
+}

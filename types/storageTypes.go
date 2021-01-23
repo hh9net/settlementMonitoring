@@ -162,19 +162,18 @@ type BJsjkShengwjsqs struct {
 
 //12 省外结算数据分类  `b_jsjk_shengwjssjfl`
 type BJsjkShengwjssjfl struct {
-	FNbId int `gorm:"AUTO_INCREMENT; primary_key ;column:F_NB_ID"` //  `F_NB_ID` int NOT NULL AUTO_INCREMENT COMMENT '唯一自增id',
-
-	FNbJiaoyzts   int       `gorm:"column:F_NB_JIAOYZTS"`   //   `F_NB_JIAOYZTS` int DEFAULT NULL COMMENT '交易总条数',
-	FNbQingfsjts  int       `gorm:"column:F_NB_QINGFSJTS"`  //   `F_NB_QINGFSJTS` int DEFAULT NULL COMMENT '清分数据条数',
-	FNbJizsjts    int       `gorm:"column:F_NB_JIZSJTS"`    //   `F_NB_JIZSJTS` int DEFAULT NULL COMMENT '记账数据条数',
-	FNbZhengysjts int       `gorm:"column:F_NB_ZHENGYSJTS"` //   `F_NB_ZHENGYSJTS` int DEFAULT NULL COMMENT '争议数据条数 待处理',
-	FNbWeidbsjts  int       `gorm:"column:F_NB_WEIDBSJTS"`  //   `F_NB_WEIDBSJTS` int DEFAULT NULL COMMENT '未打包数据条数',
-	FNbYidbsjts   int       `gorm:"column:F_NB_YIDBSJTS"`   //   `F_NB_YIDBSJTS` int DEFAULT NULL COMMENT '已打包数据条数',
-	FNbYifssjts   int       `gorm:"column:F_NB_YIFSSJTS"`   //   `F_NB_YIFSSJTS` int DEFAULT NULL COMMENT '已发送数据条数',
-	FNbHuaizsjts  int       `gorm:"column:F_NB_HUAIZSJTS"`  //   `F_NB_HUAIZSJTS` int DEFAULT NULL COMMENT '坏账数据条数',
-	FDtKaistjsj   time.Time `gorm:"column:F_DT_KAISTJSJ"`   //   `F_DT_KAISTJSJ` datetime DEFAULT NULL COMMENT '开始统计时间',
-	FDtTongjwcsj  time.Time `gorm:"column:F_DT_TONGJWCSJ"`  //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
-	FVcTongjrq    string    `gorm:"column:F_VC_TONGJRQ"`    //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
+	FNbId         int       `gorm:"AUTO_INCREMENT; primary_key ;column:F_NB_ID"` //  `F_NB_ID` int NOT NULL AUTO_INCREMENT COMMENT '唯一自增id',
+	FNbJiaoyzts   int       `gorm:"column:F_NB_JIAOYZTS"`                        //   `F_NB_JIAOYZTS` int DEFAULT NULL COMMENT '交易总条数',
+	FNbQingfsjts  int       `gorm:"column:F_NB_QINGFSJTS"`                       //   `F_NB_QINGFSJTS` int DEFAULT NULL COMMENT '清分数据条数',
+	FNbJizsjts    int       `gorm:"column:F_NB_JIZSJTS"`                         //   `F_NB_JIZSJTS` int DEFAULT NULL COMMENT '记账数据条数',
+	FNbZhengysjts int       `gorm:"column:F_NB_ZHENGYSJTS"`                      //   `F_NB_ZHENGYSJTS` int DEFAULT NULL COMMENT '争议数据条数 待处理',
+	FNbWeidbsjts  int       `gorm:"column:F_NB_WEIDBSJTS"`                       //   `F_NB_WEIDBSJTS` int DEFAULT NULL COMMENT '未打包数据条数',
+	FNbYidbsjts   int       `gorm:"column:F_NB_YIDBSJTS"`                        //   `F_NB_YIDBSJTS` int DEFAULT NULL COMMENT '已打包数据条数',
+	FNbYifssjts   int       `gorm:"column:F_NB_YIFSSJTS"`                        //   `F_NB_YIFSSJTS` int DEFAULT NULL COMMENT '已发送数据条数',
+	FNbHuaizsjts  int       `gorm:"column:F_NB_HUAIZSJTS"`                       //   `F_NB_HUAIZSJTS` int DEFAULT NULL COMMENT '坏账数据条数',
+	FDtKaistjsj   time.Time `gorm:"column:F_DT_KAISTJSJ"`                        //   `F_DT_KAISTJSJ` datetime DEFAULT NULL COMMENT '开始统计时间',
+	FDtTongjwcsj  time.Time `gorm:"column:F_DT_TONGJWCSJ"`                       //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
+	FVcTongjrq    string    `gorm:"column:F_VC_TONGJRQ"`                         //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
 }
 
 //13 省外结算争议数据统计表 `b_jsjk_shengwjszysjtj`

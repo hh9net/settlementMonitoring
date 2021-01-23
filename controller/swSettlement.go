@@ -805,3 +805,18 @@ func Settlementtrendcalibration(c *gin.Context) {
 	c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "省内、省外结算趋势校准 ok", Message: "省内、省外结算趋势校准ok "})
 
 }
+
+//
+////关于前一天以及之前的未记账处理的原始消息包查询
+//func GetUnkeepaccountMsg(c *gin.Context) {
+//
+//	qsnqserr := db.QueryUnkeepaccountMsg()
+//	if qsnqserr != nil {
+//		log.Println("+++++++++++++++++++++【1.8error】+++++++++++++++++=查询省内结算分类 定时任务 error:", qsnqserr)
+//		c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "省内、省外结算趋势校准 error", Message: "省内、省外结算趋势校准error "})
+//		return
+//	}
+//
+//	c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "省内、省外结算趋势校准 ok", Message: "省内、省外结算趋势校准ok "})
+//
+//}
