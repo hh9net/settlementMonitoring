@@ -2,12 +2,12 @@
 ; [mysql生产]
 ;mysql_hostname     =172.18.70.251
 ;mysql_port         = 3306
-;mysql_user         = jstxb
-;mysql_pass         = JStxb0408@
+;mysql_user         = root
+;mysql_pass         = mysql
 ;mysql_databasename = payflow
 
 ; [mysql开发]
-mysql_hostname     =192.168.200.170
+mysql_hostname     =192.168.128.222
 mysql_port         = 3306
 mysql_user         = root
 mysql_pass         = mysql
@@ -36,7 +36,7 @@ log_FileName     = "settlementMonitoring.log"
 ;hmysql_pass         = JStxb0408@
 ;hmysql_databasename = blacklist
 
-hmysql_hostname     = 192.168.200.170
+hmysql_hostname     = 192.168.128.222
 hmysql_port         = 3306
 hmysql_user         = root
 hmysql_pass         =mysql
@@ -44,7 +44,7 @@ hmysql_databasename = blacklist
 
 ;[redis]
 ;redis_addr         = "172.18.70.252:6379"
-redis_addr         = "192.168.200.204:6379"
+redis_addr         = "192.168.128.222:6379"
 
 
 ;[parkids] 海岭 3201000009【机场】,3201000003【省人民医院停车场】

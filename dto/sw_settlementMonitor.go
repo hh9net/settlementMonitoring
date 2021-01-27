@@ -100,15 +100,18 @@ type ClearlingcheckData struct {
 }
 
 type Dataclassification struct {
-	Shengwzcount int    `json:"total_count" example:"1244547"`        //省外结算总数据
-	Yiqfcount    int    `json:"clear_count" example:"1244547"`        //已清分总条数（不含坏账）
-	Jizcount     int    `json:"keepaccount_count" example:"1244547"`  //记账
-	Zhengycount  int    `json:"dispute_count" example:"1244547"`      //争议
-	Weidbcount   int    `json:"no_packaging_count" example:"1244547"` //未打包
-	Yidbcount    int    `json:"packaging_count" example:"1244547"`    //已打包
-	Yifscount    int    `json:"send_count" example:"1244547"`         //已发送
-	Huaizcount   int    `json:"bad_debts_count" example:"1244547"`    //坏账
-	DateTime     string `json:"datetime"  example:"2020-08-18"`       //完成时间
+	Shengwzcount   int    `json:"total_count" example:"1244547"`        //省外结算总数据
+	Yiqfcount      int    `json:"clear_count" example:"1244547"`        //已清分总条数（不含坏账）
+	Jizcount       int    `json:"keepaccount_count" example:"1244547"`  //记账
+	Zhengycount    int    `json:"dispute_count" example:"1244547"`      //争议
+	Weidbcount     int    `json:"no_packaging_count" example:"1244547"` //未打包
+	Yidbcount      int    `json:"packaging_count" example:"1244547"`    //已打包
+	Yifscount      int    `json:"send_count" example:"1244547"`         //已发送
+	Huaizcount     int    `json:"bad_debts_count" example:"1244547"`    //坏账
+	DateTime       string `json:"datetime"  example:"2020-08-18"`       //完成时间
+	FNbShengwjyzje string `json:"total_money" example:"1244547"`        //`F_NB_SHENGWJYZJE` bigint(20) DEFAULT NULL COMMENT '省外交易总金额（单位：元）',
+	FNbShengwqfje  string `json:"clear_money" example:"1244547"`        //`F_NB_SHENGWQFJE` bigint(20) DEFAULT NULL COMMENT '省外清分金额（单位：元）',
+	FNbShengwhzje  string `json:"bad_debts_money" example:"1244547"`    //`F_NB_SHENGWHZJE` bigint(20) DEFAULT NULL COMMENT '省外坏账金额元',
 
 }
 

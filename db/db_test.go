@@ -68,7 +68,6 @@ func TestUpdateTabledata(t *testing.T) {
 	UpdateTabledata(data, 10000, 19)
 }
 
-//QueryJieSuanTable()
 func TestQueryJieSuanTable(t *testing.T) {
 	Newdb()
 	//查询结算表 总交易笔数、总金额
@@ -92,14 +91,12 @@ func TestQueryShengnJieSuan(t *testing.T) {
 	log.Println(c, je) //结算表总交易笔数7011，查询总金额为：[10309200]
 }
 
-//QueryShengwClearingJieSuan()
 func TestQueryShengwClearingJieSuan(t *testing.T) {
 	Newdb()
 	c, je := QueryShengwClearingJieSuan()
 	log.Println(c, je)
 }
 
-//QueryDisputeJieSuanData()
 func TestQueryDisputeJieSuanData(t *testing.T) {
 	Newdb()
 	c, je := QueryDisputeJieSuanData()
@@ -127,63 +124,53 @@ func TestQueryShengwJieSuan(t *testing.T) {
 	log.Println(c, je) //总交易笔数1047，查询总金额为：[1623900]
 }
 
-//ShengwClearingInsert()
 func TestShengwClearingInsert(t *testing.T) {
 	Newdb()
 	c := ShengwClearingInsert()
 	log.Println(c)
 }
 
-//QueryJieSuan()
 func TestQueryJieSuan(t *testing.T) {
 	Newdb()
 	QueryJieSuan()
 }
 
-//QueryShengwClearingdata()
 func TestQueryShengwClearingdata(t *testing.T) {
 	Newdb()
 	QueryShengwClearingdata()
 }
 
-//ShengwDisputeInsert()
 func TestShengwDisputeInsert(t *testing.T) {
 	Newdb()
 	ShengwDisputeInsert()
 }
 
-//QueryShengwDispute
 func TestQueryShengwDispute(t *testing.T) {
 	Newdb()
 	QueryShengwDispute()
 }
 
-//AbnormalDataInsert()
 func TestAbnormalDataInsert(t *testing.T) {
 	Newdb()
 	AbnormalDataInsert(1)
 }
 
-//QueryAbnormaltable()
 func TestQueryAbnormaltable(t *testing.T) {
 	Newdb()
 	QueryAbnormaltable(1)
 }
 
-//QueryblacklistTable
 func TestQueryblacklistTable(t *testing.T) {
 	Newdb()
 	QueryblacklistTable() //64张表
 }
 
-//QueryBlacklistcount
 func TestQueryBlacklistcount(t *testing.T) {
 	//config.InitConfigs()  //初始化配置
 	QueryBlacklistcount() //"表数64获取黑名单总数:3165万6389"
 	//"表数64获取黑名单总数:3165万6389"
 }
 
-//QueryBlacklistTiaoshutable
 func TestQueryBlacklistTiaoshutable(t *testing.T) {
 	Newdb()
 	QueryBlacklistTiaoshutable(296, 3)
@@ -195,19 +182,16 @@ func TestQueryTingccJieSuandata(t *testing.T) {
 	log.Println(c)
 }
 
-//InsertTingjiesuan
 func TestInsertTingjiesuan(t *testing.T) {
 	Newdb()
 	InsertTingjiesuan()
 }
 
-//QueryTingjiesuan
 func TestQueryTingjiesuan(t *testing.T) {
 	Newdb()
 	QueryTingjiesuan()
 }
 
-//UpdateTingjiesuan
 func TestUpdateTingjiesuan(t *testing.T) {
 	Newdb()
 
@@ -221,36 +205,29 @@ func TestUpdateTingjiesuan(t *testing.T) {
 	logrus.Print(err)
 }
 
-// QueryTingjiesuanById
 func TestQueryTingjiesuanById(t *testing.T) {
 	Newdb()
 	QueryTingjiesuanById(2)
 }
 
-//QueryClearlingdata()
 func TestQueryClearlingdata(t *testing.T) {
 	Newdb()
-	log.Println(QueryClearlingdata("2020-07-30"))
+	log.Println(QueryClearlingdata("2021-01-27"))
 }
 
-//StatisticalkeepAccount
 func TestStatisticalkeepAccount(t *testing.T) {
 	Newdb()
 	log.Println(StatisticalkeepAccount("2020-09-15")) //41400 【30日】
 }
 
-//QueryDisputedata
 func TestQueryDisputedata(t *testing.T) {
 	Newdb()
 	log.Println(QueryDisputedata("2020-07-30"))
-
 }
 
-//DisputedDataCanClearling
 func TestDisputedDataCanClearling(t *testing.T) {
 	Newdb()
 	log.Println(DisputedDataCanClearling(317671)) //9550
-
 }
 
 //
@@ -260,42 +237,35 @@ func TestStatisticalClearlingcheck(t *testing.T) {
 
 }
 
-//QueryCheckResultOne()
 func TestQueryCheckResultOne(t *testing.T) {
 	Newdb()
 	log.Println(QueryCheckResultbyTs(100))
 }
 
-//QueryCompletionKeepaccount()
 func TestQueryCompletionKeepaccount(t *testing.T) {
 	Newdb()
 }
 
-//QueryCompletionKeepaccount()
 func TestQueryCompletioncount(t *testing.T) {
 	Newdb()
 	log.Println(QuerySWDataClassification())
 }
 
-//InsertSWDataClassification()
 func TestInsertSWDataClassification(t *testing.T) {
 	Newdb()
 	log.Println(InsertSWDataClassification())
 }
 
-//QuerySWDataClassificationTable()
 func TestQuerySWDataClassificationTable(t *testing.T) {
 	Newdb()
 	log.Println(QuerySWDataClassificationTable())
 }
 
-//QuerySWDataClassificationTableByID
 func TestQuerySWDataClassificationTableByID(t *testing.T) {
 	Newdb()
 	log.Println(QuerySWDataClassificationTableByID(2))
 }
 
-// DataTurnMonitor()
 func TestDataTurnMonitor(t *testing.T) {
 	Newdb()
 	for i := 0; i < 24; i++ {
@@ -303,160 +273,132 @@ func TestDataTurnMonitor(t *testing.T) {
 	}
 }
 
-//QueryDataTurnMonitortable
 func TestQueryDataTurnMonitortable(t *testing.T) {
 	Newdb()
 	log.Println(QueryDataTurnMonitortable(3, 2))
 }
 
-//QuerySettlementTrend()
 func TestQuerySettlementTrend(t *testing.T) {
 	Newdb()
 	QuerySettlementTrend("2020-08-03")
 }
 
-//QuerySettlementTrendbyDay()
 func TestQuerySettlementTrendbyDay(t *testing.T) {
 	Newdb()
 	QuerySettlementTrendbyDay()
 }
 
-//InsertSettlementTrendbyDayTable
 func TestInsertSettlementTrendbyDayTable(t *testing.T) {
 	Newdb()
 	InsertSettlementTrendbyDayTable()
 }
 
-//QuerySettlementTrendbyDayTable()
 func TestQuerySettlementTrendbyDayTable(t *testing.T) {
 	Newdb()
 	QuerySettlementTrendbyDayTable()
 }
 
-//QuerySettlementTrendbyday
 func TestQuerySettlementTrendbyday(t *testing.T) {
 	Newdb()
 	QuerySettlementTrendbyday(9)
 }
 
-//QueryPacketMonitoring()
 func TestQueryPacketMonitoring(t *testing.T) {
 	Newdb()
 	QueryPacketMonitoring()
 }
 
-//ShengnSendJieSuanData()
 func TestShengnSendJieSuanData(t *testing.T) {
 	Newdb()
 	ShengnSendJieSuanData()
 }
 
-//QueryShengnRefusePay()
 func TestQueryShengnRefusePay(t *testing.T) {
 	Newdb()
 	QueryShengnRefusePay()
 }
 
-//QueryAlreadyPlease()
 func TestQueryAlreadyPlease(t *testing.T) {
 	Newdb()
 	QueryAlreadyPlease()
 }
 
-//QuerySNDataClassification()
 func TestQuerySNDataClassification(t *testing.T) {
 	Newdb()
 	QuerySNDataClassification()
 }
 
-//QueryRealTimeSettlementData()
 func TestQueryRealTimeSettlementData(t *testing.T) {
 	Newdb()
 	QueryRealTimeSettlementData()
 }
 
-//QueryShengNSettlementTrend()
 func TestQueryShengNSettlementTrend(t *testing.T) {
 	Newdb()
 	QueryShengNSettlementTrendData("2020-10-16")
 }
 
-//AbnormalDataOfParking
 func TestAbnormalDataOfParking(t *testing.T) {
 	Newdb()
 	QueryAbnormalDataOfParking()
 }
 
-//QueryOverdueData()
 func TestQueryOverdueData(t *testing.T) {
 	Newdb()
 	QueryOverdueData()
 }
 
-//QuerySWSettlementTrendOne
 func TestQuerySWSettlementTrendOne(t *testing.T) {
 	Newdb()
 	QuerySWSettlementTrendOne()
 }
 
-//QuerySWSettlementTrendbyDay()
 func TestQuerySWSettlementTrendbyDay(t *testing.T) {
 	Newdb()
 	QuerySWSettlementTrendbyDay()
 }
 
-//QuerySWSettlementTrendbyOneDay()
 func TestQuerySWSettlementTrendbyOneDay(t *testing.T) {
 	Newdb()
 	QuerySWSettlementTrendbyOneDay()
 }
 
-//QuerySNSettlementTrendOne
 func TestQuerySNSettlementTrendOne(t *testing.T) {
 	Newdb()
 	QuerySNSettlementTrendOne()
 }
 
-//SNSettlementTrendbyDay
 func TestSNSettlementTrendbyDay(t *testing.T) {
 	Newdb()
 	SNSettlementTrendbyDay()
 }
 
-//QueryDataSync
 func TestQueryDataSync(t *testing.T) {
 	Newdb()
 	//QueryDataSync()
 }
 
-//QuerySNRealTimeSettlementData
 func TestQuerySNRealTimeSettlementData(t *testing.T) {
 	Newdb()
 	QuerySNRealTimeSettlementData(5)
 }
 
-//QueryOverdueDatatable
 func TestQueryOverdueDatatable(t *testing.T) {
 	Newdb()
 	log.Println(QueryOverdueDatatable("2020-08-12", 10))
-
 }
 func TestQueryHSDZData(t *testing.T) {
 	NewHSZDDB()
 	QueryHSDZData()
-
 }
 
-//QueryDataSync()
 func TestQueryDataSync1(t *testing.T) {
 	Newdb()
 	log.Println(QueryDataSync())
-
 }
 
 //
 func TestStatisticalRefund(t *testing.T) {
 	Newdb()
 	log.Println(StatisticalRefund("2020-11-24"))
-
 }

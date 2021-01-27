@@ -36,13 +36,15 @@ type DataSync struct {
 }
 
 type ShengNDataClassification struct {
-	Shengnzcount int    `json:"count"  example:"123"`             //结算总数据
-	Yiqkcount    int    `json:"clear_count"  example:"123"`       //已清分总条数（不含坏账）
-	Weifscount   int    `json:"no_send_count"  example:"123"`     //未打包
-	Yifscount    int    `json:"send_count"  example:"123"`        //已发送
-	Jufuzcount   int    `json:"bad_debts_count"  example:"123"`   //坏账
-	Jizcount     int    `json:"keepaccount_count"  example:"123"` //已记账
-	DateTime     string `json:"datetime"  example:"2020-08-18"`   //完成时间
+	Shengnzcount int    `json:"count"`                          //省内结算总数据
+	Yiqkcount    int    `json:"clear_count"`                    //已清分总条数（含坏账）
+	Weifscount   int    `json:"no_send_count"`                  //未打包
+	Yifscount    int    `json:"send_count"`                     //已发送
+	Jufuzcount   int    `json:"bad_debts_count"`                //拒付数量
+	DateTime     string `json:"datetime"  example:"2020-08-18"` //完成时间
+	ShengnzMoney string `json:"money"`                          //省内结算总金额元
+	YiqkMoney    string `json:"clear_money"`                    //已清分总金额元
+	JufuzMoney   string `json:"bad_debts_money"`                //拒付金额元
 
 }
 

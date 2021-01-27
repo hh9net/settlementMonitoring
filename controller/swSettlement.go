@@ -589,7 +589,7 @@ func Clearcalibration(c *gin.Context) {
 	}
 	log.Println("清分核对校准的清分包接收日期：", req.BeginTime)
 
-	//1、获取昨日的清分包数据
+	//1、获取今天的清分包数据
 	qerr, clears := db.QueryClearlingdata(req.BeginTime)
 	if qerr != nil {
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "清分核对校准,获取昨日的清分包数据error", Message: "清分核对校准,获取昨日的清分包数据error "})

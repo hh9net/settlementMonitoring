@@ -17,7 +17,9 @@ func QuerSNTotalSettlementData() (int, error, *dto.TotalSettlementData) {
 	//查询数据库获取总金额、总笔数
 	//conn := utils.RedisConn //初始化redis
 	conn := utils.Pool.Get()
-	defer conn.Close()
+	defer func() {
+		_ = conn.Close()
+	}()
 	// key:"jiestotal"  value："金额｜总条数"
 	rhgeterr, value := utils.RedisGet(&conn, "snjiesuantotal")
 	if rhgeterr != nil {
@@ -167,7 +169,6 @@ func QueryDataSync() (int, error, *[]dto.DataSync) {
 	return types.StatusSuccessfully, nil, &Data
 }
 
-//QuerySNDataClassification
 func QuerySNDataClassification() (int, error, *dto.ShengNDataClassification) {
 	//查询省内结算数据分类
 	err, data := db.QuerySNDataClassificationTable()
@@ -185,8 +186,11 @@ func QuerySNDataClassification() (int, error, *dto.ShengNDataClassification) {
 			Data.FNbWeifssl,
 			Data.FNbFassjl,
 			Data.FNbjufsjl,
-			Data.FNbQingksl,
+			//Data.FNbQingksl,
 			Data.FDtTongjwcsj.Format("2006-01-02 15:04:05"),
+			utils.Fen2Yuan(Data.FNbShengnzjyje),
+			utils.Fen2Yuan(Data.FNbShengnqkje),
+			utils.Fen2Yuan(Data.FNbShengnjfje),
 		}
 	}
 	//返回数据赋值
@@ -196,8 +200,11 @@ func QuerySNDataClassification() (int, error, *dto.ShengNDataClassification) {
 		data.FNbWeifssl,
 		data.FNbFassjl,
 		data.FNbjufsjl,
-		data.FNbQingksl,
+		//data.FNbQingksl,
 		data.FDtTongjwcsj.Format("2006-01-02 15:04:05"),
+		utils.Fen2Yuan(data.FNbShengnzjyje),
+		utils.Fen2Yuan(data.FNbShengnqkje),
+		utils.Fen2Yuan(data.FNbShengnjfje),
 	}
 }
 

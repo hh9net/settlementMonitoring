@@ -350,28 +350,34 @@ func Dataclassification() (int, error, *dto.Dataclassification) {
 		}
 		sj := data.FDtTongjwcsj.Format("2006-01-02 15:04:05")
 		return types.StatusSuccessfully, nil, &dto.Dataclassification{
-			Shengwzcount: data.FNbJiaoyzts,
-			Yiqfcount:    data.FNbQingfsjts,  //已清分总条数（不含坏账）
-			Jizcount:     data.FNbJizsjts,    //记账
-			Zhengycount:  data.FNbZhengysjts, //争议
-			Weidbcount:   data.FNbWeidbsjts,  //未打包
-			Yidbcount:    data.FNbYidbsjts,   //已打包
-			Yifscount:    data.FNbYifssjts,   //已发送
-			Huaizcount:   data.FNbHuaizsjts,  //坏账
-			DateTime:     sj,
+			Shengwzcount:   data.FNbJiaoyzts,
+			Yiqfcount:      data.FNbQingfsjts,  //已清分总条数（不含坏账）
+			Jizcount:       data.FNbJizsjts,    //记账
+			Zhengycount:    data.FNbZhengysjts, //争议
+			Weidbcount:     data.FNbWeidbsjts,  //未打包
+			Yidbcount:      data.FNbYidbsjts,   //已打包
+			Yifscount:      data.FNbYifssjts,   //已发送
+			Huaizcount:     data.FNbHuaizsjts,  //坏账
+			DateTime:       sj,
+			FNbShengwjyzje: utils.Fen2Yuan(data.FNbShengwhzje),
+			FNbShengwqfje:  utils.Fen2Yuan(data.FNbShengwqfje),
+			FNbShengwhzje:  utils.Fen2Yuan(data.FNbShengwhzje),
 		}
 	}
 
 	//返回数据赋值
 	return types.StatusSuccessfully, nil, &dto.Dataclassification{Shengwzcount: dataclassification.FNbJiaoyzts,
-		Yiqfcount:   dataclassification.FNbQingfsjts,  //已清分总条数（不含坏账）
-		Jizcount:    dataclassification.FNbJizsjts,    //记账
-		Zhengycount: dataclassification.FNbZhengysjts, //争议
-		Weidbcount:  dataclassification.FNbWeidbsjts,  //未打包
-		Yidbcount:   dataclassification.FNbYidbsjts,   //已打包
-		Yifscount:   dataclassification.FNbYifssjts,   //已发送
-		Huaizcount:  dataclassification.FNbHuaizsjts,  //坏账
-		DateTime:    dataclassification.FDtTongjwcsj.Format("2006-01-02 15:04:05"),
+		Yiqfcount:      dataclassification.FNbQingfsjts,  //已清分总条数（不含坏账）
+		Jizcount:       dataclassification.FNbJizsjts,    //记账
+		Zhengycount:    dataclassification.FNbZhengysjts, //争议
+		Weidbcount:     dataclassification.FNbWeidbsjts,  //未打包
+		Yidbcount:      dataclassification.FNbYidbsjts,   //已打包
+		Yifscount:      dataclassification.FNbYifssjts,   //已发送
+		Huaizcount:     dataclassification.FNbHuaizsjts,  //坏账
+		DateTime:       dataclassification.FDtTongjwcsj.Format("2006-01-02 15:04:05"),
+		FNbShengwjyzje: utils.Fen2Yuan(dataclassification.FNbShengwhzje),
+		FNbShengwqfje:  utils.Fen2Yuan(dataclassification.FNbShengwqfje),
+		FNbShengwhzje:  utils.Fen2Yuan(dataclassification.FNbShengwhzje),
 	}
 }
 

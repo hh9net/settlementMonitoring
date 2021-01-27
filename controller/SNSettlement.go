@@ -209,7 +209,6 @@ func QueryDataSync(c *gin.Context) {
 	}
 }
 
-//QuerySNDataClassification
 /*  接口8方法注释   */
 //@Summary 省内结算数据分类 api
 //@Tags 查询省内结算数据分类
@@ -238,8 +237,6 @@ func QuerySNDataClassification(c *gin.Context) {
 	}
 }
 
-//QueryAbnormalDataParking
-//QuerySNDataClassification
 /*  接口9方法注释   */
 //@Summary  查询异常数据停车场top10 api
 //@Tags  查询异常数据停车场top10

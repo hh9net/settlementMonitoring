@@ -774,20 +774,36 @@ func QueryCheckResultbyTs(ts int) (error, *[]types.BJsjkQingfhd) {
 func QuerySWDataClassification() *types.DataClassification {
 	db := utils.GormClient.Client
 	//省外总数据
+	//swzcount := 0
+	//db.Table("b_js_jiessj").Not("F_NB_DABZT = ?", 4).Not("F_VC_KAWLH = ?", 3201).Count(&swzcount)
+	//log.Printf("查询省外结算交易，结算表总交易笔数:%d", swzcount)
+	var result types.SWResult
+	sqlstr := `select SUM(F_NB_JINE) as total,count(F_NB_JINE) as count  from b_js_jiessj where F_NB_DABZT  not in (4) and F_VC_KAWLH <> '3201'`
+	db.Raw(sqlstr).Scan(&result)
+	log.Println("统计省外结算总金额、总条数 result:", result)
 
-	swzcount := 0
-	db.Table("b_js_jiessj").Not("F_NB_DABZT = ?", 4).Not("F_VC_KAWLH = ?", 3201).Count(&swzcount)
-	log.Printf("查询省外结算交易，结算表总交易笔数:%d", swzcount)
 	//坏账       1:已清分 F_NB_ZHENGYCLJG 争议处理结果：坏账2
-	huaizcount := 0
-	db.Table("b_js_jiessj").Not("F_NB_DABZT = ?", 4).Where("F_NB_QINGFJG = ?", 1).Where("F_NB_ZHENGYCLJG = ?", 2).Not("F_VC_KAWLH = ?", 3201).Count(&huaizcount)
-	log.Printf("查询结算表已清分的坏账交易笔数:%d ", huaizcount)
+	//huaizcount := 0
+	//db.Table("b_js_jiessj").Not("F_NB_DABZT = ?", 4).Where("F_NB_QINGFJG = ?", 1).Where("F_NB_ZHENGYCLJG = ?", 2).Not("F_VC_KAWLH = ?", 3201).Count(&huaizcount)
+	//log.Printf("查询结算表已清分的坏账交易笔数:%d ", huaizcount)
+	var hzresult types.SWResult
+	sql1str := `select SUM(F_NB_JINE) as total,count(F_NB_JINE) as count  from b_js_jiessj where F_NB_DABZT  not in (4) and F_VC_KAWLH <> '3201' and F_NB_QINGFJG =1 and F_NB_ZHENGYCLJG = 2`
+	db.Raw(sql1str).Scan(&hzresult)
+	log.Printf("查询结算表已清分的坏账交易笔数:%d ", hzresult.Count)
+	log.Printf("查询结算表已清分的坏账交易金额:%d ", hzresult.Total)
 
 	//已清分
-	yiqfcount := 0
-	db.Table("b_js_jiessj").Not("F_NB_DABZT = ?", 4).Where("F_NB_QINGFJG = ?", 1).Not("F_VC_KAWLH = ?", 3201).Count(&yiqfcount)
-	log.Printf("查询结算表含坏账总清分的交易笔数:%d ", yiqfcount)
-	log.Printf("查询结算表不含坏账总清分的交易笔数:%d ", yiqfcount-huaizcount)
+	//yiqfcount := 0
+	//db.Table("b_js_jiessj").Not("F_NB_DABZT = ?", 4).Where("F_NB_QINGFJG = ?", 1).Not("F_VC_KAWLH = ?", 3201).Count(&yiqfcount)
+	//log.Printf("查询结算表含坏账总清分的交易笔数:%d ", yiqfcount)
+	//log.Printf("查询结算表不含坏账总清分的交易笔数:%d ", yiqfcount-huaizcount)
+
+	var qfresult types.SWResult
+	sql2str := `select SUM(F_NB_JINE) as total,count(F_NB_JINE) as count  from b_js_jiessj where F_NB_DABZT  not in (4) and F_VC_KAWLH <> '3201' and F_NB_QINGFJG =1`
+	db.Raw(sql2str).Scan(&qfresult)
+	log.Printf("统计结算表含坏账总清分的交易笔数:%d ", qfresult.Count)
+	log.Printf("统计结算表不含坏账总清分的交易笔数:%d ", qfresult.Count-hzresult.Count)
+	log.Println("统计省外结算清分含坏账总金额、总条数 result:", qfresult.Total, qfresult.Count)
 
 	//结算表 已记账
 	jzcount := 0
@@ -820,16 +836,21 @@ func QuerySWDataClassification() *types.DataClassification {
 	db.Raw(zdzsqlstr, 2).Pluck("SUM(F_NB_JILSL) as yifscount", &yifscount)
 	log.Printf("查询结算表 已发送的交易笔数:%d ", yifscount)
 	var dataClassification types.DataClassification
-	dataClassification.Yiqfcount = yiqfcount - huaizcount //已清分总条数（不含坏账）
 
-	dataClassification.Shengwzcount = swzcount  //省外结算总数据
+	dataClassification.Yiqfcount = qfresult.Count  //已清分总条数（含坏账）
+	dataClassification.YiqfzMoney = qfresult.Total //已清分总金额（含坏账）
+
+	dataClassification.Shengwzcount = result.Count //省外结算总数据
+	dataClassification.ShengwzMoney = result.Total //省外结算总金额
+
 	dataClassification.Jizcount = jzcount       //记账
 	dataClassification.Zhengycount = zycount    //争议
 	dataClassification.Weidbcount = weidbcount  //未打包
 	dataClassification.Yidbcount = yidbcount    //已打包
 	dataClassification.Yifscount = yifscount[0] //已发送
-	dataClassification.Huaizcount = huaizcount  //坏账
 
+	dataClassification.Huaizcount = hzresult.Count //坏账
+	dataClassification.HuaizMoney = hzresult.Total //坏账金额
 	return &dataClassification
 }
 
@@ -865,22 +886,25 @@ func UpdateSWDataClassificationTable(data *types.BJsjkShengwjssjfl, id int) erro
 	db := utils.GormClient.Client
 	swfltj := new(types.BJsjkShengwjssjfl)
 
-	swfltj.FNbJiaoyzts = data.FNbJiaoyzts     //   `F_NB_JIAOYZTS` int DEFAULT NULL COMMENT '交易总条数',
-	swfltj.FNbQingfsjts = data.FNbQingfsjts   //   `F_NB_QINGFSJTS` int DEFAULT NULL COMMENT '清分数据条数',
-	swfltj.FNbJizsjts = data.FNbJizsjts       //   `F_NB_JIZSJTS` int DEFAULT NULL COMMENT '记账数据条数',
-	swfltj.FNbZhengysjts = data.FNbZhengysjts //   `F_NB_ZHENGYSJTS` int DEFAULT NULL COMMENT '争议数据条数 待处理',
-	swfltj.FNbWeidbsjts = data.FNbWeidbsjts   //   `F_NB_WEIDBSJTS` int DEFAULT NULL COMMENT '未打包数据条数',
-	swfltj.FNbYidbsjts = data.FNbYidbsjts     //   `F_NB_YIDBSJTS` int DEFAULT NULL COMMENT '已打包数据条数',
-	swfltj.FNbYifssjts = data.FNbYifssjts     //   `F_NB_YIFSSJTS` int DEFAULT NULL COMMENT '已发送数据条数',
-	swfltj.FNbHuaizsjts = data.FNbHuaizsjts   //   `F_NB_HUAIZSJTS` int DEFAULT NULL COMMENT '坏账数据条数',
-	swfltj.FDtTongjwcsj = data.FDtTongjwcsj   //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
-	swfltj.FVcTongjrq = data.FVcTongjrq       //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
+	swfltj.FNbJiaoyzts = data.FNbJiaoyzts       //   `F_NB_JIAOYZTS` int DEFAULT NULL COMMENT '交易总条数',
+	swfltj.FNbQingfsjts = data.FNbQingfsjts     //   `F_NB_QINGFSJTS` int DEFAULT NULL COMMENT '清分数据条数',
+	swfltj.FNbJizsjts = data.FNbJizsjts         //   `F_NB_JIZSJTS` int DEFAULT NULL COMMENT '记账数据条数',
+	swfltj.FNbZhengysjts = data.FNbZhengysjts   //   `F_NB_ZHENGYSJTS` int DEFAULT NULL COMMENT '争议数据条数 待处理',
+	swfltj.FNbWeidbsjts = data.FNbWeidbsjts     //   `F_NB_WEIDBSJTS` int DEFAULT NULL COMMENT '未打包数据条数',
+	swfltj.FNbYidbsjts = data.FNbYidbsjts       //   `F_NB_YIDBSJTS` int DEFAULT NULL COMMENT '已打包数据条数',
+	swfltj.FNbYifssjts = data.FNbYifssjts       //   `F_NB_YIFSSJTS` int DEFAULT NULL COMMENT '已发送数据条数',
+	swfltj.FNbHuaizsjts = data.FNbHuaizsjts     //   `F_NB_HUAIZSJTS` int DEFAULT NULL COMMENT '坏账数据条数',
+	swfltj.FDtTongjwcsj = data.FDtTongjwcsj     //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
+	swfltj.FVcTongjrq = data.FVcTongjrq         //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
+	swfltj.FNbShengwjyzje = data.FNbShengwjyzje //`F_NB_SHENGWJYZJE` bigint(20) DEFAULT NULL COMMENT '省外交易总金额（单位：分）',
+	swfltj.FNbShengwqfje = data.FNbShengwqfje   //`F_NB_SHENGWQFJE` bigint(20) DEFAULT NULL COMMENT '省外清分金额（单位：分）',
+	swfltj.FNbShengwhzje = data.FNbShengwhzje   //`F_NB_SHENGWHZJE` bigint(20) DEFAULT NULL COMMENT '省外坏账金额',
 
 	if err := db.Table("b_jsjk_shengwjssjfl").Where("F_NB_ID=?", id).Updates(&swfltj).Error; err != nil {
-		log.Println("更新 最新的省外结算数据分类 记录 时 error", err)
+		log.Error("更新 最新的省外结算数据分类 记录 时 error", err)
 		return err
 	}
-	log.Println("更新 最新的省外结算数据分类 记录 成功++++++++++++++++++++++++++++++++++++++++++++++")
+	log.Println("更新 最新的省外结算数据分类 记录 成功")
 	return nil
 }
 
@@ -1459,15 +1483,26 @@ func QuerySNDataClassification() *types.ShengNDataClassification {
 	db := utils.GormClient.Client
 	//省内结算总数据
 
-	snzcount := 0
-	db.Table("b_js_jiessj").Where("F_VC_KAWLH = ?", 3201).Not("F_NB_DABZT = ?", 4).Not("F_NB_DABZT = ?", 5).Count(&snzcount)
-	log.Printf("查询省内结算交易，结算表总交易笔数:%d", snzcount)
+	//snzcount := 0
+	//db.Table("b_js_jiessj").Where("F_VC_KAWLH = ?", 3201).Not("F_NB_DABZT = ?", 4).Not("F_NB_DABZT = ?", 5).Count(&snzcount)
+	//log.Printf("查询省内结算交易，结算表总交易笔数:%d", snzcount)
+	var result types.SNResult
+	sqlstr := `select SUM(F_NB_JINE) as total,count(F_NB_JINE) as count  from b_js_jiessj where F_NB_DABZT  not in (4,5) and F_VC_KAWLH = '3201'`
+
+	db.Raw(sqlstr).Scan(&result)
+
+	log.Printf("查询省内结算交易，结算表总交易笔数:%d 交易金额:%d", result.Count, result.Total)
 
 	//已请款数据
-	qkcount := 0
+	//qkcount := 0
+	//db.Table("b_js_jiessj").Where("F_VC_KAWLH = ?", 3201).Where("F_NB_QINGFJG =?", 1).Not("F_NB_DABZT = ?", 4).Not("F_NB_DABZT = ?", 5).Not("F_NB_ZHENGYCLJG = ?", 2).Count(&qkcount)
+	//log.Printf("查询省内结算表 已请款的交易笔数:%d ", qkcount)
 	//"F_NB_ZHENGYCLJG =?",
-	db.Table("b_js_jiessj").Where("F_VC_KAWLH = ?", 3201).Where("F_NB_QINGFJG =?", 1).Not("F_NB_DABZT = ?", 4).Not("F_NB_DABZT = ?", 5).Not("F_NB_ZHENGYCLJG = ?", 2).Count(&qkcount)
-	log.Printf("查询省内结算表 已请款的交易笔数:%d ", qkcount)
+	var qkresult types.SNResult
+	sql1str := `select SUM(F_NB_JINE) as total,count(F_NB_JINE) as count from b_js_jiessj where F_NB_DABZT =2 and F_VC_KAWLH ='3201' and F_NB_QINGFJG =1`
+	db.Raw(sql1str).Scan(&qkresult)
+	log.Println(db.Error)
+	log.Printf("查询省内结算表 已请款的（含拒付）交易笔数:%d 请款金额:%d", qkresult.Count, qkresult.Total)
 
 	//未发送数据 "F_NB_DABZT = ?", 0
 	wfscount := 0
@@ -1481,16 +1516,25 @@ func QuerySNDataClassification() *types.ShengNDataClassification {
 	log.Printf("查询省内结算表 已发送的交易笔数:%d ", fscount)
 
 	//拒付数据
-	jfcount := 0
-	//"F_NB_ZHENGYCLJG =?",2 坏账状态表示
-	db.Table("b_js_jiessj").Where("F_VC_KAWLH = ?", 3201).Where("F_NB_ZHENGYCLJG =?", 2).Count(&jfcount)
-	log.Printf("查询省内结算表 拒付的交易笔数:%d ", jfcount)
+	//jfcount := 0
+	////"F_NB_ZHENGYCLJG =?",2 坏账状态表示
+	//db.Table("b_js_jiessj").Where("F_VC_KAWLH = ?", 3201).Where("F_NB_ZHENGYCLJG =?", 2).Count(&jfcount)
+	//log.Printf("查询省内结算表 拒付的交易笔数:%d ", jfcount)
 
-	return &types.ShengNDataClassification{Shengnzcount: snzcount, //结算总数据
-		Yiqkcount:  qkcount,  //已清分总条数（不含坏账）
-		Weifscount: wfscount, //未fas
-		Yifscount:  fscount,  //已发送
-		Jufuzcount: jfcount,  //坏账
+	var jfresult types.SNResult
+	sql2str := `select SUM(F_NB_JINE) as total,count(F_NB_JINE) as count  from b_js_jiessj where F_NB_DABZT =2 and F_VC_KAWLH = '3201' and F_NB_QINGFJG =1 and F_NB_ZHENGYCLJG =2`
+	db.Raw(sql2str).Scan(&jfresult)
+	log.Printf("查询省内结算表 已拒付的交易笔数:%d 拒付金额:%d", jfresult.Count, jfresult.Total)
+
+	return &types.ShengNDataClassification{
+		Shengnzcount: result.Count,   //结算总数据
+		Yiqkcount:    qkresult.Count, //已清分总条数（不含坏账）
+		Weifscount:   wfscount,       //未fas
+		Yifscount:    fscount,        //已发送
+		Jufuzcount:   jfresult.Count, //坏账
+		JufuzMoney:   jfresult.Total, //拒付金额
+		ShengnzMoney: result.Total,   //结算总金额
+		YiqkzMoney:   qkresult.Total, //已清分总金额（含坏账）
 	}
 }
 

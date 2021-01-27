@@ -645,7 +645,9 @@ func DataClassification() error {
 	dc.FNbHuaizsjts = data.Huaizcount          //   `F_NB_HUAIZSJTS` int DEFAULT NULL COMMENT '坏账数据条数',
 	dc.FDtTongjwcsj = utils.StrTimeToNowtime() //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
 	dc.FVcTongjrq = utils.DateNowFormat()      //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
-
+	dc.FNbShengwjyzje = data.ShengwzMoney      //`F_NB_SHENGWJYZJE` bigint(20) DEFAULT NULL COMMENT '省外交易总金额（单位：分）',
+	dc.FNbShengwqfje = data.YiqfzMoney         //`F_NB_SHENGWQFJE` bigint(20) DEFAULT NULL COMMENT '省外清分金额（单位：分）',
+	dc.FNbShengwhzje = data.HuaizMoney         //`F_NB_SHENGWHZJE` bigint(20) DEFAULT NULL COMMENT '省外坏账金额',
 	//5、更新
 	uperr := UpdateSWDataClassificationTable(dc, dataclassification.FNbId)
 	if uperr != nil {
@@ -957,6 +959,9 @@ func QuerySNDataClassificationData() error {
 	Data.FNbjufsjl = flshuju.Jufuzcount
 	Data.FDtTongjwcsj = utils.StrTimeToNowtime()
 	Data.FVcTongjrq = utils.DateNowFormat()
+	Data.FNbShengnzjyje = flshuju.ShengnzMoney //`F_NB_SHENGNZJYJE` bigint(20) DEFAULT NULL COMMENT '省内总交易金额（单位：分）',
+	Data.FNbShengnqkje = flshuju.YiqkzMoney    //`F_NB_SHENGNQKJE` bigint(20) DEFAULT NULL COMMENT '省内请款金额（单位：分）',
+	Data.FNbShengnjfje = flshuju.JufuzMoney    //`F_NB_SHENGNJFJE` bigint(20) DEFAULT NULL COMMENT '省内拒付金额（单位：分）',
 	//5、更新省内结算分类
 	uperr := UpdateSNDataClassificationTable(Data, data.FNbId)
 	if uperr != nil {
