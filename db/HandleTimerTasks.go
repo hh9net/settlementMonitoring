@@ -17,54 +17,48 @@ func HandleDayTasks() {
 		now := time.Now()               //获取当前时间，放到now里面，要给next用
 		next := now.Add(time.Hour * 24) //通过now偏移24小时
 
-		next = time.Date(next.Year(), next.Month(), next.Day(), 18, 0, 0, 0, next.Location()) //获取下一个20点的日期
+		next = time.Date(next.Year(), next.Month(), next.Day(), 15, 0, 0, 0, next.Location()) //获取下一个20点的日期
 
 		t := time.NewTimer(next.Sub(now)) //计算当前时间到凌晨的时间间隔，设置一个定时器
 		<-t.C
-		log.Println("执行线程1，处理一天一次的定时任务11111111111111111111111111111111111111111111111111111111111111111")
+		log.Println("执行线程1，每天下午3点，处理一天一次的定时任务")
 
-		//任务三
 		//查询停车场的总金额、总笔数
 		qterr := QueryTingccJieSuan()
 		if qterr != nil {
-			log.Println("+++++++++++++++++++++【1.1error】+++++++++++++++++=查询停车场的总金额、总笔数定时任务:", qterr)
+			log.Error("+++++++++++++++++++++【1.1error】+++++++++++++++++=查询停车场的总金额、总笔数定时任务:", qterr)
 		}
 
-		//任务七
 		//省外结算趋势
 		qserr := SettlementTrendbyDay()
 		if qserr != nil {
-			log.Println("+++++++++++++++++++++【1.4error】+++++++++++++++++=查询省外结算趋势定时任务 error:", qserr)
+			log.Error("+++++++++++++++++++++【1.4error】+++++++++++++++++=查询省外结算趋势定时任务 error:", qserr)
 		}
 
 		//省内业务
-		//任务十三
 		//省内结算趋势
 		qsnqserr := QueryShengNSettlementTrenddata()
 		if qsnqserr != nil {
-			log.Println("+++++++++++++++++++++【1.5error】+++++++++++++++++=查询省内结算分类 定时任务 error:", qsnqserr)
+			log.Error("+++++++++++++++++++++【1.5error】+++++++++++++++++=查询省内结算分类 定时任务 error:", qsnqserr)
 		}
 
-		//任务 十四
 		//逾期数据
 		yuqierr := Overduedata()
 		if yuqierr != nil {
-			log.Println("+++++++++++++++++++++【1.6error】+++++++++++++++++=查询逾期数据 定时任务 error:", yuqierr)
+			log.Error("+++++++++++++++++++++【1.6error】+++++++++++++++++=查询逾期数据 定时任务 error:", yuqierr)
 		}
 
-		//任务 十五
 		//省外停车场结算趋势
 		qwqserr := SWSettlementTrendbyDay()
 		if qwqserr != nil {
-			log.Println("+++++++++++++++++++++【1.7error】+++++++++++++++++=查询省外停车场结算趋势 定时任务 error:", qwqserr)
+			log.Error("+++++++++++++++++++++【1.7error】+++++++++++++++++=查询省外停车场结算趋势 定时任务 error:", qwqserr)
 		}
 		//1.16 省内停车场结算趋势
 		snqserr := SNSettlementTrendbyDay()
 		if snqserr != nil {
-			log.Println("+++++++++++++++++++++【1.8error】+++++++++++++++++=查询省内停车场结算趋势 定时任务 error:", snqserr)
+			log.Error("+++++++++++++++++++++【1.8error】+++++++++++++++++=查询省内停车场结算趋势 定时任务 error:", snqserr)
 		}
-
-		log.Println("执行线程1，处理一天一次的定时任务【完成】11111111111111111111111111111111111111111111111111111111111111111")
+		log.Println("执行线程1，处理一天一次的定时任务完成")
 
 	}
 }
@@ -74,7 +68,7 @@ func HandleSixHourTasks() {
 	for {
 		cherr := StatisticalClearlingcheck()
 		if cherr != nil {
-			log.Println("清分核对定时任务error:", cherr)
+			log.Error("清分核对定时任务error:", cherr)
 			continue
 		}
 		log.Println("执行清分核对的定时任务完成")
@@ -85,128 +79,115 @@ func HandleSixHourTasks() {
 //goroutine2
 //2定时任务 按小时的
 func HandleHourTasks() {
-	tiker := time.NewTicker(time.Minute * 60) //每15秒执行一下
-
+	tiker := time.NewTicker(time.Hour * 1)
 	for {
-		log.Println("执行线程2，处理按小时的定时任务222222222222222222222222222222222222222222222222")
-		//任务一
+		log.Println("执行线程2，处理按小时的定时任务")
 		//查询省外结算总金额、总笔数
 		qerr := QuerTotalSettlementData()
 		if qerr != nil {
-			log.Println("+++++++++++++++++++++【2.1error】+++++++++++++++++=查询省外结算总金额、总笔数定时任务:", qerr)
+			log.Error("+++++++++++++++++++++【2.1error】+++++++++++++++++=查询省外结算总金额、总笔数定时任务:", qerr)
 		}
-		//任务二
 		//查询省外已清分总金额、总笔数(不含坏账)
 		qcerr := QuerTotalClarify()
 		if qcerr != nil {
-			log.Println("+++++++++++++++++++++【2.2error】+++++++++++++++++=查询省外已清分总金额、总笔数定时任务:", qcerr)
+			log.Error("+++++++++++++++++++++【2.2error】+++++++++++++++++=查询省外已清分总金额、总笔数定时任务:", qcerr)
 		}
 		//任务1 待处理争议数据
 		qderr := QueryShengwDisputedata()
 		if qderr != nil {
-			log.Println("查询省外存在争议的总金额、总笔数定时任务【2.3error】 error:", qderr)
+			log.Error("查询省外存在争议的总金额、总笔数定时任务【2.3error】 error:", qderr)
 		}
 		//任务2 异常数据统计
 		qycerr := QueryAbnormaldata()
 		if qycerr != nil {
-			log.Println("查询异常数据统计的总金额、总笔数定时任务 【2.4error】error:", qycerr)
+			log.Error("查询异常数据统计的总金额、总笔数定时任务 【2.4error】error:", qycerr)
 		}
 
 		//任务4 海玲数据同步
 		tberr := QueryDataSyncdata()
 		if tberr != nil {
-			log.Println("+++++++++++++++++++++【2.5error】+++++++++++++++++查询海玲数据同步定时任务 error:", tberr)
+			log.Error("+++++++++++++++++++++【2.5error】+++++++++++++++++查询海玲数据同步定时任务 error:", tberr)
 		}
 
 		//任务5 异常数据top10
 		yctoperr := QueryAbnormalDataOfParkingdata()
 		if yctoperr != nil {
-			log.Println("+++++++++++++++++++++【2.6error】+++++++++++++++++查询异常数据top10定时任务 error:", yctoperr)
+			log.Error("+++++++++++++++++++++【2.6error】+++++++++++++++++查询异常数据top10定时任务 error:", yctoperr)
 		}
 
-		//任务六
 		//查询省外数据分类查询
 		qdcerr := DataClassification()
 		if qdcerr != nil {
-			log.Println("+++++++++++++++++++++【2.7error】+++++++++++++++++=数据分类查询定时任务 error:", qdcerr)
+			log.Error("+++++++++++++++++++++【2.7error】+++++++++++++++++=数据分类查询定时任务 error:", qdcerr)
 		}
 
-		//任务 五
 		//省内发送结算数据金额、条数
 		snjsfserr := ShengnSendJieSuanData()
 		if snjsfserr != nil {
-			log.Println("+++++++++++++++++++++【2.8error】+++++++++++++++++=查询省内发送结算数据金额、条数 定时任务 error:", snjsfserr)
+			log.Error("+++++++++++++++++++++【2.8error】+++++++++++++++++=查询省内发送结算数据金额、条数 定时任务 error:", snjsfserr)
 		}
 
-		//任务 八
 		//省内结算总金额、总条数监控
 		snjserr := ShengnJieSuanData()
 		if snjserr != nil {
-			log.Println("+++++++++++++++++++++【2.9error】+++++++++++++++++=查询省内结算总金额、总条数-监控定时任务 error:", snjserr)
+			log.Error("+++++++++++++++++++++【2.9error】+++++++++++++++++=查询省内结算总金额、总条数-监控定时任务 error:", snjserr)
 		}
 
-		//任务 十二
 		//查询省内结算分类
 		qjsflerr := QuerySNDataClassificationData()
 		if qjsflerr != nil {
-			log.Println("+++++++++++++++++++++【2.10error】+++++++++++++++++=查询省内结算分类 定时任务 error:", qjsflerr)
+			log.Error("+++++++++++++++++++++【2.10error】+++++++++++++++++=查询省内结算分类 定时任务 error:", qjsflerr)
 		}
 
-		//任务 十
 		//省内拒付数据金额、条数
 		snjferr := QueryShengnRefusePayData()
 		if snjferr != nil {
-			log.Println("+++++++++++++++++++++【2.11error】+++++++++++++++++=查询省内拒付数据金额、条数 定时任务 error:", snjferr)
+			log.Error("+++++++++++++++++++++【2.11error】+++++++++++++++++=查询省内拒付数据金额、条数 定时任务 error:", snjferr)
 		}
 
 		//任务一 转结算24小时监控
 		dterr := DataTurnMonitor()
 		if dterr != nil {
-			log.Println("省外之前24小时转结算定时任务 【2.12error】error:", dterr)
+			log.Error("省外之前24小时转结算定时任务 【2.12error】error:", dterr)
 		}
 
 		//任务3 处理黑名单统计
 		qhmderr := QueryblacklistCount()
 		if qhmderr != nil {
-			log.Println("查询黑名单统计总数定时任务【2.13error】 error:", qhmderr)
+			log.Error("查询黑名单统计总数定时任务【2.13error】 error:", qhmderr)
 		}
 
-		//任务四
 		//查询清分包、争议包的包号、接收时间  使用redis记录的
 		qcderr := QueryClearlingAndDisputePackage()
 		if qcderr != nil {
-			log.Println("+++++++++++++++++++++【2.14 error】+++++++++++++++++=查询清分包、争议包的包号、接收时间定时任务:", qcderr)
+			log.Error("+++++++++++++++++++++【2.14 error】+++++++++++++++++=查询清分包、争议包的包号、接收时间定时任务:", qcderr)
 		}
-		log.Println(utils.DateTimeFormat(<-tiker.C), "执行线程2，处理按小时的定时任务【完成】222222222222222222222222222222222222222222222222")
-
+		<-tiker.C
+		log.Println("执行线程2，处理按小时的定时任务完成")
 	}
-
 }
 
 //goroutine3
 //3定时任务 按分钟的
 func HandleMinutesTasks() {
-	tiker := time.NewTicker(time.Minute * 10) //每15秒执行一下
-
+	tiker := time.NewTicker(time.Minute * 10)
 	for {
-		log.Println("执行线程3，处理按分钟的定时任务333333333333333333333333333333333333333333333333333333333333333333")
-
+		log.Println("执行线程3，处理按分钟的定时任务")
 		//任务一 数据包监控
 		perr := PacketMonitoring()
 		if perr != nil {
-			log.Println("省外结算数据包监控定时任务 【3.1error】error:", perr)
+			log.Error("省外结算数据包监控定时任务 【3.1error】error:", perr)
 		}
 		//任务二 省内实时数据监控[统计全库数据，做差值]
 		snsserr := ShengNRealTimeSettlementData()
 		if snsserr != nil {
-			log.Println("省内实时数据监控 定时任务 【3.2error】error:", snsserr)
+			log.Error("省内实时数据监控 定时任务 【3.2error】error:", snsserr)
 		}
 
-		//任务 三
-		//查询省内已请款数据金额、条数
+		//任务 三 查询省内已请款数据金额、条数
 		qqingkerr := QueryShengnAlreadyPleaseData()
 		if qqingkerr != nil {
-			log.Println("+++++++++++++++++++++【3.3error】+++++++++++++++++=f查询省内已请款数据金额、条数 定时任务 error:", qqingkerr)
+			log.Error("+++++++++++++++++++++【3.3error】+++++++++++++++++=f查询省内已请款数据金额、条数 定时任务 error:", qqingkerr)
 		}
 
 		log.Println(utils.DateTimeFormat(<-tiker.C), "执行线程3，处理按分钟的定时任务【完成】333333333333333333333333333333333333333333333333333333333333333333")
@@ -218,19 +199,14 @@ func HandleMinutesTasks() {
 //goroutine4
 //3定时任务 按分钟的
 func HandleKafka() {
-	//tiker := time.NewTicker(time.Second * 10)
-	//for {
 KafkaI:
 	log.Println("执行go程 处理kafka数据++++++++++++++++++++++++【kafka执行】+++++++++++++++++++++++++++++++++处理kafka数据")
 	//处理kafka数据
 	err := utils.ConsumerGroup()
 	if err != nil {
-		log.Println("+++++++++++++++++++++++++++++++++++++++++++++++++++【执行go程 处理kafka数据】 error :", err)
+		log.Error("+++++++++++++++++++++++++++++++++++++++++++++++++++【执行go程 处理kafka数据】 error :", err)
 		goto KafkaI
 	}
-	//log.Println(<-tiker.C)
-	//}
-
 }
 
 //1任务1
@@ -238,25 +214,25 @@ func QuerTotalSettlementData() error {
 	//0、查询最新记录[插入之前先做校验该天是否有新增数据数据]
 	qerr, sj := QueryTabledata(10000)
 	if qerr != nil {
-		log.Println("查询省外结算总金额、总笔数,查询最新的省外结算统计记录  error!", qerr)
+		log.Error("查询省外结算总金额、总笔数,查询最新的省外结算统计记录  error!", qerr)
 		return qerr //不用返回前端
 	}
 	s1 := utils.DateNowFormat()
 	if sj.FVcTongjrq == s1 {
-		log.Println("这一天已经插入数据了，不需要重复统计")
+		log.Error("这一天已经插入数据了，不需要重复统计")
 		return nil
 	}
 
 	//1、新增开始统计记录
 	inerr := InsertTabledata(10000)
 	if inerr != nil {
-		log.Println("查询省外结算总金额、总笔数,新增开始统计的记录  error!", inerr)
+		log.Error("查询省外结算总金额、总笔数,新增开始统计的记录  error!", inerr)
 		return inerr //不用返回前端
 	}
 	//2、查询最新记录
 	qerr, sj = QueryTabledata(10000)
 	if qerr != nil {
-		log.Println("查询省外结算总金额、总笔数,查询最新的省外结算统计记录  error!", qerr)
+		log.Error("查询省外结算总金额、总笔数,查询最新的省外结算统计记录  error!", qerr)
 		return qerr //不用返回前端
 	}
 	//3、获取省外结算统计数据
@@ -273,22 +249,22 @@ func QuerTotalSettlementData() error {
 	//4、更新最新统计记录
 	uperr := UpdateTabledata(data, 10000, sj.FNbId)
 	if uperr != nil {
-		log.Println("db.UpdateTabledata error!", uperr)
+		log.Error("db.UpdateTabledata error!", uperr)
 		return uperr
 	}
 
 	//5、把数据更新到redis【覆盖】
 	conn := utils.Pool.Get()
+	defer func() {
+		_ = conn.Close()
+	}()
 	//	conn := utils.RedisConn //初始化redis
 	// key:"jiesuantotal"  value："金额｜总条数"
 	rhseterr := utils.RedisSet(&conn, "swjiesuantotal", strconv.Itoa(int(zje))+"|"+strconv.Itoa(zts))
 	if rhseterr != nil {
 		return rhseterr
 	}
-	defer func() {
-		_ = conn.Close()
 
-	}()
 	log.Println("更新省外结算统计最新统计记录成功++++++++++++++++++++++++++++[2.1]++++++++++++++++++++++++++++++++++")
 	//返回数据赋值
 	return nil

@@ -139,7 +139,7 @@ func QueryTingjiesuan() (error, *types.BJsjkTingccjssjtj) {
 	Jiestjs := new(types.BJsjkTingccjssjtj)
 	//赋值
 	if err := db.Table("b_jsjk_tingccjssjtj").Last(&Jiestjs).Error; err != nil {
-		log.Println("查询 停车场结算数据统计表最新数据时 QueryTabledata error :", err)
+		log.Error("查询停车场结算数据统计表最新数据时error :", err)
 		return err, nil
 	}
 	log.Println("查询停车场结算数据统计表结果:", Jiestjs)

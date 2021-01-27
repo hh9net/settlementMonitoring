@@ -1,49 +1,45 @@
 package service
 
 import (
-	"log"
+	log "github.com/sirupsen/logrus"
+	"settlementMonitoring/config"
 	"settlementMonitoring/db"
 	"settlementMonitoring/dto"
+	"settlementMonitoring/utils"
 	"testing"
+	"time"
 )
 
-//QuerTotalSettlementData()
 func TestQuerTotalSettlementData(t *testing.T) {
 	db.Newdb()
 	QuerTotalSettlementData()
 }
 
-// QueryDataTurnMonitordata()
 func TestQueryDataTurnMonitordata(t *testing.T) {
 	db.Newdb()
 	QueryDataTurnMonitordata()
 }
 
-// QuerySettlementTrend()
 func TestQuerySettlementTrend(t *testing.T) {
 	db.Newdb()
 	QuerySettlementTrend()
 }
 
-//QuerySNRealTimeData
 func TestQuerySNRealTimeData(t *testing.T) {
 	db.Newdb()
 	log.Println(QuerySNRealTimeData())
 }
 
-//QueryOverdueData
 func TestQueryOverdueData(t *testing.T) {
 	db.Newdb()
 	log.Println(QueryOverdueData())
 }
 
-// Clarifydifference()
 func TestClarifydifference(t *testing.T) {
 	db.Newdb()
 	log.Println(Clarifydifference())
 }
 
-//StatisticalClearlingcheck
 func TestStatisticalClearlingcheck(t *testing.T) {
 	db.Newdb()
 	log.Println(StatisticalClearlingcheck())
@@ -56,15 +52,21 @@ func TestClarifyQuery(t *testing.T) {
 	log.Println(ClarifyQuery(req))
 }
 
-//ExportExcel
 func TestExportExcel(t *testing.T) {
 	db.Newdb()
 	req := dto.ReqClarifyExportExcel{BeginTime: "2020-08-10", EndTime: "2020-08-22", CheckState: 2, Orderstatus: 1}
 	log.Println(ExportExcel(req))
 }
 
-//QueryHSDZData()
 func TestQueryHSDZData(t *testing.T) {
 	db.NewHSZDDB()
 	log.Println(QueryHSDZData())
+}
+
+func TestHandleSixHourTasks(t *testing.T) {
+	conf := config.ConfigInit() //初始化配置
+	log.Error("结算监控配置文件信息：", *conf)
+	utils.InitLogrus(conf.LogPath, conf.LogFileName, time.Duration(24*conf.LogMaxAge)*time.Hour, time.Duration(conf.LogRotationTime)*time.Hour)
+	db.Newdb()
+	db.HandleSixHourTasks()
 }

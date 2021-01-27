@@ -111,7 +111,6 @@ func QuerySNRealTimeData() (int, error, *[]dto.RealTimeSettlementData) {
 	//查询省内结算实时数据监控 应该 144 条
 	ts := types.Frequency
 	Data := make([]dto.RealTimeSettlementData, ts)
-
 	err, ds := db.QuerySNRealTimeSettlementData(ts)
 	if err != nil {
 		return types.Statuszero, err, nil
@@ -257,7 +256,6 @@ func QueryOverdueData() (int, error, *[]dto.Overduedata) {
 
 //QueryHSDZData
 func QueryHSDZData() (int, error, *[]db.Hsdzdata) {
-
 	data, err := db.QueryHSDZData()
 	if err != nil {
 		return types.Statuszero, err, nil

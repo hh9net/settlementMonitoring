@@ -38,7 +38,7 @@ log_FileName     = "settlementMonitoring.log"
 
 hmysql_hostname     = 192.168.128.222
 hmysql_port         = 3306
-hmysql_user         = root
+hmysql_user         =root
 hmysql_pass         =mysql
 hmysql_databasename = blacklist
 

@@ -67,7 +67,9 @@ func Login(req dto.Reqlogin) (int, error) {
 	}
 
 	conn := utils.Pool.Get()
-	defer conn.Close()
+	defer func() {
+		_ = conn.Close()
+	}()
 
 	rgeterr, code := utils.RedisGet(&conn, req.Verificationcode)
 	if rgeterr != nil {

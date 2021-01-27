@@ -19,7 +19,10 @@ func QuerTotalSettlementData() (int, error, *dto.TotalSettlementData) {
 	//查询数据库获取总金额、总笔数
 	//conn := utils.RedisConn //初始化redis
 	conn := utils.Pool.Get()
-	defer conn.Close()
+	defer func() {
+		_ = conn.Close()
+	}()
+
 	// key:"jiestotal"  value："金额｜总条数"
 	rhgeterr, value := utils.RedisGet(&conn, "swjiesuantotal")
 	if rhgeterr != nil {
@@ -95,7 +98,6 @@ func QueryDisputedata() (int, error, *dto.TotalDisputeData) {
 
 //查询异常的数据总金额、总笔数
 func QueryAbnormaldata() (int, error, *dto.TotalAbnormalData) {
-
 	//查询异常数据的统计结果[最新的数据]
 	yccount, ycamount, qycerr := db.QueryAbnormalData(1)
 	if qycerr != nil {
@@ -107,7 +109,6 @@ func QueryAbnormaldata() (int, error, *dto.TotalAbnormalData) {
 		log.Println(ddqycerr)
 		return types.Statuszero, ddqycerr, nil
 	}
-
 	log.Println("查询异常的数据总金额、总笔数  成功")
 	//返回数据赋值
 	return types.StatusSuccessfully, nil, &dto.TotalAbnormalData{Amount: utils.Fen2Yuan(ycamount + ddycamount), Count: yccount + ddyccount}
@@ -260,7 +261,6 @@ func QueryClearlingAndDisputePackagedata() (int, error, *dto.ClearlAndDisputeDat
 	//查询清分包、争议包的接收时间、包号[最新的数据]前14天数据[1天]
 	date := utils.OldData(14)
 	conn := utils.Pool.Get()
-
 	defer func() {
 		_ = conn.Close()
 	}()
@@ -398,7 +398,6 @@ func QueryDataTurnMonitordata() (int, error, *[]dto.TurnDataResponse) {
 		datas[i].DDzcount = dd.FNbChedyssjts //dd
 		datas[i].DateTime = dd.FDtTongjwcsj.Format("2006-01-02 15:04:05")
 	}
-
 	//zdz 1:单点、2:总对总'
 	zdzqerr, zdztds := db.QueryDataTurnMonitortable(ts, 2)
 	if zdzqerr != nil {
@@ -408,7 +407,6 @@ func QueryDataTurnMonitordata() (int, error, *[]dto.TurnDataResponse) {
 		datas[i].ZDZcount = dd.FNbChedyssjts //zdz
 	}
 	log.Println("datas", datas)
-
 	//处理数据
 	for i, r := range datas {
 		TurndataResps[i].JieszCount = r.Jieszcount
@@ -440,7 +438,6 @@ func QuerySettlementTrend() (int, error, *[]dto.SettlementTrend) {
 		Datas[i].QingfCount = d.FNbQingfts
 		Datas[i].DateTime = d.FVcTongjrq
 	}
-
 	log.Println("响应数据：", len(Datas))
 	//返回数据
 	return types.StatusSuccessfully, nil, &Datas
@@ -451,13 +448,11 @@ func QueryPacketMonitoring() (int, error, *[]dto.PacketMonitoringdata) {
 	ts := types.Frequency
 	//响应数据 list TurnDataResponse
 	Datas := make([]dto.PacketMonitoringdata, ts)
-
 	//查询数据
 	qerr, ds := db.QueryPacketMonitoringtable(ts)
 	if qerr != nil {
 		return types.Statuszero, qerr, nil
 	}
-
 	for i, d := range *ds {
 		Datas[i].Yuansyingdbsl = d.FNbYuansjyydbsl
 		Datas[i].Dabaojine = utils.Fen2Yuan(d.FNbDabje)
@@ -498,19 +493,6 @@ func Clarifydifference() (int, error, *[]dto.DifferAmount) {
 func ClarifyQuery(req dto.ReqQueryClarify) (int, error, *dto.Clearlingcheckdata) {
 	log.Print("清分核对请求参数：", req)
 	//获取请求数据
-	/*
-		Datas := make([]dto.ClearlingcheckData, 5)
-		Datas[0].Tongjrq="2021-01-12"
-		Datas[1].Tongjrq="2021-01-13"
-		Datas[2].Tongjrq="2021-01-01"
-		Datas[3].Tongjrq="2021-01-02"
-		Datas[4].Tongjrq="2021-01-03"
-		Data := dto.Clearlingcheckdata{
-			Clearlingcheck: Datas,
-			ZongTS:         5,
-			ZongYS:         50000,
-		}
-		return types.StatusSuccessfully, nil, &Data*/
 	err, qfhdreqs, zongjls, zongys := db.QueryClearlingcheck(&req)
 	if err != nil {
 		if fmt.Sprint(err) == "请输入开始查询时间" {
@@ -615,11 +597,12 @@ func ExportExcel(req dto.ReqClarifyExportExcel) (int, error, []byte, string) {
 		rows = append(rows, row)
 	}
 	log.Println("导出文件名为：清分包数据核对记录表.xlsx 成功", rows[0])
-
 	path := utils.ExportExcel("清分包数据核对记录", columns, rows)
-
 	log.Println("要发送excle 文件的path:=", path)
 	file, oserr := os.Open("./" + path)
+	defer func() {
+		_ = file.Close()
+	}()
 	if oserr != nil {
 		log.Println("os.Open error:", oserr)
 		return types.Statuszero, oserr, nil, ""
@@ -628,8 +611,6 @@ func ExportExcel(req dto.ReqClarifyExportExcel) (int, error, []byte, string) {
 	if rerr != nil {
 		return types.Statuszero, rerr, nil, ""
 	}
-	defer file.Close()
-
 	//返回数据
 	return types.StatusSuccessfully, nil, data, path
 }
