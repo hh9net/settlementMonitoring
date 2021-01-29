@@ -182,6 +182,7 @@ func QuerySNDataClassification() (int, error, *dto.ShengNDataClassification) {
 		return types.StatusSuccessfully, nil, &dto.ShengNDataClassification{
 			Data.FNbShengnzjysl,
 			Data.FNbQingksl,
+			Data.FNbQingksl, //省内记账与清分数据一致
 			Data.FNbWeifssl,
 			Data.FNbFassjl,
 			Data.FNbjufsjl,
@@ -196,6 +197,7 @@ func QuerySNDataClassification() (int, error, *dto.ShengNDataClassification) {
 	return types.StatusSuccessfully, nil, &dto.ShengNDataClassification{
 		data.FNbShengnzjysl,
 		data.FNbQingksl,
+		data.FNbQingksl, //省内记账与清分数据一致
 		data.FNbWeifssl,
 		data.FNbFassjl,
 		data.FNbjufsjl,

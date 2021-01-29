@@ -212,7 +212,7 @@ func TestQueryTingjiesuanById(t *testing.T) {
 
 func TestQueryClearlingdata(t *testing.T) {
 	Newdb()
-	log.Println(QueryClearlingdata("2021-01-27"))
+	log.Println(QueryClearlingdata("2021-01-29"))
 }
 
 func TestStatisticalkeepAccount(t *testing.T) {

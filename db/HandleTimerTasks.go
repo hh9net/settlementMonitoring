@@ -64,15 +64,20 @@ func HandleDayTasks() {
 }
 
 func HandleSixHourTasks() {
-	tiker := time.NewTimer(time.Hour * 6) //计算当前时间到凌晨的时间间隔，设置一个定时器
+	//创建一个新的定时器，它将在至少持续时间d之后在其通道上发送当前时间。
+	//tiker := time.NewTimer(time.Hour * 6) //计算当前时间到凌晨的时间间隔，设置一个定时器
+	//返回一个新的计时器，其中包含一个通道，该通道将发送时间和duration参数指定的周期。
+	//它调整音程或降低节拍来弥补慢的接收器。持续时间d必须大于零;否则，NewTicker将会恐慌。停止股票以释放关联的资源。
+	//tiker := time.NewTicker(time.Second * 5)
+
 	for {
+		//<-tiker.C
 		cherr := StatisticalClearlingcheck()
 		if cherr != nil {
 			log.Error("清分核对定时任务error:", cherr)
-			continue
 		}
 		log.Println("执行清分核对的定时任务完成")
-		<-tiker.C
+		time.Sleep(time.Hour * 6)
 	}
 }
 

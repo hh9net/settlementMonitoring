@@ -513,7 +513,7 @@ func QueryClearlingdata(todayJS string) (error, *[]types.BJsQingftjxx) {
 	db := utils.GormClient.Client
 	qingftjsjs := make([]types.BJsQingftjxx, 0)
 	//赋值
-	if err := db.Table("b_js_qingftjxx").Where("F_DT_JIESSJ>=?", todayJS+" 00:00:00").Where("F_DT_JIESSJ<=?", todayJS+" 23:59:59").Find(&qingftjsjs).Error; err != nil {
+	if err := db.Table("b_js_qingftjxx").Where("F_DT_JIESSJ >=?", todayJS+" 00:00:00").Where("F_DT_JIESSJ  <=?", todayJS+" 23:59:59").Find(&qingftjsjs).Error; err != nil {
 		if fmt.Sprint(err) == "record not found" {
 			log.Println("QueryClearlingdata err== `record not found`:", err)
 			return nil, nil
@@ -547,13 +547,18 @@ func QueryDisputedata(yesterday string) (error, *types.BJsZhengyjyclxx) {
 //1、统计清分数据
 func StatisticalClearlingcheck() error {
 	//1、获取昨日的清分包数据
-	today := time.Now().Format("2006-01-02")
+	//log.Println(time.Now().Format("2006-01-02"))
+	today := time.Now().Format("2006-01-02") //"2021-01-28" //
 	qerr, clears := QueryClearlingdata(today)
 	if qerr != nil {
 		return qerr
 	}
 	if clears == nil {
 		log.Println("今日这时还没有收到清分包")
+		return errors.New("今日这时还没有收到清分包，需要检查清分包是否接收")
+	}
+	if len(*clears) == 0 {
+		log.Error("查询清分核对结果时,清分包查询【有问题】，没有查到清分包数据")
 		return errors.New("今日这时还没有收到清分包，需要检查清分包是否接收")
 	}
 	for _, clear := range *clears {
@@ -746,9 +751,13 @@ func CheckResultInsert(clear *types.BJsjkQingfhd) error {
 func QueryCheckResult(Qingfbxh int64) error {
 	db := utils.GormClient.Client
 	Clear := new(types.BJsjkQingfhd)
+	log.Println("查询要清分核对的清分包序号", Qingfbxh)
+	if Qingfbxh <= 0 {
+		return errors.New("查询要清分核对的清分包序号不正确")
+	}
 	if err := db.Table("b_jsjk_qingfhd").Where("F_NB_QINGFBXH = ?", Qingfbxh).First(Clear).Error; err != nil {
 		if fmt.Sprint(err) == "record not found" {
-			log.Println("Query b_jsjk_qingfhd err == `record not found`:", err)
+			log.Error("Query b_jsjk_qingfhd err == `record not found`:", err)
 			return nil
 		}
 		log.Println("Query b_jsjk_qingfhd error", err)
