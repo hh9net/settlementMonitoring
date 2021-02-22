@@ -38,7 +38,6 @@ func QuerySNTotalSettlementData(c *gin.Context) {
 	}
 }
 
-//QuerySNSendTotalSettlementData
 /*  接口2方法注释   */
 //@Summary 查询省内的已发送 总条数、总金额 api
 //@Tags 查询省内的已发送 总条数、总金额
@@ -65,7 +64,6 @@ func QuerySNSendTotalSettlementData(c *gin.Context) {
 	}
 }
 
-//QuerySNAlreadyPleaseData
 /*  接口3方法注释   */
 //@Summary 查询省内已请款的数据总条数、总金额 api
 //@Tags 查询省内已请款的数据总条数、总金额
@@ -94,7 +92,6 @@ func QuerySNAlreadyPleaseData(c *gin.Context) {
 	}
 }
 
-//QuerySNRefusePayData
 /*  接口4方法注释   */
 //@Summary 查询坏账（拒付）数据 总条数、总金额 api
 //@Tags 查询坏账（拒付）数据 总条数、总金额
@@ -151,7 +148,6 @@ func QuerySNRealTimeData(c *gin.Context) {
 	}
 }
 
-//QuerySNSettlementTrend
 /*  接口6方法注释   */
 //@Summary 前30日省内结算趋势概览 api
 //@Tags 查询前30日省内结算趋势概览
@@ -180,7 +176,6 @@ func QuerySNSettlementTrend(c *gin.Context) {
 	}
 }
 
-//QueryDataSync
 /*  接口7方法注释   */
 //@Summary 海岭数据同步监控 api
 //@Tags 查询海岭数据同步监控
@@ -317,5 +312,22 @@ func QueryHSDZData(c *gin.Context) {
 	}
 	if code == types.Statuszero {
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryOverdueDataError, Data: types.StatusText(types.StatusQueryOverdueDataError), Message: "查询逾期数据停车场top10 失败"})
+	}
+}
+
+//省内结算趋势更新
+func SettlementTrendUpdate(c *gin.Context) {
+	//查询省内结算趋势数据
+	code, err := service.SettlementTrendUpdate()
+	if err != nil {
+		log.Println("SettlementTrendUpdate err: %v", err)
+		//respFailure.Code = code
+		//respFailure.Message = fmt.Sprintf("SettlementTrendUpdate err: %v", err)
+	}
+	if code == types.StatusSuccessfully {
+		c.JSON(http.StatusOK, dto.QueryResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Message: "更新省内前30日省内结算趋势概览成功"})
+	}
+	if code == types.Statuszero {
+		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQuerySNSettlementTrendError, Data: types.StatusText(types.StatusQuerySNSettlementTrendError), Message: "更新省内前30日省内结算趋势概览失败"})
 	}
 }

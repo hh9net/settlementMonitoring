@@ -66,6 +66,8 @@ func AuthAPIInit(route *gin.RouterGroup) {
 	route.GET("/sw/settlementtrend", controller.QuerySettlementTrendbyDay)
 	//省外结算数据包监控
 	route.GET("/sw/packetmonitoring", controller.PacketMonitoring)
+	//省外结算趋势更新
+	route.POST("/sw/settlementtrendupdate", controller.SWSettlementTrendUpdate)
 
 	//省内结算监控模块
 	//4.2.1省内结算数据表的总条数、总金额【1】
@@ -90,6 +92,8 @@ func AuthAPIInit(route *gin.RouterGroup) {
 	route.GET("/sn/overduedata", controller.QueryOverdueData)
 	//4.2.11 恒生对帐数据[1]
 	route.GET("/sn/checkaccount", controller.QueryHSDZData)
+	//省内结算趋势更新
+	route.POST("/sn/settlementtrendupdate", controller.SettlementTrendUpdate)
 
 	//最近15天清分包数据差额
 	route.GET("/sw/clarifydifference", controller.Clarifydifference)
@@ -113,8 +117,6 @@ func AuthAPIInit(route *gin.RouterGroup) {
 	route.GET("/sw/settlementtrendcalibration", controller.Settlementtrendcalibration)
 	//省外结算清分包处理通知
 	//route.POST("/sw/clearingnotice", controller.ClearingNotice)
-
-	//
 
 	//关于前一天以及之前的未记账处理的原始消息包查询untreated
 	//route.POST("/sw/getunkeepaccountmsg", controller.GetUnkeepaccountMsg)

@@ -579,7 +579,7 @@ func StatisticalClearlingcheck() error {
 			return disputerr
 		}
 		//统计退费数据
-		SWRefund := StatisticalRefund(today)
+		SWRefund := StatisticalRefund(s1[0])
 		f := strconv.FormatFloat(float64(SWRefund.Total), 'f', 2, 64)
 		fs := strings.Split(f, ".")
 
@@ -1706,6 +1706,7 @@ func QueryShengNSettlementTrend() *[]types.SNClearandJiesuan {
 	ds := utils.OldData(30)
 	datas := make([]types.SNClearandJiesuan, 0)
 	for _, d := range ds {
+		//d ： 2021-01-02
 		data := QueryShengNSettlementTrendData(d)
 		datas = append(datas, *data)
 	}
@@ -1779,6 +1780,15 @@ func UpdateShengNSettlementTrendTable(data *types.BJsjkShengnjsqs, id int) error
 	return nil
 }
 
+func SNSettlementTrendUpdate(data *types.BJsjkShengnjsqs, id int) error {
+	db := utils.GormClient.Client
+	if err := db.Table("b_jsjk_shengnjsqs").Where("F_NB_ID=?", id).Updates(&data).Error; err != nil {
+		log.Println("更新省内结算趋势时 error", err)
+		return err
+	}
+	log.Println("更新省内结算趋势 完成")
+	return nil
+}
 func QueryShengNSettlementTrendtable(ts int) (error, *[]types.BJsjkShengnjsqs) {
 	db := utils.GormClient.Client
 	shujus := make([]types.BJsjkShengnjsqs, ts)

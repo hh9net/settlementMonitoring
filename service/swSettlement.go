@@ -614,3 +614,42 @@ func ExportExcel(req dto.ReqClarifyExportExcel) (int, error, []byte, string) {
 	//返回数据
 	return types.StatusSuccessfully, nil, data, path
 }
+
+//更新省内结算趋势
+func SWSettlementTrendUpdate() (int, error) {
+	//省内结算趋势查询
+	qsdatas := db.QuerySettlementTrendbyDay()
+	for _, qsdata := range *qsdatas {
+		//1、新增省外结算趋势
+		inerr := db.InsertSettlementTrendbyDayTable()
+		if inerr != nil {
+			return types.Statuszero, inerr
+		}
+		//2、查询最新一条
+		qerr, qsOnedata := db.QuerySettlementTrendbyDayTable()
+		if qerr != nil {
+			return types.Statuszero, qerr
+		}
+		//3、赋值
+		qushijl := new(types.BJsjkShengwjsqs)
+
+		qushijl.FNbJiaoye = qsdata.JiesuanMoney                       //   `F_NB_JIAOYJE` bigint DEFAULT NULL COMMENT '交易金额',
+		qushijl.FNbQingdje = qsdata.ClearlingMoney                    //   `F_NB_QINGFJE` bigint DEFAULT NULL COMMENT '清分金额',
+		qushijl.FNbChae = qsdata.JiesuanMoney - qsdata.ClearlingMoney //   `F_NB_CHAE` bigint DEFAULT NULL COMMENT '差额',
+		qushijl.FNbJiaoyts = qsdata.JiesuanCount                      //   `F_NB_JIAOYTS` int DEFAULT NULL COMMENT '交易条数',
+		qushijl.FNbQingfts = qsdata.ClearlingCount                    //   `F_NB_QINGFTS` int DEFAULT NULL COMMENT '清分条数',
+		qushijl.FDtTongjwcsj = utils.StrTimeToNowtime()               //   `F_DT_TONGJWCSJ` datetime DEFAULT NULL COMMENT '统计完成时间',
+		qushijl.FVcTongjrq = qsdata.Datetime                          //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',
+
+		//4、更新数据
+		uperr := db.UpdateSettlementTrendbyDayTable(qushijl, qsOnedata.FNbId)
+		if uperr != nil {
+			return types.Statuszero, uperr
+		}
+
+	}
+
+	log.Println("更新之前30天 省外结算趋势表数据 记录 成功+++++++【1.4】++++++++++")
+	//返回数据赋值
+	return types.StatusSuccessfully, nil
+}

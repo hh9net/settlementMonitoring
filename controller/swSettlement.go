@@ -375,8 +375,6 @@ func PacketMonitoring(c *gin.Context) {
 	}
 }
 
-//Clarifydifference
-
 /*  接口13方法注释  */
 //@Summary 查询最近15天清分包数据差额 api
 //@Tags 查询最近15天清分包数据差额
@@ -407,7 +405,6 @@ func Clarifydifference(c *gin.Context) {
 	}
 }
 
-//ClarifyQuery
 /*  接口14方法注释  */
 //@Summary 查询清分核对 api
 //@Tags 查询清分核对
@@ -479,8 +476,6 @@ func Clarifyconfirm(c *gin.Context) {
 	}
 }
 
-//ExportExcel
-
 /*  接口14方法注释  */
 //@Summary 导出清分核对记录为excel api
 //@Tags 导出清分核对记录为excel
@@ -523,8 +518,6 @@ func ExportExcel(c *gin.Context) {
 		return
 	}
 }
-
-//SetRedis
 
 /*  接口14方法注释  */
 //@Summary 导出清分核对记录为excel api
@@ -575,7 +568,7 @@ func SetRedis(c *gin.Context) {
 	c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "set redis ok", Message: "set redis   零值 ok "})
 }
 
-//Clearcalibration清分核对校准
+//清分核对校准
 func Clearcalibration(c *gin.Context) {
 	req := dto.ReqQuery{}
 	respFailure := dto.ResponseFailure{}
@@ -623,7 +616,7 @@ func Clearcalibration(c *gin.Context) {
 			//return disputerr
 		}
 		//统计退费数据
-		SWRefund := db.StatisticalRefund(req.BeginTime)
+		SWRefund := db.StatisticalRefund(s1[0])
 		f := strconv.FormatFloat(float64(SWRefund.Total), 'f', 2, 64)
 		fs := strings.Split(f, ".")
 
@@ -677,7 +670,7 @@ func Clearcalibration(c *gin.Context) {
 
 }
 
-//Clearcalibration清分包、争议包校准
+//清分包、争议包校准
 func ClearlingAndDisputePackagecalibration(c *gin.Context) {
 	conn := utils.Pool.Get() //初始化redis
 
@@ -781,9 +774,8 @@ func ClearlingAndDisputePackagecalibration(c *gin.Context) {
 
 }
 
-//Settlementtrendcalibration
 func Settlementtrendcalibration(c *gin.Context) {
-	//任务七
+
 	//省外结算趋势
 	qserr := db.SettlementTrendbyDay()
 	if qserr != nil {
@@ -792,8 +784,6 @@ func Settlementtrendcalibration(c *gin.Context) {
 		return
 	}
 
-	//省内业务
-	//任务十三
 	//省内结算趋势
 	qsnqserr := db.QueryShengNSettlementTrenddata()
 	if qsnqserr != nil {
@@ -801,9 +791,7 @@ func Settlementtrendcalibration(c *gin.Context) {
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "省内、省外结算趋势校准 error", Message: "省内、省外结算趋势校准error "})
 		return
 	}
-
 	c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "省内、省外结算趋势校准 ok", Message: "省内、省外结算趋势校准ok "})
-
 }
 
 //
@@ -820,3 +808,20 @@ func Settlementtrendcalibration(c *gin.Context) {
 //	c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "省内、省外结算趋势校准 ok", Message: "省内、省外结算趋势校准ok "})
 //
 //}
+
+//省外结算趋势更新
+func SWSettlementTrendUpdate(c *gin.Context) {
+	//更新省外结算趋势数据
+	code, err := service.SWSettlementTrendUpdate()
+	if err != nil {
+		log.Println("SWSettlementTrendUpdate err: %v", err)
+		//respFailure.Code = code
+		//respFailure.Message = fmt.Sprintf("SettlementTrendUpdate err: %v", err)
+	}
+	if code == types.StatusSuccessfully {
+		c.JSON(http.StatusOK, dto.QueryResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Message: "更新省外前30日省外结算趋势概览成功"})
+	}
+	if code == types.Statuszero {
+		c.JSON(http.StatusOK, dto.Response{Message: "更新省外前30日省外结算趋势概览失败"})
+	}
+}

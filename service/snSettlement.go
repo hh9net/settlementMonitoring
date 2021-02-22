@@ -128,7 +128,6 @@ func QuerySNRealTimeData() (int, error, *[]dto.RealTimeSettlementData) {
 	return types.StatusSuccessfully, nil, &Data
 }
 
-//QuerySNSettlementTrend
 func QuerySNSettlementTrend() (int, error, *[]dto.SNClearandJiesuan) {
 	//查询前30日省内结算趋势概览
 	ts := 30
@@ -150,7 +149,6 @@ func QuerySNSettlementTrend() (int, error, *[]dto.SNClearandJiesuan) {
 	return types.StatusSuccessfully, nil, &Data
 }
 
-//QueryDataSync
 func QueryDataSync() (int, error, *[]dto.DataSync) {
 	//查询海岭数据同步监控
 	ts := 12
@@ -231,7 +229,6 @@ func QueryAbnormalDataParking() (int, error, *[]dto.AbnormalDataOfParking) {
 	return types.StatusSuccessfully, nil, &Data
 }
 
-//QueryOverdueData
 func QueryOverdueData() (int, error, *[]dto.Overduedata) {
 	ts := 10
 	Data := make([]dto.Overduedata, ts)
@@ -256,7 +253,6 @@ func QueryOverdueData() (int, error, *[]dto.Overduedata) {
 	return types.StatusSuccessfully, nil, &Data
 }
 
-//QueryHSDZData
 func QueryHSDZData() (int, error, *[]db.Hsdzdata) {
 	data, err := db.QueryHSDZData()
 	if err != nil {
@@ -264,4 +260,40 @@ func QueryHSDZData() (int, error, *[]db.Hsdzdata) {
 	}
 	//返回数据赋值
 	return types.StatusSuccessfully, nil, data
+}
+
+//更新省内结算趋势
+func SettlementTrendUpdate() (int, error) {
+	// 查询省内结算趋势
+	qsshujus := db.QueryShengNSettlementTrend()
+	for i, qsshuju := range *qsshujus {
+		//1、新增省内结算趋势
+		inerr := db.InsertShengNSettlementTrendTable()
+		if inerr != nil {
+			return types.Statuszero, inerr
+		}
+		//2、查询省内结算趋势
+		qerr, data := db.QueryShengNSettlementTrendTable()
+		if qerr != nil {
+			return types.Statuszero, qerr
+		}
+		//4、赋值
+		Data := new(types.BJsjkShengnjsqs)
+		Data.FNbShengnjyje = qsshuju.JiesuanMoney                    //   `F_NB_SHENGNJYJE` bigint DEFAULT NULL COMMENT '省内交易金额',
+		Data.FNbShengnqkje = qsshuju.ClearlingMoney                  //   `F_NB_SHENGNQKJE` bigint DEFAULT NULL COMMENT '省内请款金额',
+		Data.FNbChae = qsshuju.JiesuanMoney - qsshuju.ClearlingMoney //   `F_NB_CHAE` bigint DEFAULT NULL COMMENT '差额',
+		Data.FNbJiaoyts = qsshuju.JiesuanCount                       //   `F_NB_JIAOYTS` int DEFAULT NULL COMMENT '交易条数',
+		Data.FNbQingkts = qsshuju.ClearlingCount                     //   `F_NB_QINGKTS` int DEFAULT NULL COMMENT '请款条数',
+		Data.FVcKuaizsj = qsshuju.Datetime                           //   `F_DT_KUAIZSJ` datetime DEFAULT NULL COMMENT '快照时间',
+		Data.FDtTongjwcsj = utils.StrTimeToNowtime()
+		//5、更新省内结算趋势
+		uperr := db.UpdateShengNSettlementTrendTable(Data, data.FNbId)
+		if uperr != nil {
+			return types.Statuszero, uperr
+		}
+		log.Printf("更新第%d天省内结算趋势成功+++++++++++++", i+1)
+	}
+	log.Println("更新省内之前30天结算趋势成功")
+	//返回数据赋值
+	return types.StatusSuccessfully, nil
 }
