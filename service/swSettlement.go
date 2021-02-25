@@ -383,6 +383,11 @@ func Dataclassification() (int, error, *dto.Dataclassification) {
 
 //转结算
 func QueryDataTurnMonitordata() (int, error, *[]dto.TurnDataResponse) {
+	conn := utils.Pool.Get()
+	defer func() {
+		_ = conn.Close()
+	}()
+
 	ts := 24
 	//响应数据 list TurnDataResponse
 	TurndataResps := make([]dto.TurnDataResponse, ts)
@@ -409,10 +414,20 @@ func QueryDataTurnMonitordata() (int, error, *[]dto.TurnDataResponse) {
 	log.Println("datas", datas)
 	//处理数据
 	for i, r := range datas {
+		sj := strings.Split(r.DateTime, " ")
+		chmgeterr, AbnormalToClearCount := utils.RedisHGet(&conn, "AbnormalToClear", sj[1])
+		if chmgeterr != nil {
+			log.Error(chmgeterr)
+			return types.Statuszero, chmgeterr, nil
+		}
+		AbnormalToClearCountstr := string(AbnormalToClearCount.([]uint8))
+		log.Println("查询转结算中异常转结算 数据 The hget value is ：", AbnormalToClearCountstr)
+		AbnormalToClearCountint, _ := strconv.Atoi(AbnormalToClearCountstr)
 		TurndataResps[i].JieszCount = r.Jieszcount
 		TurndataResps[i].YuansCount = r.ZDZcount + r.DDzcount
 		TurndataResps[i].DifferCount = TurndataResps[i].YuansCount - r.Jieszcount
 		TurndataResps[i].DateTime = r.DateTime
+		TurndataResps[i].AbnormalToClearCount = AbnormalToClearCountint
 	}
 	log.Println("转结算，响应数据：", TurndataResps)
 	//返回数据
@@ -527,6 +542,47 @@ func ClarifyQuery(req dto.ReqQueryClarify) (int, error, *dto.Clearlingcheckdata)
 		Datas[i].Tuifts = d.FNbTuifts
 	}
 	Data := dto.Clearlingcheckdata{
+		Clearlingcheck: Datas,
+		ZongTS:         zongjls,
+		ZongYS:         zongys,
+	}
+	log.Println("响应数据条数：", len(Datas))
+	//返回数据
+	return types.StatusSuccessfully, nil, &Data
+}
+
+//查询清分包处理结果
+func ClearlingStatusQuery(req dto.ClearlingStatusReq) (int, error, *dto.Clearlingstatusdata) {
+
+	//获取请求数据
+	err, qfreqs, zongjls, zongys := db.QueryClearlingStatus(&req)
+	if err != nil {
+		if fmt.Sprint(err) == "请输入开始查询时间" {
+			//查询用户是否被注册，查询失败
+			return types.Statuszero, err, nil
+		}
+		if fmt.Sprint(err) == "请输入查询截止时间" {
+			//查询用户是否被注册，查询失败
+			return types.Statuszero, err, nil
+		}
+
+		if fmt.Sprint(err) == "请输入正确的每页展示记录数" {
+			//查询用户是否被注册，查询失败
+			return types.Statuszero, err, nil
+		}
+
+		//查询用户是否被注册，查询失败
+		return types.Statuszero, err, nil
+	}
+	//响应数据 list
+	Datas := make([]dto.ClearstatusData, len(*qfreqs))
+	for i, d := range *qfreqs {
+		Datas[i].Clearlingpakgxh = d.FNbXiaoxxh
+		Datas[i].ClearDate = d.FVcQingfmbr                              //清分目标日
+		Datas[i].Qingfbjssj = d.FDtJiessj.Format("2006-01-02 15:04:05") //清分包接收时间
+		Datas[i].Chulzt = d.FNbChulzt                                   //处理结果
+	}
+	Data := dto.Clearlingstatusdata{
 		Clearlingcheck: Datas,
 		ZongTS:         zongjls,
 		ZongYS:         zongys,

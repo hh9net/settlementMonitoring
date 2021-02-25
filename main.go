@@ -69,15 +69,15 @@ func main() {
 	IpAddress := conf.IpAddress
 
 	//goroutine1
-	go db.HandleDayTasks()
+	//go db.HandleDayTasks()
 	//goroutine2
 	go db.HandleHourTasks()
 	//goroutine3
-	go db.HandleMinutesTasks()
+	//go db.HandleMinutesTasks()
 	//goroutine4
-	go db.HandleSixHourTasks()
+	//go db.HandleSixHourTasks()
 	////kafka处理
-	go db.HandleKafka()
+	//go db.HandleKafka()
 	//http处理
 	router.RouteInit(IpAddress)
 	tiker := time.NewTicker(time.Minute * 1)

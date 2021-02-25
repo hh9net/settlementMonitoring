@@ -543,6 +543,39 @@ func QueryDisputedata(yesterday string) (error, *types.BJsZhengyjyclxx) {
 	return nil, zytjsj
 }
 
+func QueryClearlingdataByclearTime(clearTime string) (error, *[]types.BJsQingftjxx) {
+	db := utils.GormClient.Client
+	qingftjsjs := make([]types.BJsQingftjxx, 0)
+	//赋值
+	if err := db.Table("b_js_qingftjxx").Where("F_VC_QINGFMBR =?", clearTime).Find(&qingftjsjs).Error; err != nil {
+		if fmt.Sprint(err) == "record not found" {
+			log.Println("QueryClearlingdata err== `record not found`:", err)
+			return nil, nil
+		}
+		log.Println("查询清分包数据 最新数据时 QueryClearlingdata error :", err)
+		return err, nil
+	}
+	log.Println("查询清分包数据表结果:", qingftjsjs)
+	return nil, &qingftjsjs
+}
+
+func UpdateClearlingdataByclearTime(clearTime string) (error, int) {
+	db := utils.GormClient.Client
+	qfxx := new(types.BJsQingftjxx)
+	qfxx.FNbChulzt = 2
+	//赋值
+	if err := db.Table("b_js_qingftjxx").Where("F_VC_QINGFMBR =?", clearTime).Update(&qfxx).Error; err != nil {
+		//if fmt.Sprint(err) == "record not found" {
+		//	log.Println("UpdateClearlingdataByclearTime err== `record not found`:", err)
+		//	return nil
+		//}
+		log.Println("更新清分包数据 最新数据时 UpdateClearlingdataByclearTime error :", err)
+		return err, 0
+	}
+	log.Println("更新清分包数据表结果:", qfxx)
+	return nil, types.Statuszero
+}
+
 //4.1.11	清分核对
 //1、统计清分数据
 func StatisticalClearlingcheck() error {
@@ -623,6 +656,10 @@ func StatisticalClearlingcheck() error {
 		cherr := CheckResultInsert(data)
 		if cherr != nil {
 			return cherr
+		}
+
+		if is == 2 {
+			utils.ClearErrorUsePostData(int(clear.FNbXiaoxxh), s[0])
 		}
 		log.Println("清分金额核对完成+++++")
 	}
@@ -748,6 +785,18 @@ func CheckResultInsert(clear *types.BJsjkQingfhd) error {
 	return nil
 }
 
+func CheckResultUpdate(clear *types.BJsjkQingfhd) error {
+	db := utils.GormClient.Client
+	//统计日期就是清分目标日
+	if err := db.Table("b_jsjk_qingfhd").Where("F_DT_TONGJRQ=?", clear.FVcTongjrq).Update(&clear).Error; err != nil {
+		// 错误处理...
+		log.Println("update b_jsjk_qingfhd error:", clear.FVcTongjrq, err)
+		return err
+	}
+	log.Println("更新清分核对结果成功", clear.FNbQingfbxh)
+	return nil
+}
+
 func QueryCheckResult(Qingfbxh int64) error {
 	db := utils.GormClient.Client
 	Clear := new(types.BJsjkQingfhd)
@@ -755,7 +804,7 @@ func QueryCheckResult(Qingfbxh int64) error {
 	if Qingfbxh <= 0 {
 		return errors.New("查询要清分核对的清分包序号不正确")
 	}
-	if err := db.Table("b_jsjk_qingfhd").Where("F_NB_QINGFBXH = ?", Qingfbxh).First(Clear).Error; err != nil {
+	if err := db.Table("b_jsjk_qingfhd").Where("F_NB_QINGFBXH =?", Qingfbxh).First(Clear).Error; err != nil {
 		if fmt.Sprint(err) == "record not found" {
 			log.Error("Query b_jsjk_qingfhd err == `record not found`:", err)
 			return nil
@@ -945,10 +994,17 @@ func QueryDataTurnMonitor() *types.TurnData {
 	jszcount := 0
 	db.Table("b_js_jiessj").Where("F_DT_JIAOYSJ >= ?", "2020-09-01 :00:00:00").Count(&jszcount)
 	log.Printf("查询结算表总交易笔数jszcount:%d", jszcount)
+
+	//异常转清分数据
+	yctoclearcount := 0
+	//F_NB_JIAOYJGLX '校验结果类型 0：正常数据、1：未处理异常数据、2：已处理异常数据'
+	db.Table("b_js_jiessj").Where("F_DT_JIAOYSJ >= ?", "2020-09-01 :00:00:00").Where("F_NB_JIAOYJGLX=", 1).Count(&yctoclearcount)
+	log.Printf("查询结算表异常转清分笔数yctoclearCount:%d", yctoclearcount)
 	turndata := new(types.TurnData)
 	turndata.DDzcount = ddckzcount
 	turndata.ZDZcount = zdzckzcount
 	turndata.Jieszcount = jszcount
+	turndata.AbnormalToClear = yctoclearcount
 	return turndata
 }
 
@@ -2424,6 +2480,66 @@ func QueryClearlingcheck(req *dto.ReqQueryClarify) (error, *[]types.BJsjkQingfhd
 			return err, nil, 0, 0
 		}
 		return nil, &hmdtjs, result[0].Count, totalpages
+	}
+}
+
+//查询清分包处理状态
+func QueryClearlingStatus(req *dto.ClearlingStatusReq) (error, *[]types.BJsQingftjxx, int, int) {
+	db := utils.GormClient.Client
+	log.Println("req:", req)
+	if req.BeginTime == "" {
+		return errors.New("请输入开始查询时间"), nil, 0, 0
+	}
+	if req.EndTime == "" {
+		return errors.New("请输入查询截止时间"), nil, 0, 0
+	}
+	if req.Prepage == 0 {
+		return errors.New("请输入正确的每页展示记录数"), nil, 0, 0
+	}
+	//查询全部
+	if req.State == 4 {
+		qfbsj := make([]types.BJsQingftjxx, 0)
+		//查询总数
+		var result []types.ClearPkgCount
+		sqlstr4 := `select count(F_NB_XIAOXXH) as count  from b_js_qingftjxx where F_VC_QINGFMBR >= ? and F_VC_QINGFMBR <= ?`
+		db.Raw(sqlstr4, req.BeginTime, req.EndTime).Scan(&result)
+		log.Println("查询总记录数:", result[0].Count)
+		//根据总数，和prepage每页数量 生成分页总数
+		totalpages := int(math.Ceil(float64(result[0].Count) / float64(req.Prepage))) //page总数
+		//当前页数
+		if req.Currentpageid > totalpages {
+			req.Currentpageid = totalpages
+		}
+		if req.Currentpageid <= 0 {
+			req.Currentpageid = 1
+		}
+		if err := db.Table("b_js_qingftjxx").Where("F_VC_QINGFMBR >=?", req.BeginTime).Where("F_VC_QINGFMBR <=?", req.EndTime).Order("F_NB_ID desc").Offset((req.Currentpageid - 1) * req.Prepage).Limit(req.Prepage).Find(&qfbsj).Error; err != nil {
+			log.Println("查询清分包数据时，QueryClearlingStatus error :", err)
+			return err, nil, 0, 0
+		}
+		return nil, &qfbsj, result[0].Count, totalpages
+	} else {
+		//req.State '处理状态 0：未处理；1：处理中；2：已处理；3：发生错误'4 全部
+		qfbsj := make([]types.BJsQingftjxx, 0)
+		//查询总数
+		var result []types.ClearPkgCount
+		sqlstr4 := `select count(F_NB_XIAOXXH) as count  from b_js_qingftjxx where F_VC_QINGFMBR >= ? and F_VC_QINGFMBR <= ? and F_NB_CHULZT=?`
+		db.Raw(sqlstr4, req.BeginTime, req.EndTime, req.State).Scan(&result)
+		log.Println("查询总记录数:", result[0].Count)
+		//根据总数，和prepage每页数量 生成分页总数
+		totalpages := int(math.Ceil(float64(result[0].Count) / float64(req.Prepage))) //page总数
+		//当前页数
+		if req.Currentpageid > totalpages {
+			req.Currentpageid = totalpages
+		}
+		if req.Currentpageid <= 0 {
+			req.Currentpageid = 1
+		}
+		if err := db.Table("b_js_qingftjxx").Where("F_VC_QINGFMBR >=?", req.BeginTime).Where("F_VC_QINGFMBR <=?", req.EndTime).Where("F_NB_CHULZT=?", req.State).Order("F_NB_ID desc").Offset((req.Currentpageid - 1) * req.Prepage).Limit(req.Prepage).Find(&qfbsj).Error; err != nil {
+			log.Println("查询清分包数据时，QueryClearlingStatus error :", err)
+			return err, nil, 0, 0
+		}
+		return nil, &qfbsj, result[0].Count, totalpages
 	}
 }
 

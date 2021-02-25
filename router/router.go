@@ -103,6 +103,12 @@ func AuthAPIInit(route *gin.RouterGroup) {
 	route.POST("/sw/clarifyquery", controller.ClarifyQuery)
 	//导出清分核对记录为excel
 	route.POST("/sw/exportexcel", controller.ExportExcel)
+	//更新清分核对结果
+	route.POST("/sw/clearlingcheckupdate", controller.ClearlingCheckUpdate)
+	//查询清分包处理结果
+	route.POST("/sw/clearlstatusquery", controller.ClearlingStatusQuery)
+	//更新清分包处理结果
+	route.POST("/sw/clearlingstatusupdate", controller.ClearlingStatusUpdate)
 
 	//
 	//省外清分核对确认【待处理Clarify confirm】

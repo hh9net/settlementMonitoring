@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
+	"settlementMonitoring/ClearingNoticeServer"
 	"strings"
 
 	"net/http"
@@ -548,6 +549,11 @@ func SetRedis(c *gin.Context) {
 		log.Print("set redis snjiesuantotal 零值error", rsnseterr)
 	}
 
+	//AbnormalToClearrseterr := utils.RedisHSet(&conn, "AbnormalToClear", "00:00:00","100")
+	//if AbnormalToClearrseterr != nil {
+	//	log.Print("set redis AbnormalToClear 零值 error", AbnormalToClearrseterr)
+	//}
+
 	m := make(map[string]string, 0)
 	m["2020-09-00"] = "999990" + "|" + "2020-09-00 11:11:11"
 	hmseterr := utils.RedisHMSet(&conn, "clear", m)
@@ -593,6 +599,7 @@ func Clearcalibration(c *gin.Context) {
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "清分核对校准,昨日没有清分包", Message: "清分核对校准,昨日没有清分包"})
 		return
 	}
+
 	for _, clear := range *clears {
 		qcrerr := db.QueryCheckResult(clear.FNbXiaoxxh)
 		if qcrerr != nil {
@@ -823,5 +830,162 @@ func SWSettlementTrendUpdate(c *gin.Context) {
 	}
 	if code == types.Statuszero {
 		c.JSON(http.StatusOK, dto.Response{Message: "更新省外前30日省外结算趋势概览失败"})
+	}
+}
+
+//更新清分核对
+func ClearlingCheckUpdate(c *gin.Context) {
+	req := dto.ClearlingCheckUpdateReq{}
+	if err := c.Bind(&req); err != nil {
+		log.Println("ClearlingCheckUpdate Req json unmarshal err: %v", err)
+		c.JSON(http.StatusOK, dto.Response{Message: "更新清分核对时获取请求参数失败"})
+		return
+	}
+
+	//校验参数
+	if req.ClearlingDate == "" {
+		c.JSON(http.StatusOK, dto.Response{Message: "更新清分核对时获取请求不能为空"})
+		return
+	}
+
+	log.Println("清分核对的清分包的清分目标日期：", req.ClearlingDate)
+	qerr, clears := db.QueryClearlingdataByclearTime(req.ClearlingDate)
+	if qerr != nil {
+		c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "清分核对校准,获取清分目标日的清分包数据error", Message: "清分核对校准,获取昨日的清分包数据error "})
+		return
+	}
+	if clears == nil {
+		log.Println("+++++++++++++++++++++++++++没有清分包【1.5】++++++++++++++++++++++")
+		c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "清分核对校准,没有找到清分包", Message: "清分核对校准,没有找到清分包"})
+		return
+	}
+	//更新清分核对
+	for _, clear := range *clears {
+		//if strconv.Itoa(int(clear.FNbXiaoxxh)) != req.ClearlingDNum {
+		//	//c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "需要清分核对的清分包号不一致", Message: "需要清分核对的清分包号不一致"})
+		//	log.Println("需要清分核对的清分包号不一致,需要核实")
+		//}
+		//qcrerr := db.QueryCheckResult(clear.FNbXiaoxxh)
+		//if qcrerr != nil {
+		//	if fmt.Sprint(qcrerr) == "查询清分核对结果成功,不能重复插入" {
+		//		log.Println("查询清分核对结果成功,不能重复插入")
+		//		c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "查询清分核对结果成功,不能重复插入", Message: "查询清分核对结果成功,不能重复插入"})
+		//		return
+		//	}
+		//	c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "清分核对校准error", Message: "清分核对校准error "})
+		//	return
+		//}
+		//2、统计昨日记账包总金额
+		s1 := strings.Split(clear.FVcQingfmbr, "T")
+		log.Println("++++统计记账包")
+		keepAccount, keepAccountCount := db.StatisticalkeepAccount(s1[0])
+		log.Println("++++统计记账包完成")
+
+		//统计存在争议数据
+		disputerr, Disput, zyfgsl := db.DisputedDataCanClearling(clear.FNbXiaoxxh)
+		if disputerr != nil {
+			//return disputerr
+		}
+		//统计退费数据
+		SWRefund := db.StatisticalRefund(s1[0])
+		f := strconv.FormatFloat(float64(SWRefund.Total), 'f', 2, 64)
+		fs := strings.Split(f, ".")
+
+		i, _ := strconv.Atoi(fs[0] + fs[1])
+
+		var zhengyclje int64
+		if Disput == nil {
+			zhengyclje = 0
+		} else {
+			zhengyclje = Disput.FNbQuerxyjzdzje
+		}
+		log.Println("今日核对清分结果的总金额：", keepAccount+zhengyclje)
+		log.Println("清分包清分总金额：", clear.FNbQingfzje)
+		log.Println("清分包退费总金额：", int64(i))
+
+		var is int
+		if (clear.FNbQingfzje == keepAccount+zhengyclje-int64(i)) && (clear.FNbQingfsl == keepAccountCount+zyfgsl+SWRefund.Count) {
+			is = 1
+			log.Println("清分核对正确++++++++++++++")
+		} else {
+			is = 2
+			log.Println("清分核对不正确++++++++++++++++++++++++++++++++")
+		}
+
+		//把清分核对结果存数据库
+		data := new(types.BJsjkQingfhd)
+		//赋值
+		data.FNbQingfqrzt = 0                          // `F_NB_QINGFQRZT` int DEFAULT NULL COMMENT '清分确认状态',
+		data.FNbQingfts = clear.FNbQingfsl             //`F_NB_QINGFTS` int DEFAULT NULL COMMENT '清分条数',
+		data.FNbTongjqfts = keepAccountCount + zyfgsl  //`F_NB_TONGJQFTS` int DEFAULT NULL COMMENT '统计清分条数',
+		data.FDtQingfbjssj = clear.FDtJiessj           //`F_VC_QINGFBJSSJ` int DEFAULT NULL COMMENT '清分包接收时间',
+		data.FNbQingfbxh = clear.FNbXiaoxxh            //   `F_NB_QINGFBXH` bigint DEFAULT NULL COMMENT '清分包序号',
+		data.FNbQingfje = clear.FNbQingfzje            //   `F_NB_QINGFJE` bigint DEFAULT NULL COMMENT '清分金额',
+		data.FNbTongjqfje = keepAccount + (zhengyclje) //   `F_NB_TONGJQFJE` bigint DEFAULT NULL COMMENT '统计清分金额',
+		data.FNbHedjg = is                             //   `F_NB_HEDJG` int DEFAULT NULL COMMENT '核对结果 是否一致,1:一致，2:不一致',
+		data.FNbTuifje = int64(i)                      //退费总金额  分
+		data.FNbTuifts = SWRefund.Count                //退费总条数
+
+		s := strings.Split(clear.FVcQingfmbr, "T")
+		data.FVcTongjrq = s[0] //   `F_DT_TONGJRQ` date DEFAULT NULL COMMENT '统计日期',【清分包的清分目标日】
+
+		cherr := db.CheckResultUpdate(data)
+		if cherr != nil {
+			c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "清分核对更新 error", Message: "清分核对校准 插入 error "})
+			return
+		}
+	}
+	c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "清分核对更新 ok", Message: "清分核对更新 ok "})
+}
+
+//查询清分包处理结果 '处理状态 0：未处理；1：处理中；2：已处理；3：发生错误'
+func ClearlingStatusQuery(c *gin.Context) {
+	req := dto.ClearlingStatusReq{}
+
+	if err := c.Bind(&req); err != nil {
+		log.Println("ClearlingStatusQuery json unmarshal err: %v", err)
+	}
+	//查询清分包处理结果
+	code, err, totaldata := service.ClearlingStatusQuery(req)
+	if err != nil {
+		log.Println("ClearlingStatusQuery err: %v", err)
+	}
+	if code == types.StatusSuccessfully {
+		c.JSON(http.StatusOK, dto.QuerResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Data: *totaldata, Message: "查询清分包处理结果成功"})
+		return
+	}
+	if code == types.Statuszero {
+		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryClarifyError, Message: "查询清分包处理结果失败"})
+		return
+	}
+}
+
+//更新清分包处理结果
+func ClearlingStatusUpdate(c *gin.Context) {
+	req := dto.ClearlingStatusUpdateReq{}
+
+	if err := c.Bind(&req); err != nil {
+		log.Println("ClearlingStatusUpdate json unmarshal err: %v", err)
+	}
+	//更新清分包处理结果1、发送消息到Kafka
+	qerr, clears := db.QueryClearlingdataByclearTime(req.ClearlingDate)
+	if qerr != nil {
+		c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: "清分核对校准,获取清分目标日的清分包数据error", Message: "清分核对校准,获取昨日的清分包数据error "})
+		return
+	}
+
+	//清分统计消息包更新结算表时，处理标记为2[已处理] 一个触发消息的生成  用kafka
+	ClearingNoticeServer.ClearingNotice(req.ClearlingDate, strconv.Itoa(int((*clears)[0].FNbXiaoxxh)))
+	uperr, code := db.UpdateClearlingdataByclearTime(req.ClearlingDate)
+	if uperr != nil {
+		log.Println("pdateClearlingdataByclearTime err: %v", uperr)
+	}
+	if code == types.StatusSuccessfully {
+		c.JSON(http.StatusOK, dto.QuerResponse{Code: types.StatusSuccessfully, CodeMsg: types.StatusText(types.StatusSuccessfully), Message: "更新清分包处理结果成功"})
+		return
+	}
+	if code == types.Statuszero {
+		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryClarifyError, Message: "更新清分包处理结果失败"})
+		return
 	}
 }

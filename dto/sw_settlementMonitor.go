@@ -79,13 +79,12 @@ type ClearlAndDisputeData struct {
 	ClearlingAndDisputedata []types.ClearlingAndDisputeData `json:"clearling_and_dispute_data" example:"1244547"`
 }
 
-//Clearlingcheck
-
 type Clearlingcheckdata struct {
 	Clearlingcheck []ClearlingcheckData
 	ZongTS         int `json:"total_count" example:"1244547"` //总记录条数
 	ZongYS         int `json:"page_num" example:"1244547"`    //总页数
 }
+
 type ClearlingcheckData struct {
 	Clearlingpakgxh int64  `json:"clear_pakg_id" example:"1244547"`    //清分包序号
 	Clearlingpakgje string `json:"clear_pakg_money" example:"1244547"` //清分包金额
@@ -97,6 +96,19 @@ type ClearlingcheckData struct {
 	Qingfbjssj      string `json:"receiv_time" example:"1244547"`      //清分包接收时间
 	Tuifje          string `json:"refund_money" example:"1244547"`
 	Tuifts          int    `json:"refund_count"`
+}
+
+type Clearlingstatusdata struct {
+	Clearlingcheck []ClearstatusData
+	ZongTS         int `json:"total_count" example:"1244547"` //总记录条数
+	ZongYS         int `json:"page_num" example:"1244547"`    //总页数
+}
+
+type ClearstatusData struct {
+	Clearlingpakgxh int64  `json:"clear_pakg_id" example:"12400"` //清分包序号
+	ClearDate       string `json:"clear_date"`                    //清分目标日
+	Qingfbjssj      string `json:"receiv_time"`                   //清分包接收时间
+	Chulzt          int    `json:"result" example:"1"`            //处理结果
 }
 
 type Dataclassification struct {
@@ -123,11 +135,11 @@ type TurnData struct {
 }
 
 type TurnDataResponse struct {
-	JieszCount  int    `json:"total_count" example:"1244547"` //结算表总数
-	YuansCount  int    `json:"count" example:"1244547"`       //原始出口总笔数
-	DifferCount int    `json:"differ_count" example:"1244547"`
-	DateTime    string `json:"datetime"  example:"2020-08-18"` //完成时间
-
+	JieszCount           int    `json:"total_count" example:"1244547"` //结算表总数
+	YuansCount           int    `json:"count" example:"1244547"`       //原始出口总笔数
+	DifferCount          int    `json:"differ_count" example:"1244547"`
+	DateTime             string `json:"datetime"  example:"2020-08-18"` //完成时间
+	AbnormalToClearCount int    `json:"abnormal_to_clear_count"`        //abnormal_to_clear_count
 }
 
 //省外结算趋势
@@ -165,11 +177,28 @@ type ReqQueryClarify struct {
 	CheckState    int    `json:"check_state" example:"1"` //0:全部、1：校验成功 2：校验失败
 	Currentpageid int    `json:"currentpageid" example:"1"`
 	Prepage       int    `json:"count" example:"1"`
-	Orderstatus   int    `json:"order_status" example:"1"`
+	Orderstatus   int    `json:"order_status" example:"1"` //顺序
+}
+
+type ClearlingStatusReq struct {
+	BeginTime     string `json:"begin_time" example:"2020-08-13 13:13:13"`
+	EndTime       string `json:"end_time" example:"2020-08-13 13:13:13"`
+	State         int    `json:"state" example:"1"`         //'处理状态 0：未处理；1：处理中；2：已处理；3：发生错误'4 全部
+	Currentpageid int    `json:"currentpageid" example:"1"` //当前页
+	Prepage       int    `json:"count" example:"1"`
+	//Orderstatus   int    `json:"order_status" example:"1"`//顺序
+}
+
+type ClearlingStatusUpdateReq struct {
+	ClearlingDate string `json:"clearling_date" example:"2020-08-13"`
+	ClearlPkg     string `json:"clearl_pkg"`
 }
 
 type ReqQuery struct {
 	BeginTime string `json:"begin_time" example:"2020-08-13"`
+}
+type ClearlingCheckUpdateReq struct {
+	ClearlingDate string `json:"clearling_date" example:"2020-08-13"`
 }
 
 type ReqClarifyExportExcel struct {
@@ -178,11 +207,3 @@ type ReqClarifyExportExcel struct {
 	CheckState  int    `json:"check_state" example:"1"` //0:全部、1：校验成功 2：校验失败
 	Orderstatus int    `json:"order_status" example:"1"`
 }
-
-//{
-//"begintime":"2020-07-31",
-//"endtime":"2020-08-14",
-//"checkstate":"2"
-//"currentpageid":"2",
-//"prepage":"2",
-//}

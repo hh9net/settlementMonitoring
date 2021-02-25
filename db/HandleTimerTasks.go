@@ -690,8 +690,24 @@ func DataTurnMonitor() error {
 	if dduperr != nil {
 		return dduperr
 	}
-	log.Println("插入之前24小时转结算表数据 记录 完成【按分钟统计】+++++++++++++++++++++++++【2.12】+++++++++++++++++++++++++")
+	conn := utils.Pool.Get()
 
+	defer func() {
+		_ = conn.Close()
+	}()
+	//5、统计异常转清分数据
+	sjstr := data.FDtTongjwcsj.Format("2006-01-02 15:04:05")
+	sj := strings.Split(sjstr, " ")
+
+	//m:=make(map[string]string,0)
+	//m[sj[1]]=strconv.Itoa(turndata.AbnormalToClear)
+	// key:"AbnormalToClear"  v：value："时间：异常转清分总条数"
+
+	rseterr := utils.RedisHSet(&conn, "AbnormalToClear", sj[1], strconv.Itoa(turndata.AbnormalToClear))
+	if rseterr != nil {
+		return rseterr
+	}
+	log.Println("插入之前24小时转结算表数据 记录 完成【按分钟统计2.12】")
 	return nil
 }
 

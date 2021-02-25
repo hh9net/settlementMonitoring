@@ -357,23 +357,26 @@ type BSysYongh struct {
 
 // B_JS_QINGFTJXX【清分统计消息】b_js_qingftjxx
 type BJsQingftjxx struct {
-	FVcBanbh         string    `gorm:"column:F_VC_BANBH"`                              //F_VC_BANBH	版本号	VARCHAR(32)
-	FNbXiaoxlb       int       `gorm:"column:F_NB_XIAOXLB"`                            //F_NB_XIAOXLB	消息类别	INT
-	FNbXiaoxlx       int       `gorm:"column:F_NB_XIAOXLX"`                            //F_NB_XIAOXLX	消息类型	INT
-	FVcFaszid        string    `gorm:"column:F_VC_FASZID"`                             //F_VC_FASZID	发送者ID	VARCHAR(32)
-	FVcJieszid       string    `gorm:"column:F_VC_JIESZID"`                            //F_VC_JIESZID	接收者ID	VARCHAR(32)
-	FNbXiaoxxh       int64     `gorm:"column:F_NB_XIAOXXH"`                            //F_NB_XIAOXXH	消息序号	BIGINT
-	FDtJiessj        time.Time `gorm:"column:F_DT_JIESSJ"`                             //F_DT_JIESSJ	接收时间	DATETIME 2021-01-02 12:12:12
-	FVcQingfmbr      string    `gorm:"column:F_VC_QINGFMBR"`                           //F_VC_QINGFMBR	清分目标日	DATE
-	FNbQingfzje      int64     `gorm:"column:F_NB_QINGFZJE"`                           //F_NB_QINGFZJE	清分总金额	INT
-	FNbQingfsl       int       `gorm:"column:F_NB_QINGFSL"`                            //F_NB_QINGFSL	清分数量	INT
-	FDtQingftjclsj   time.Time `gorm:"column:F_DT_QINGFTJCLSJ"`                        //F_DT_QINGFTJCLSJ	清分统计处理时间	DATETIME
-	FNbYuansjysl     int       `gorm:"column:F_NB_YUANSJYSL"`                          //F_NB_YUANSJYSL	原始包交易数量	INT
-	FNbZhengycljgbsl int       `gorm:"column:F_NB_ZHENGYCLJGBSL"`                      //F_NB_ZHENGYCLJGBSL	争议处理结果包数量	INT
-	FVcXiaoxwjlj     string    `gorm:"column:F_VC_XIAOXWJLJ"`                          //F_VC_XIAOXWJLJ	消息文件路径	VARCHAR(512)
-	FDtChulsj        time.Time `gorm:"column:F_DT_CHULSJ"`                             //`F_DT_CHULSJ` datetime DEFAULT NULL COMMENT '处理时间',
-	FNbWeiyid        int       `gorm:"AUTO_INCREMENT; primary_key;column:F_NB_WEIYID"` //`F_NB_WEIYID` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增主键',
-	FNbTuifbsl       int       `gorm:"column:F_NB_TUIFBSL"`                            //`F_NB_TUIFBSL` int(11) DEFAULT '0' COMMENT '退费包数量',
+	FVcBanbh         string    `gorm:"column:F_VC_BANBH"`         //F_VC_BANBH	版本号	VARCHAR(32)
+	FNbXiaoxlb       int       `gorm:"column:F_NB_XIAOXLB"`       //F_NB_XIAOXLB	消息类别	INT
+	FNbXiaoxlx       int       `gorm:"column:F_NB_XIAOXLX"`       //F_NB_XIAOXLX	消息类型	INT
+	FVcFaszid        string    `gorm:"column:F_VC_FASZID"`        //F_VC_FASZID	发送者ID	VARCHAR(32)
+	FVcJieszid       string    `gorm:"column:F_VC_JIESZID"`       //F_VC_JIESZID	接收者ID	VARCHAR(32)
+	FNbXiaoxxh       int64     `gorm:"column:F_NB_XIAOXXH"`       //F_NB_XIAOXXH	消息序号	BIGINT
+	FDtJiessj        time.Time `gorm:"column:F_DT_JIESSJ"`        //F_DT_JIESSJ	接收时间	DATETIME 2021-01-02 12:12:12
+	FVcQingfmbr      string    `gorm:"column:F_VC_QINGFMBR"`      //F_VC_QINGFMBR	清分目标日	DATE
+	FNbQingfzje      int64     `gorm:"column:F_NB_QINGFZJE"`      //F_NB_QINGFZJE	清分总金额	INT
+	FNbQingfsl       int       `gorm:"column:F_NB_QINGFSL"`       //F_NB_QINGFSL	清分数量	INT
+	FDtQingftjclsj   time.Time `gorm:"column:F_DT_QINGFTJCLSJ"`   //F_DT_QINGFTJCLSJ	清分统计处理时间	DATETIME
+	FNbYuansjysl     int       `gorm:"column:F_NB_YUANSJYSL"`     //F_NB_YUANSJYSL	原始包交易数量	INT
+	FNbZhengycljgbsl int       `gorm:"column:F_NB_ZHENGYCLJGBSL"` //F_NB_ZHENGYCLJGBSL	争议处理结果包数量	INT
+	FVcXiaoxwjlj     string    `gorm:"column:F_VC_XIAOXWJLJ"`     //F_VC_XIAOXWJLJ	消息文件路径	VARCHAR(512)
+	FDtChulsj        time.Time `gorm:"column:F_DT_CHULSJ"`        //`F_DT_CHULSJ` datetime DEFAULT NULL COMMENT '处理时间',
+
+	FNbWeiyid int `gorm:"AUTO_INCREMENT; primary_key;column:F_NB_WEIYID"` //`F_NB_WEIYID` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增主键',
+
+	FNbTuifbsl int `gorm:"column:F_NB_TUIFBSL"` //`F_NB_TUIFBSL` int(11) DEFAULT '0' COMMENT '退费包数量',
+	FNbChulzt  int `gorm:"column:F_NB_CHULZT"`  //	`F_NB_CHULZT` int(11) NOT NULL DEFAULT '0' COMMENT '处理状态 0：未处理；1：处理中；2：已处理；3：发生错误',
 }
 
 //  B_JS_QINGFTONGJIMX【清分统计明细】b_js_qingftjmx
@@ -407,7 +410,7 @@ type BJsZhengyjyclxx struct {
 	FNbWeiyid       int       `gorm:"AUTO_INCREMENT; primary_key;column:F_NB_WEIYID"` //`F_NB_WEIYID` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增主键',
 }
 
-// 26    B_JS_ZHENGYJYCLMX【争议交易处理明细】
+//26 B_JS_ZHENGYJYCLMX【争议交易处理明细】
 type BJsZhengyjyclmx struct {
 	FNbZhengyjyclxxxh int64 //F_NB_ZHENGYJYCLXXXH	争议交易处理消息序号	BIGINT
 	FNbFenzxh         int   //F_NB_FENZXH	分组序号	INT
@@ -438,7 +441,7 @@ type BJsJizclxx struct {
 	FNbWeiyid      int       //`F_NB_WEIYID` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增主键',
 }
 
-//29   B_JS_JIZCLMX【记账处理明细】
+//29B_JS_JIZCLMX【记账处理明细】
 type BJsJizclmx struct {
 	FNbYuansjyxxxh int64 //F_NB_YUANSJYXXXH	原始交易消息序号	BIGINT
 	FNbBaonxh      int   //F_NB_BAONXH	包内序号	INT
@@ -446,7 +449,7 @@ type BJsJizclmx struct {
 	FNbWeiyid      int   //`F_NB_WEIYID` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增主键',
 }
 
-//31   B_JS_YUANSJYXX【原始交易消息包表】
+//31 B_JS_YUANSJYXX【原始交易消息包表】
 type BJsYuansjyxx struct {
 	FVcBanbh       string    //F_VC_BANBH	版本号	VARCHAR(32)
 	FNbXiaoxlb     int       //F_NB_XIAOXLB	消息类别	INT
@@ -517,6 +520,10 @@ type Result struct {
 	//Date           string
 }
 
+type ClearPkgCount struct {
+	Count int
+}
+
 type SNResult struct {
 	Total int64
 	Count int
@@ -571,9 +578,10 @@ type ShengNDataClassification struct {
 }
 
 type TurnData struct {
-	Jieszcount int //结算表总数
-	DDzcount   int //单点出口总笔数
-	ZDZcount   int //总对总总笔数
+	Jieszcount      int //结算表总数
+	DDzcount        int //单点出口总笔数
+	ZDZcount        int //总对总总笔数
+	AbnormalToClear int
 }
 type ClearandJiesuan struct {
 	ClearlingCount int   //清分总笔数
@@ -618,12 +626,3 @@ type SNClearandJiesuan struct {
 	JiesuanMoney   int64 //交易总金额
 	Datetime       string
 }
-
-//hl:
-//  park:
-//    id: 3208260001,3201000001,3202110001,3212830001,3203110001,3201000009,3201000002,3205830001,3201000003,3201000004,3201000005,3201000007,3201000006,3201000008,3206120001,3101130001,3205820001
-//  company:
-//    id: 3207000002,3207000003,3207000004,3207000005,3207000006,3207000007,3207000008,3207000009,3207000010,3207000018,3207000012,3207000013,3207000014,3207000015,3207000016,3107000001,3207000017
-
-//company:
-//id: 3201060010,3201020001
