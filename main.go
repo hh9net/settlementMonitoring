@@ -71,7 +71,7 @@ func main() {
 	//goroutine1
 	//go db.HandleDayTasks()
 	//goroutine2
-	go db.HandleHourTasks()
+	//go db.HandleHourTasks()
 	//goroutine3
 	//go db.HandleMinutesTasks()
 	//goroutine4
